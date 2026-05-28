@@ -46,7 +46,11 @@
 				goto('/');
 			}, 2000);
 		} catch (err: any) {
-			error = err.message || 'Signup failed. Username or email might be taken.';
+			if (err.errors && Array.isArray(err.errors)) {
+				error = err.errors.map((e: any) => Object.values(e)[0]).join(', ');
+			} else {
+				error = err.message || 'Signup failed. Username or email might be taken.';
+			}
 		} finally {
 			loading = false;
 		}
@@ -82,8 +86,8 @@
 			</div>
 
 			<div class="form-row">
-				<Textfield variant="outlined" bind:value={first_name} label="First Name" required />
-				<Textfield variant="outlined" bind:value={last_name} label="Last Name" required />
+				<Textfield variant="outlined" bind:value={first_name} label="First Name" required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
+				<Textfield variant="outlined" bind:value={last_name} label="Last Name" required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
 			</div>
 
 			<Textfield variant="outlined" bind:value={username} label="Username" required />
@@ -99,8 +103,9 @@
 				variant="outlined"
 				type="password"
 				bind:value={password}
-				label="Password"
+				label="Password (min 9 chars)"
 				required
+				input$minlength={9}
 			/>
 
 			{#if role === 'instructor'}
@@ -140,7 +145,7 @@
 		padding: 2rem;
 		background: white;
 		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}
 	h1 {
 		color: var(--terciary-color);

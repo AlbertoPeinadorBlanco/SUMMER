@@ -7,6 +7,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
+		"test:unit": "vitest",
+		"test:e2e": "playwright test",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -14,8 +16,10 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.60.0",
 		"@smui/button": "^9.0.0",
 		"@smui/card": "^9.0.0",
+		"@smui/data-table": "^9.0.0",
 		"@smui/dialog": "^9.0.0",
 		"@smui/drawer": "^9.0.0",
 		"@smui/fab": "^9.0.0",
@@ -26,17 +30,22 @@
 		"@smui/textfield": "^9.0.0",
 		"@smui/top-app-bar": "^9.0.0",
 		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/adapter-node": "^5.5.4",
 		"@sveltejs/kit": "^2.57.0",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"@testing-library/svelte": "^5.3.1",
+		"jsdom": "^29.1.1",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.1",
 		"smui-theme": "^9.0.0",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
 		"typescript": "^6.0.2",
-		"vite": "^8.0.7"
+		"vite": "^8.0.7",
+		"vitest": "^4.1.7"
 	},
 	"dependencies": {
+		"@sentry/sveltekit": "^10.54.0",
 		"@smui/checkbox": "^9.0.0",
 		"@smui/form-field": "^9.0.0",
 		"@smui/menu": "^9.0.0",

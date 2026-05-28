@@ -66,9 +66,9 @@
 		<form onsubmit={handleLogin} class="login-form">
 			<Textfield
 				variant="outlined"
-				type="email"
+				type="text"
 				bind:value={email}
-				label="Email"
+				label="Email or Username"
 				required
 				input$autocomplete="username"
 				style="width: 100%; margin-bottom: 1rem;"
@@ -79,6 +79,7 @@
 				bind:value={password}
 				label="Password"
 				required
+				input$minlength={9}
 				input$autocomplete="current-password"
 				style="width: 100%; margin-bottom: 1rem;"
 			/>

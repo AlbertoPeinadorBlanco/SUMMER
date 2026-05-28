@@ -8,6 +8,7 @@
 	import { t, isLoading, locale } from 'svelte-i18n';
 	import { currency, type CurrencyCode } from '$lib/stores/currency';
 	import { auth } from '$lib/stores/auth';
+	import { notifications } from '$lib/stores/notifications';
 	import LoginPopup from '$lib/components/LoginPopup.svelte';
 
 	setupI18n();
@@ -16,6 +17,21 @@
 	let mobileMenuOpen = $state(false);
 	let showLogin = $state(false);
 	let userMenuOpen = $state(false);
+	let notifMenuOpen = $state(false);
+
+	let unreadCount = $derived($notifications.filter(n => !n.is_read).length);
+
+	$effect(() => {
+		if ($auth.isAuthenticated) {
+			notifications.fetch();
+		} else {
+			notifications.clear();
+		}
+	});
+
+	async function markNotifRead(id) {
+		await notifications.markAsRead(id);
+	}
 
 	function toggleMobileMenu() {
 		mobileMenuOpen = !mobileMenuOpen;
@@ -47,9 +63,9 @@
 		<TopAppBar variant="fixed" class="navbar" aria-label="Main navigation">
 			<Row>
 				<Section class="left-section">
-					<IconButton class="material-icons" href="/" aria-label="Home page">waves</IconButton>
+					<IconButton class="material-icons app-logo" href="/" aria-label="Home page" style="margin-right: -8px;">waves</IconButton>
 					<Title
-						style="cursor: pointer; margin-right: 2rem;"
+						style="cursor: pointer; margin-right: 2rem; padding-left: 5px;"
 						onclick={() => (window.location.href = '/')}
 						aria-label="{$t('app.title')} homepage"
 					>
@@ -66,9 +82,17 @@
 							>
 							<Label>{$t('nav.marketplace')}</Label>
 						</Button>
+						<Button href="/instructors" class="nav-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">groups</span>
+							<Label>{$t('nav.instructors')}</Label>
+						</Button>
 						<Button href="/policies" class="nav-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">policy</span>
 							<Label>{$t('nav.policies')}</Label>
+						</Button>
+						<Button href="/gear-guide" class="nav-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">surfing</span>
+							<Label>{$t('nav.gear_guide')}</Label>
 						</Button>
 						<Button href="/contact" class="nav-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">mail</span>
@@ -84,14 +108,39 @@
 					aria-label="User menu"
 				>
 					{#if $auth.isAuthenticated && $auth.user}
-						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (userMenuOpen = false)}>
+						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (notifMenuOpen = false)}>
+							<Button onclick={() => (notifMenuOpen = !notifMenuOpen)} class="nav-btn desktop-nav" style="min-width: 48px; padding: 0;">
+								<span class="material-icons" aria-hidden="true">notifications</span>
+								{#if unreadCount > 0}
+									<span style="position: absolute; top: 0px; right: 4px; background: #e63946; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold;">{unreadCount}</span>
+								{/if}
+							</Button>
+							{#if notifMenuOpen}
+								<div class="user-dropdown desktop-nav" style="width: 320px; max-height: 400px; overflow-y: auto; right: 0;">
+									{#if $notifications.length === 0}
+										<div style="padding: 1rem; text-align: center; color: #666;">No notifications</div>
+									{:else}
+										{#each $notifications as notif}
+											<div class="dropdown-item" style="flex-direction: column; align-items: flex-start; padding: 1rem; border-bottom: 1px solid #eee; {notif.is_read ? 'opacity: 0.6;' : 'font-weight: 600;'}" onclick={() => markNotifRead(notif.id)}>
+												<div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 0.25rem; text-transform: uppercase;">{notif.type.replace('_', ' ')}</div>
+												<div style="font-size: 0.9rem; white-space: normal; line-height: 1.4;">{notif.message}</div>
+												<div style="font-size: 0.75rem; color: #999; margin-top: 0.5rem;">{new Date(notif.created_at).toLocaleString()}</div>
+											</div>
+										{/each}
+									{/if}
+								</div>
+							{/if}
+						</div>
+
+						<div class="user-menu-container" style="position: relative; margin-left: 0.5rem;" onmouseleave={() => (userMenuOpen = false)}>
 							<Button onclick={() => (userMenuOpen = !userMenuOpen)} class="nav-btn user-btn desktop-nav">
 								{#if $auth.user.profile_picture_url}
-									<img src={`http://localhost:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" />
+									<img src={`http://127.0.0.1:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
 								{:else}
-									<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">person</span>
+									<div class="nav-avatar-placeholder">
+										{$auth.user.username ? $auth.user.username.charAt(0).toUpperCase() : 'U'}
+									</div>
 								{/if}
-								<Label>{$t('nav.profile')}</Label>
 								<span class="material-icons" aria-hidden="true" style="margin-left: 4px;">arrow_drop_down</span>
 							</Button>
 							{#if userMenuOpen}
@@ -100,11 +149,36 @@
 										<span class="material-icons" aria-hidden="true">person</span>
 										{$t('nav.profile')}
 									</a>
+									<a href="/bookings" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">book_online</span>
+										My Bookings
+									</a>
 									{#if $auth.user.role === 'instructor'}
 										<a href="/instructor/manage-ads" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
 											<span class="material-icons" aria-hidden="true">edit_note</span>
 											{$t('nav.manageAds')}
 										</a>
+									{/if}
+									{#if $auth.user.role === 'admin'}
+										<div class="dropdown-divider"></div>
+										<div class="dropdown-header">Administration</div>
+										<a href="/admin/notifications" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">campaign</span>
+											Manage Notifications
+										</a>
+										<a href="/admin/external-ads" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">store</span>
+											External Adverts
+										</a>
+										<a href="/admin/pricings" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">price_change</span>
+											Platform Pricings
+										</a>
+										<a href="/admin" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">admin_panel_settings</span>
+											{$t('admin.title')}
+										</a>
+										<div class="dropdown-divider"></div>
 									{/if}
 									<button class="dropdown-item" onclick={() => { auth.logout(); userMenuOpen = false; }}>
 										<span class="material-icons" aria-hidden="true">logout</span>
@@ -124,7 +198,7 @@
 					<Button
 						onclick={toggleCurrency}
 						variant="outlined"
-						class="lang-btn"
+						class="lang-btn desktop-nav"
 						aria-label="Toggle currency. Current: {$currency}"
 					>
 						<Label>{$currency}</Label>
@@ -132,7 +206,7 @@
 					<Button
 						onclick={toggleLanguage}
 						variant="outlined"
-						class="lang-btn"
+						class="lang-btn desktop-nav"
 						aria-label="Toggle language. Current: {$locale === 'en' ? 'English' : 'Spanish'}"
 					>
 						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
@@ -185,6 +259,10 @@
 					>
 					<Label>{$t('nav.marketplace')}</Label>
 				</Button>
+				<Button href="/instructors" onclick={toggleMobileMenu} class="mobile-menu-btn">
+					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">groups</span>
+					<Label>{$t('nav.instructors')}</Label>
+				</Button>
 				<Button href="/policies" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">policy</span>
 					<Label>{$t('nav.policies')}</Label>
@@ -201,13 +279,39 @@
 							<Label>{$t('nav.manageAds')}</Label>
 						</Button>
 					{/if}
+					{#if $auth.user.role === 'admin'}
+						<div class="mobile-menu-header">Administration</div>
+						<Button href="/admin/notifications" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">campaign</span>
+							<Label>Manage Notifications</Label>
+						</Button>
+						<Button href="/admin/external-ads" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">store</span>
+							<Label>External Adverts</Label>
+						</Button>
+						<Button href="/admin/pricings" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">price_change</span>
+							<Label>Platform Pricings</Label>
+						</Button>
+						<Button href="/admin" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">admin_panel_settings</span>
+							<Label>{$t('admin.title')}</Label>
+						</Button>
+						<div class="dropdown-divider" style="margin: 0.5rem -1rem;"></div>
+					{/if}
 					<Button href="/profile" onclick={toggleMobileMenu} class="mobile-menu-btn">
 						{#if $auth.user.profile_picture_url}
-							<img src={`http://localhost:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar-mobile" />
+							<img src={`http://127.0.0.1:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar-mobile" width="24" height="24" loading="lazy" decoding="async" />
 						{:else}
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">person</span>
+							<div class="nav-avatar-placeholder-mobile">
+								{$auth.user.username ? $auth.user.username.charAt(0).toUpperCase() : 'U'}
+							</div>
 						{/if}
 						<Label>{$t('nav.profile')}</Label>
+					</Button>
+					<Button href="/bookings" onclick={toggleMobileMenu} class="mobile-menu-btn">
+						<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">book_online</span>
+						<Label>My Bookings</Label>
 					</Button>
 					<Button
 						onclick={() => {
@@ -241,7 +345,9 @@
 		<footer class="app-footer" role="contentinfo">
 			<div class="footer-content">
 				<nav class="footer-links" aria-label="Footer navigation">
+					<a href="/about">{$t('footer.about')}</a>
 					<a href="/contact">{$t('nav.contact')}</a>
+					<a href="/sitemap">{$t('footer.sitemap')}</a>
 					<a href="/policies">{$t('footer.privacy')}</a>
 					<a href="/policies">{$t('footer.terms')}</a>
 				</nav>
@@ -265,6 +371,10 @@
 		align-items: center;
 	}
 
+	:global(.app-logo) {
+		color: var(--secondary-color) !important;
+	}
+
 	:global(.desktop-nav) {
 		display: flex;
 		align-items: center;
@@ -278,6 +388,13 @@
 
 	:global(.navbar .mdc-button) {
 		color: white !important;
+		transition: all 0.3s ease !important;
+		border-radius: 8px !important;
+	}
+
+	:global(.navbar .mdc-button:hover) {
+		background-color: rgba(255, 255, 255, 0.15) !important;
+		transform: translateY(-2px);
 	}
 
 	:global(.lang-btn) {
@@ -304,7 +421,7 @@
 		left: 0;
 		right: 0;
 		z-index: 10;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.15);
 	}
 
 	:global(.mobile-menu-btn) {
@@ -320,7 +437,8 @@
 	}
 
 	:global(.nav-btn) {
-		color: var(--terciary-color) !important;
+		color: white !important; /* Override terciary color for navbar contrast */
+		margin: 0 4px !important;
 	}
 
 	.user-dropdown {
@@ -329,7 +447,7 @@
 		right: 0;
 		background: white;
 		border-radius: 8px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.2);
 		padding: 0.5rem 0;
 		min-width: 200px;
 		display: flex;
@@ -368,6 +486,40 @@
 
 	.dropdown-item:hover .material-icons {
 		color: var(--primary-color);
+	}
+
+	.dropdown-header {
+		padding: 0.5rem 1rem 0.25rem;
+		font-size: 0.75rem;
+		font-weight: bold;
+		color: #999;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.dropdown-divider {
+		height: 1px;
+		background-color: #eee;
+		margin: 0.5rem 0;
+	}
+
+	.admin-item {
+		border-left: 3px solid var(--primary-color);
+		background-color: #f8f9fa;
+	}
+
+	.mobile-menu-header {
+		padding: 1rem 1rem 0.5rem;
+		font-size: 0.85rem;
+		font-weight: bold;
+		color: #999;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	:global(.admin-btn) {
+		border-left: 4px solid var(--primary-color) !important;
+		background-color: #f8f9fa !important;
 	}
 
 	.nav-avatar {
@@ -465,5 +617,35 @@
 		.mobile-menu {
 			display: flex;
 		}
+	}
+
+	.nav-avatar-placeholder {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background-color: var(--secondary-color);
+		color: white;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		font-weight: bold;
+		margin-right: 4px;
+		flex-shrink: 0;
+	}
+
+	.nav-avatar-placeholder-mobile {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background-color: var(--secondary-color);
+		color: white;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		font-weight: bold;
+		margin-right: 8px;
+		flex-shrink: 0;
 	}
 </style>

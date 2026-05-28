@@ -10,6 +10,13 @@ export interface User {
 	phone?: string;
 	profile_picture_url?: string;
 	role?: string;
+	tier?: string;
+	has_video_upgrade?: boolean;
+	has_link_upgrade?: boolean;
+	has_badge_upgrade?: boolean;
+	video_url?: string;
+	booking_link?: string;
+	available_today?: boolean;
 }
 
 function createAuthStore() {

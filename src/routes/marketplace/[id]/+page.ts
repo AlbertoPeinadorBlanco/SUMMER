@@ -4,11 +4,11 @@ export const load: PageLoad = async ({ fetch, params }) => {
 	const teacherId = params.id;
 
 	try {
-		const userRes = await fetch(`http://localhost:5000/api/users/${teacherId}`);
+		const userRes = await fetch(`http://127.0.0.1:5000/api/users/${teacherId}`);
 		if (!userRes.ok) throw new Error('Teacher not found');
 		const u = await userRes.json();
 
-		const classesRes = await fetch(`http://localhost:5000/api/classes`);
+		const classesRes = await fetch(`http://127.0.0.1:5000/api/classes`);
 		let allClasses = [];
 		if (classesRes.ok) {
 			allClasses = await classesRes.json();
@@ -24,7 +24,8 @@ export const load: PageLoad = async ({ fetch, params }) => {
 				description: c.description,
 				description_es: c.description_es,
 				duration: `${c.duration_minutes} Minutes`,
-				level: c.class_type,
+				class_type: c.class_type,
+				difficulty_level: c.difficulty_level,
 				price: c.price
 			}));
 
@@ -42,6 +43,8 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			price: teacherClasses.length > 0 ? teacherClasses[0].price : 50,
 			image: u.profile_picture_url ? `http://localhost:5000${u.profile_picture_url}` : images[u.id % images.length],
 			bio: u.bio || 'Passionate surfing instructor ready to hit the waves!',
+			video_url: u.video_url,
+			booking_link: u.booking_link,
 			classes: teacherClasses
 		};
 

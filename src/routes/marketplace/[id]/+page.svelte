@@ -6,6 +6,9 @@
 	import Button, { Label } from '@smui/button';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
+	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
+	import { fetchApi } from '$lib/api';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
 	let teacher = $derived(data.teacher);
@@ -14,10 +17,23 @@
 	let contactName = $state('');
 	let contactEmail = $state('');
 	let contactMessage = $state('');
+	let contactSuccessDialogOpen = $state(false);
+	let activeCoupon: any = $state(null);
+
+	onMount(async () => {
+		try {
+			const resCoupons = await fetchApi('/coupons');
+			if (Array.isArray(resCoupons) && resCoupons.length > 0) {
+				activeCoupon = resCoupons[0];
+			}
+		} catch (e) {
+			console.error("Failed to load coupons", e);
+		}
+	});
 
 	function handleContact(e: Event) {
 		e.preventDefault();
-		alert(`Message sent to ${teacher?.name} successfully!`);
+		contactSuccessDialogOpen = true;
 		contactName = '';
 		contactEmail = '';
 		contactMessage = '';
@@ -71,6 +87,21 @@
 
 		<div class="content-grid">
 			<div class="main-column">
+				{#if teacher.video_url}
+					<section class="video-section">
+						<h3>Introductory Video</h3>
+						<div class="video-container">
+							<iframe 
+								src={teacher.video_url.includes('youtube.com/watch?v=') ? teacher.video_url.replace('watch?v=', 'embed/') : teacher.video_url} 
+								title="Instructor Video"
+								frameborder="0" 
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+								allowfullscreen
+							></iframe>
+						</div>
+					</section>
+				{/if}
+
 				<section class="about-section" aria-labelledby="about-title">
 					<h3 id="about-title">{$t('profile.about')}</h3>
 					<p>{teacher.bio}</p>
@@ -80,16 +111,19 @@
 					<h3 id="classes-title">{$t('profile.classes_title')}</h3>
 					<div class="classes-list" role="list">
 						{#each teacher.classes as surfClass}
-							<Card class="class-card premium-card" role="listitem">
+							<Card class="class-card premium-card" role="listitem" style="cursor: pointer;" onclick={() => window.location.href = `/marketplace/class/${surfClass.id}`}>
 								<Content>
 									<h4>{getTitle(surfClass)}</h4>
 									<div class="class-meta">
 										<span
 											><strong>{$t('profile.class_duration')}:</strong> {surfClass.duration}</span
 										>
-										<span><strong>{$t('profile.class_level')}:</strong> {surfClass.level}</span>
 										<span
-											><strong>{$t('profile.price')}:</strong> {$formatPrice(surfClass.price)}</span
+											><strong>Type:</strong> <span style="text-transform: capitalize;">{surfClass.class_type}</span></span
+										>
+										<span><strong>Level:</strong> {surfClass.difficulty_level || 1}</span>
+										<span
+											><strong>{$t('profile.price')}:</strong> {$formatPrice(surfClass.price, surfClass.class_type === 'course' || surfClass.class_type === 'curso')}</span
 										>
 									</div>
 								</Content>
@@ -102,6 +136,13 @@
 			</div>
 
 			<div class="sidebar">
+				{#if teacher.booking_link}
+					<div class="booking-link-box" style="margin-bottom: 2rem;">
+						<Button href={teacher.booking_link} target="_blank" rel="noopener noreferrer" variant="raised" class="premium-button" style="width: 100%;">
+							<Label>Book on external software</Label>
+						</Button>
+					</div>
+				{/if}
 				<div class="contact-box" role="region" aria-labelledby="contact-title">
 					<h3 id="contact-title">{$t('profile.contact_title')}</h3>
 					<form onsubmit={handleContact} class="contact-form">
@@ -151,6 +192,43 @@
 	</div>
 {/if}
 
+<Dialog bind:open={contactSuccessDialogOpen} aria-labelledby="contact-success-title" aria-describedby="contact-success-content">
+	<DialogTitle id="contact-success-title">{$t('profile.contact_success_title')}</DialogTitle>
+	<DialogContent id="contact-success-content">
+		<div class="success-msg" style="text-align: center; padding: 1rem 0;">
+			<span class="material-icons" style="font-size: 3rem; color: #2e7d32; margin-bottom: 1rem;">check_circle</span>
+			<h3>{$t('profile.contact_success_msg')}</h3>
+			<p>{$t('profile.contact_success_desc', { values: { name: teacher?.name } })}</p>
+			
+			{#if activeCoupon}
+				<div class="coupon-box">
+					<div class="coupon-header">{$t('marketplace.exclusive_offer')}</div>
+					<div class="coupon-content">
+						{#if activeCoupon.image_url}
+							<img src={activeCoupon.image_url} alt={activeCoupon.shop_name} class="coupon-img" />
+						{/if}
+						<div class="coupon-info">
+							<h4>{activeCoupon.shop_name}</h4>
+							<p class="discount">{activeCoupon.discount_text}</p>
+							<div class="coupon-code">
+								{$t('marketplace.use_code')} <strong>{activeCoupon.coupon_code}</strong>
+							</div>
+							<Button href={activeCoupon.link_url} target="_blank" rel="noopener noreferrer" variant="outlined" style="margin-top: 0.5rem; width: 100%;">
+								<Label>{$t('marketplace.visit_shop')}</Label>
+							</Button>
+						</div>
+					</div>
+				</div>
+			{/if}
+		</div>
+	</DialogContent>
+	<DialogActions>
+		<Button onclick={() => contactSuccessDialogOpen = false}>
+			<Label>{$t('profile.close')}</Label>
+		</Button>
+	</DialogActions>
+</Dialog>
+
 <style>
 	.profile-container {
 		max-width: 1000px;
@@ -170,7 +248,7 @@
 		background: white;
 		padding: 2rem;
 		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		margin-bottom: 2rem;
 	}
 
@@ -222,12 +300,28 @@
 	}
 
 	.about-section,
-	.classes-section {
+	.classes-section,
+	.video-section {
 		background: white;
 		padding: 2rem;
 		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		margin-bottom: 2rem;
+	}
+
+	.video-container {
+		position: relative;
+		padding-bottom: 56.25%; /* 16:9 */
+		height: 0;
+		overflow: hidden;
+		border-radius: 8px;
+	}
+	.video-container iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 	}
 
 	h3 {
@@ -270,7 +364,7 @@
 		background: white;
 		padding: 2rem;
 		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		position: sticky;
 		top: 80px;
 	}
@@ -299,5 +393,58 @@
 		.content-grid {
 			grid-template-columns: 1fr;
 		}
+	}
+	
+	.opacity {
+		opacity: 0.9;
+	}
+
+	.coupon-box {
+		margin-top: 2rem;
+		border: 2px dashed var(--primary-color);
+		border-radius: 8px;
+		background: #fff9f5;
+		overflow: hidden;
+		text-align: left;
+	}
+	.coupon-header {
+		background: var(--primary-color);
+		color: white;
+		padding: 0.5rem;
+		text-align: center;
+		font-weight: bold;
+		text-transform: uppercase;
+		font-size: 0.85rem;
+	}
+	.coupon-content {
+		display: flex;
+		gap: 1rem;
+		padding: 1rem;
+		align-items: center;
+	}
+	.coupon-img {
+		width: 80px;
+		height: 80px;
+		object-fit: cover;
+		border-radius: 4px;
+	}
+	.coupon-info h4 {
+		margin: 0 0 0.25rem 0;
+		color: var(--text-color);
+	}
+	.coupon-info .discount {
+		color: var(--secondary-color);
+		font-weight: bold;
+		margin: 0 0 0.5rem 0;
+		font-size: 0.95rem;
+	}
+	.coupon-code {
+		background: white;
+		border: 1px solid #ccc;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		display: inline-block;
+		font-family: monospace;
+		font-size: 1.1rem;
 	}
 </style>

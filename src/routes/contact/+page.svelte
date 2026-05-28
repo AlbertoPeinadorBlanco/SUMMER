@@ -33,6 +33,8 @@
 				bind:value={name}
 				label={$t('contact.form_name')}
 				required
+				input$pattern="[A-Za-z\s]+"
+				input$title="Letters only"
 				style="width: 100%;"
 			></Textfield>
 		</div>
@@ -67,6 +69,7 @@
 				required
 				style="width: 100%;"
 				input$rows={6}
+				input$minlength={10}
 			></Textfield>
 		</div>
 
@@ -85,7 +88,7 @@
 		padding: 3rem;
 		background: white;
 		border-radius: 8px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}
 
 	h1 {

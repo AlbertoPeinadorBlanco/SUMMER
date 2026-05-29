@@ -2,6 +2,8 @@
 	import Button, { Label } from '@smui/button';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
+	import LiveConditionsWidget from '$lib/components/LiveConditionsWidget.svelte';
+	import BannerAd from '$lib/components/BannerAd.svelte';
 
 	let { data } = $props();
 	let featured = $derived(data?.featured);
@@ -23,6 +25,10 @@
 		</div>
 	</div>
 </section>
+
+<LiveConditionsWidget />
+
+<BannerAd placement="home_top" />
 
 {#if featured}
 <section class="featured-instructor" aria-labelledby="featured-title">
@@ -63,6 +69,8 @@
 		</article>
 	</div>
 </section>
+
+<BannerAd placement="home_bottom" />
 
 <style>
 	.hero-section {

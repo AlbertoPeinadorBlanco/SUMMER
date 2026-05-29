@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
+	import { fetchApi } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
@@ -11,12 +12,12 @@
 	import Select, { Option } from '@smui/select';
 	import IconButton from '@smui/icon-button';
 
-	let notifications = $state([]);
+	let notifications: any[] = $state([]);
 	let loading = $state(true);
 	let error = $state(null);
 
 	// Users list for dropdown
-	let users = $state([]);
+	let users: any[] = $state([]);
 
 	// Modals
 	let isModalOpen = $state(false);
@@ -42,12 +43,8 @@
 	async function fetchNotifications() {
 		try {
 			loading = true;
-			const res = await fetch('http://127.0.0.1:5000/api/notifications/admin', {
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
-			});
-			if (!res.ok) throw new Error('Failed to fetch notifications');
-			notifications = await res.json();
-		} catch (err) {
+			notifications = await fetchApi('/notifications/admin');
+		} catch (err: any) {
 			error = err.message;
 		} finally {
 			loading = false;
@@ -56,12 +53,9 @@
 
 	async function fetchUsers() {
 		try {
-			const res = await fetch('http://127.0.0.1:5000/api/admin/users', {
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
-			});
-			if (res.ok) users = await res.json();
+			users = await fetchApi('/admin/users');
 		} catch (err) {
-			console.error(err);
+			console.error('Failed to fetch users:', err);
 		}
 	}
 
@@ -75,7 +69,7 @@
 		isModalOpen = true;
 	}
 
-	function openEditModal(notif) {
+	function openEditModal(notif: any) {
 		isEditing = true;
 		currentNotifId = notif.id;
 		formUserId = notif.user_id;
@@ -85,16 +79,16 @@
 		isModalOpen = true;
 	}
 
-	function openDeleteModal(notif) {
+	function openDeleteModal(notif: any) {
 		currentNotifId = notif.id;
 		isDeleteModalOpen = true;
 	}
 
 	async function saveNotification() {
 		try {
-			const url = isEditing 
-				? `http://127.0.0.1:5000/api/notifications/admin/${currentNotifId}`
-				: `http://127.0.0.1:5000/api/notifications/admin`;
+			const endpoint = isEditing 
+				? `/notifications/admin/${currentNotifId}`
+				: `/notifications/admin`;
 			
 			const method = isEditing ? 'PUT' : 'POST';
 			const body = {
@@ -104,52 +98,43 @@
 				is_read: formIsRead
 			};
 
-			const res = await fetch(url, {
+			await fetchApi(endpoint, {
 				method,
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${$auth.token}`
-				},
 				body: JSON.stringify(body)
 			});
 
-			if (!res.ok) throw new Error('Error saving notification');
-
 			isModalOpen = false;
 			await fetchNotifications();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 
 	async function deleteNotification() {
 		try {
-			const res = await fetch(`http://127.0.0.1:5000/api/notifications/admin/${currentNotifId}`, {
-				method: 'DELETE',
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
+			await fetchApi(`/notifications/admin/${currentNotifId}`, {
+				method: 'DELETE'
 			});
-
-			if (!res.ok) throw new Error('Error deleting notification');
 
 			isDeleteModalOpen = false;
 			await fetchNotifications();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 </script>
 
-<SEO title="Manage Notifications" />
+<SEO title={$t('admin.notif_title')} />
 
 <div class="admin-container">
 	<div class="header">
 		<div>
-			<h1>Notifications Management</h1>
-			<p>Send system alerts and manage user notifications.</p>
+			<h1>{$t('admin.notif_title')}</h1>
+			<p>{$t('admin.notif_subtitle')}</p>
 		</div>
 		<Button variant="raised" onclick={openCreateModal}>
 			<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">add</span>
-			<Label>Send Notification</Label>
+			<Label>{$t('admin.notif_send')}</Label>
 		</Button>
 	</div>
 
@@ -162,13 +147,13 @@
 			<DataTable style="width: 100%;">
 				<Head>
 					<Row>
-						<Cell>ID</Cell>
-						<Cell>User</Cell>
-						<Cell>Type</Cell>
-						<Cell>Message</Cell>
-						<Cell>Status</Cell>
-						<Cell>Date</Cell>
-						<Cell>Actions</Cell>
+						<Cell>{$t('admin.id')}</Cell>
+						<Cell>{$t('admin.notif_user')}</Cell>
+						<Cell>{$t('admin.notif_type')}</Cell>
+						<Cell>{$t('admin.notif_message')}</Cell>
+						<Cell>{$t('admin.status')}</Cell>
+						<Cell>{$t('admin.notif_date')}</Cell>
+						<Cell>{$t('admin.actions')}</Cell>
 					</Row>
 				</Head>
 				<Body>
@@ -189,7 +174,7 @@
 							</Cell>
 							<Cell>
 								<span class="badge {notif.is_read ? 'read' : 'unread'}">
-									{notif.is_read ? 'Read' : 'Unread'}
+									{notif.is_read ? $t('admin.notif_read') : $t('admin.notif_unread')}
 								</span>
 							</Cell>
 							<Cell>{new Date(notif.created_at).toLocaleDateString()}</Cell>
@@ -207,12 +192,13 @@
 
 <!-- Create/Edit Modal -->
 <Dialog bind:open={isModalOpen} aria-labelledby="form-title">
-	<Title id="form-title">{isEditing ? 'Edit Notification' : 'Send Notification'}</Title>
+	<Title id="form-title">{isEditing ? $t('admin.notif_edit_title') : $t('admin.notif_send_title')}</Title>
 	<Content>
 		<div class="form-container">
 			{#if !isEditing}
 				<div class="select-field">
-					<label>Target User</label>
+					<!-- svelte-ignore a11y_label_has_associated_control -->
+					<label>{$t('admin.notif_target_user')}</label>
 					<Select bind:value={formUserId} style="width: 100%;">
 						{#each users as user}
 							<Option value={user.id}>{user.username} ({user.email})</Option>
@@ -220,27 +206,28 @@
 					</Select>
 				</div>
 			{:else}
-				<Textfield value={formUserId} label="User ID" disabled style="width: 100%;" />
+				<Textfield value={formUserId} label={$t('admin.notif_user')} disabled style="width: 100%;" />
 			{/if}
 
 			<div class="select-field">
-				<label>Type</label>
+				<!-- svelte-ignore a11y_label_has_associated_control -->
+				<label>{$t('admin.notif_type_label')}</label>
 				<Select bind:value={formType} style="width: 100%;">
-					<Option value="admin_message">Admin Message</Option>
-					<Option value="system_alert">System Alert</Option>
-					<Option value="booking_created">Booking Created</Option>
-					<Option value="booking_updated">Booking Updated</Option>
-					<Option value="subscription_updated">Subscription Updated</Option>
+					<Option value="admin_message">{$t('admin.notif_type_admin_message')}</Option>
+					<Option value="system_alert">{$t('admin.notif_type_system_alert')}</Option>
+					<Option value="booking_created">{$t('admin.notif_type_booking_created')}</Option>
+					<Option value="booking_updated">{$t('admin.notif_type_booking_updated')}</Option>
+					<Option value="subscription_updated">{$t('admin.notif_type_subscription_updated')}</Option>
 				</Select>
 			</div>
 
-			<Textfield textarea bind:value={formMessage} label="Message Content" style="width: 100%; height: 100px;" />
+			<Textfield textarea bind:value={formMessage} label={$t('admin.notif_message_label')} style="width: 100%; height: 100px;" />
 			
 			{#if isEditing}
 				<div class="select-field" style="margin-top: 1rem;">
 					<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 						<input type="checkbox" bind:checked={formIsRead} style="width: 18px; height: 18px;" />
-						Mark as Read
+						{$t('admin.notif_mark_read')}
 					</label>
 				</div>
 			{/if}
@@ -258,9 +245,9 @@
 
 <!-- Delete Modal -->
 <Dialog bind:open={isDeleteModalOpen} aria-labelledby="delete-title">
-	<Title id="delete-title">Delete Notification</Title>
+	<Title id="delete-title">{$t('admin.notif_delete_title')}</Title>
 	<Content>
-		Are you sure you want to permanently delete this notification?
+		{$t('admin.notif_delete_confirm')}
 	</Content>
 	<Actions>
 		<Button onclick={() => (isDeleteModalOpen = false)}>

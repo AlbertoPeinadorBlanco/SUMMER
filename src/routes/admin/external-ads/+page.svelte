@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
+	import { fetchApi } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
@@ -10,7 +11,7 @@
 	import Textfield from '@smui/textfield';
 	import IconButton from '@smui/icon-button';
 
-	let ads = $state([]);
+	let ads: any[] = $state([]);
 	let loading = $state(true);
 	let error = $state(null);
 
@@ -26,6 +27,7 @@
 	let formImageUrl = $state('');
 	let formLinkUrl = $state('');
 	let formIsActive = $state(true);
+	let formDisplayOrder = $state(0);
 
 	onMount(async () => {
 		if (!$auth.isAuthenticated || $auth.user?.role !== 'admin') {
@@ -38,12 +40,8 @@
 	async function fetchAds() {
 		try {
 			loading = true;
-			const res = await fetch('http://127.0.0.1:5000/api/ads/admin', {
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
-			});
-			if (!res.ok) throw new Error('Failed to fetch ads');
-			ads = await res.json();
-		} catch (err) {
+			ads = await fetchApi('/ads/admin');
+		} catch (err: any) {
 			error = err.message;
 		} finally {
 			loading = false;
@@ -58,10 +56,11 @@
 		formImageUrl = '';
 		formLinkUrl = '';
 		formIsActive = true;
+		formDisplayOrder = 0;
 		isModalOpen = true;
 	}
 
-	function openEditModal(ad) {
+	function openEditModal(ad: any) {
 		isEditing = true;
 		currentAdId = ad.id;
 		formShopName = ad.shop_name;
@@ -69,19 +68,20 @@
 		formImageUrl = ad.image_url || '';
 		formLinkUrl = ad.link_url;
 		formIsActive = ad.is_active ? true : false;
+		formDisplayOrder = ad.display_order || 0;
 		isModalOpen = true;
 	}
 
-	function openDeleteModal(ad) {
+	function openDeleteModal(ad: any) {
 		currentAdId = ad.id;
 		isDeleteModalOpen = true;
 	}
 
 	async function saveAd() {
 		try {
-			const url = isEditing 
-				? `http://127.0.0.1:5000/api/ads/admin/${currentAdId}`
-				: `http://127.0.0.1:5000/api/ads/admin`;
+			const endpoint = isEditing 
+				? `/ads/admin/${currentAdId}`
+				: `/ads/admin`;
 			
 			const method = isEditing ? 'PUT' : 'POST';
 			const body = {
@@ -89,55 +89,47 @@
 				location: formLocation,
 				image_url: formImageUrl,
 				link_url: formLinkUrl,
-				is_active: formIsActive
+				is_active: formIsActive,
+				display_order: parseInt(formDisplayOrder as any) || 0
 			};
 
-			const res = await fetch(url, {
+			await fetchApi(endpoint, {
 				method,
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${$auth.token}`
-				},
 				body: JSON.stringify(body)
 			});
 
-			if (!res.ok) throw new Error('Error saving advert');
-
 			isModalOpen = false;
 			await fetchAds();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 
 	async function deleteAd() {
 		try {
-			const res = await fetch(`http://127.0.0.1:5000/api/ads/admin/${currentAdId}`, {
-				method: 'DELETE',
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
+			await fetchApi(`/ads/admin/${currentAdId}`, {
+				method: 'DELETE'
 			});
-
-			if (!res.ok) throw new Error('Error deleting advert');
 
 			isDeleteModalOpen = false;
 			await fetchAds();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 </script>
 
-<SEO title="External Adverts" />
+<SEO title={$t('admin.ext_ads_title')} />
 
 <div class="admin-container">
 	<div class="header">
 		<div>
-			<h1>External Adverts</h1>
-			<p>Manage promotional adverts from external shops and retailers.</p>
+			<h1>{$t('admin.ext_ads_title')}</h1>
+			<p>{$t('admin.ext_ads_subtitle')}</p>
 		</div>
 		<Button variant="raised" onclick={openCreateModal}>
 			<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">add</span>
-			<Label>Create Advert</Label>
+			<Label>{$t('admin.ext_ads_create')}</Label>
 		</Button>
 	</div>
 
@@ -150,18 +142,20 @@
 			<DataTable style="width: 100%;">
 				<Head>
 					<Row>
-						<Cell>ID</Cell>
-						<Cell>Image</Cell>
-						<Cell>Shop Name</Cell>
-						<Cell>Location</Cell>
-						<Cell>Status</Cell>
-						<Cell>Actions</Cell>
+						<Cell>{$t('admin.id')}</Cell>
+						<Cell>Order</Cell>
+						<Cell>{$t('admin.ext_ads_image')}</Cell>
+						<Cell>{$t('admin.ext_ads_shop_name')}</Cell>
+						<Cell>{$t('admin.ext_ads_location')}</Cell>
+						<Cell>{$t('admin.ext_ads_status')}</Cell>
+						<Cell>{$t('admin.actions')}</Cell>
 					</Row>
 				</Head>
 				<Body>
 					{#each ads as ad}
 						<Row>
 							<Cell>{ad.id}</Cell>
+							<Cell><strong style="color: var(--primary-color); font-size: 1.1rem;">{ad.display_order}</strong></Cell>
 							<Cell>
 								{#if ad.image_url}
 									<img src={ad.image_url} alt={ad.shop_name} style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
@@ -178,7 +172,7 @@
 							<Cell>{ad.location}</Cell>
 							<Cell>
 								<span class="badge {ad.is_active ? 'active' : 'inactive'}">
-									{ad.is_active ? 'Active' : 'Inactive'}
+									{ad.is_active ? $t('admin.ext_ads_active') : $t('admin.ext_ads_inactive')}
 								</span>
 							</Cell>
 							<Cell>
@@ -195,18 +189,19 @@
 
 <!-- Create/Edit Modal -->
 <Dialog bind:open={isModalOpen} aria-labelledby="form-title">
-	<Title id="form-title">{isEditing ? 'Edit Advert' : 'Create Advert'}</Title>
+	<Title id="form-title">{isEditing ? $t('admin.ext_ads_edit_title') : $t('admin.ext_ads_create_title')}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formShopName} label="Shop Name" style="width: 100%;" />
-			<Textfield bind:value={formLocation} label="Location (e.g. Ribadesella)" style="width: 100%;" />
-			<Textfield bind:value={formImageUrl} label="Image URL" style="width: 100%;" />
-			<Textfield bind:value={formLinkUrl} label="Target Link URL" style="width: 100%;" />
+			<Textfield bind:value={formShopName} label={$t('admin.ext_ads_shop_name_label')} style="width: 100%;" />
+			<Textfield bind:value={formLocation} label={$t('admin.ext_ads_location_label')} style="width: 100%;" />
+			<Textfield bind:value={formImageUrl} label={$t('admin.ext_ads_image_url_label')} style="width: 100%;" />
+			<Textfield bind:value={formLinkUrl} label={$t('admin.ext_ads_link_url_label')} style="width: 100%;" />
 			
-			<div class="select-field" style="margin-top: 1rem;">
+			<div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
+				<Textfield type="number" bind:value={formDisplayOrder} label="Display Order (0 is first)" style="width: 200px;" />
 				<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 					<input type="checkbox" bind:checked={formIsActive} style="width: 18px; height: 18px;" />
-					Advert is Active
+					{$t('admin.ext_ads_is_active_label')}
 				</label>
 			</div>
 		</div>
@@ -223,9 +218,9 @@
 
 <!-- Delete Modal -->
 <Dialog bind:open={isDeleteModalOpen} aria-labelledby="delete-title">
-	<Title id="delete-title">Delete Advert</Title>
+	<Title id="delete-title">{$t('admin.ext_ads_delete_title')}</Title>
 	<Content>
-		Are you sure you want to permanently delete this advert?
+		{$t('admin.ext_ads_delete_confirm')}
 	</Content>
 	<Actions>
 		<Button onclick={() => (isDeleteModalOpen = false)}>

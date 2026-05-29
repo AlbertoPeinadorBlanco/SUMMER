@@ -2,8 +2,11 @@
 	import { t } from 'svelte-i18n';
 	import Textfield from '@smui/textfield';
 	import Button, { Label } from '@smui/button';
+	import Checkbox from '@smui/checkbox';
+	import FormField from '@smui/form-field';
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
+	import { auth } from '$lib/stores/auth';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let username = $state('');
@@ -12,6 +15,7 @@
 	let first_name = $state('');
 	let last_name = $state('');
 	let phone = $state('');
+	let consent = $state(false);
 
 	let role = $state('user');
 	let bio = $state('');
@@ -41,6 +45,8 @@
 					specialization
 				})
 			});
+			// Server set httpOnly cookies — restore session and redirect
+			await auth.restoreSession();
 			success = true;
 			setTimeout(() => {
 				goto('/');
@@ -129,7 +135,17 @@
 				</div>
 			{/if}
 
-			<Button type="submit" variant="raised" disabled={loading} class="premium-button submit-btn">
+			<div class="consent-field">
+				<FormField>
+					<Checkbox bind:checked={consent} required />
+					<span slot="label">
+						{$t('legal.agree_to')} <a href="/policies" target="_blank">{$t('legal.terms_of_service')}</a> 
+						{$t('legal.and')} <a href="/policies" target="_blank">{$t('legal.privacy_policy')}</a>.
+					</span>
+				</FormField>
+			</div>
+
+			<Button type="submit" variant="raised" disabled={loading || !consent} class="premium-button submit-btn">
 				<Label>{loading ? 'Creating...' : 'Sign Up'}</Label>
 			</Button>
 		</form>
@@ -191,6 +207,14 @@
 		margin-top: 0;
 		color: var(--secondary-color);
 		font-size: 1.1rem;
+	}
+	.consent-field {
+		margin-top: 0.5rem;
+		font-size: 0.9rem;
+	}
+	.consent-field a {
+		color: var(--secondary-color);
+		text-decoration: underline;
 	}
 	:global(.submit-btn) {
 		background-color: var(--secondary-color) !important;

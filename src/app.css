@@ -1,4 +1,6 @@
 
+.sveltekit-container { display: contents; }
+
 :root {
 	--primary-color: #458dba;
 	--secondary-color: #e26d3f;

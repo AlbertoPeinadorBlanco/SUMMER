@@ -35,6 +35,8 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			'https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
 		];
 
+		const isFeatured = u.featured_until && new Date(u.featured_until) > new Date();
+
 		const teacher = {
 			id: u.id,
 			name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.username,
@@ -43,8 +45,16 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			price: teacherClasses.length > 0 ? teacherClasses[0].price : 50,
 			image: u.profile_picture_url ? `http://localhost:5000${u.profile_picture_url}` : images[u.id % images.length],
 			bio: u.bio || 'Passionate surfing instructor ready to hit the waves!',
-			video_url: u.video_url,
-			booking_link: u.booking_link,
+			tier: u.tier || 'basic',
+			// Perks — only expose values if the upgrade was purchased
+			video_url: u.has_video_upgrade ? u.video_url : null,
+			booking_link: u.has_link_upgrade ? u.booking_link : null,
+			available_today: u.has_badge_upgrade ? !!u.available_today : false,
+			is_featured: isFeatured,
+			featured_until: u.featured_until,
+			has_video_upgrade: !!u.has_video_upgrade,
+			has_link_upgrade: !!u.has_link_upgrade,
+			has_badge_upgrade: !!u.has_badge_upgrade,
 			classes: teacherClasses
 		};
 

@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
+	import { fetchApi } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
@@ -11,9 +12,13 @@
 	import Select, { Option } from '@smui/select';
 	import IconButton from '@smui/icon-button';
 
-	let users = $state([]);
+	let users: any[] = $state([]);
 	let loading = $state(true);
 	let error = $state(null);
+
+	let countAdmin = $derived(users.filter(u => u.role === 'admin').length);
+	let countInstructor = $derived(users.filter(u => u.role === 'instructor').length);
+	let countBasicUser = $derived(users.filter(u => u.role === 'user' || !u.role).length);
 
 	// Modals
 	let isCreateEditModalOpen = $state(false);
@@ -22,7 +27,7 @@
 	
 	// Details state
 	let activeTab = $state('profile');
-	let detailsData = $state(null);
+	let detailsData: any = $state(null);
 	let detailsLoading = $state(false);
 
 	// Inner CRUD Modals (Bookings & Adverts)
@@ -62,14 +67,8 @@
 	async function fetchUsers() {
 		try {
 			loading = true;
-			const res = await fetch('http://127.0.0.1:5000/api/admin/users', {
-				headers: {
-					'Authorization': `Bearer ${$auth.token}`
-				}
-			});
-			if (!res.ok) throw new Error('Failed to fetch users');
-			users = await res.json();
-		} catch (err) {
+			users = await fetchApi('/admin/users');
+		} catch (err: any) {
 			error = err.message;
 		} finally {
 			loading = false;
@@ -89,7 +88,7 @@
 		isCreateEditModalOpen = true;
 	}
 
-	function openEditModal(user) {
+	function openEditModal(user: any) {
 		isEditing = true;
 		currentUserId = user.id;
 		formUsername = user.username;
@@ -102,19 +101,17 @@
 		isCreateEditModalOpen = true;
 	}
 
-	function openDeleteModal(user) {
+	function openDeleteModal(user: any) {
 		currentUserId = user.id;
 		formUsername = user.username;
 		isDeleteModalOpen = true;
 	}
 
 	async function reloadDetails() {
+		if (!detailsData || !detailsData.user) return;
 		try {
 			detailsLoading = true;
-			const res = await fetch(`http://127.0.0.1:5000/api/admin/users/${detailsData.user.id}/details`, {
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
-			});
-			if (res.ok) detailsData = await res.json();
+			detailsData = await fetchApi(`/admin/users/${detailsData.user.id}/details`);
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -122,7 +119,7 @@
 		}
 	}
 
-	function openInnerBooking(mode, booking = null) {
+	function openInnerBooking(mode: string, booking: any = null) {
 		innerModalType = 'booking';
 		innerModalMode = mode;
 		if (mode === 'edit') {
@@ -135,7 +132,7 @@
 		isInnerModalOpen = true;
 	}
 
-	function openInnerAdvert(mode, advert = null) {
+	function openInnerAdvert(mode: string, advert: any = null) {
 		innerModalType = 'advert';
 		innerModalMode = mode;
 		if (mode === 'edit') {
@@ -153,35 +150,29 @@
 	}
 
 	async function saveInnerModal() {
+		if (!detailsData || !detailsData.user) return;
 		try {
 			if (innerModalType === 'booking') {
 				if (innerModalMode === 'edit') {
-					const res = await fetch(`http://127.0.0.1:5000/api/bookings/${innerId}/status`, {
+					await fetchApi(`/bookings/${innerId}/status`, {
 						method: 'PUT',
-						headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${$auth.token}` },
 						body: JSON.stringify({ status_id: bookingStatusId })
 					});
-					if(!res.ok) throw new Error('Error updating booking');
 				} else {
-					const res = await fetch(`http://127.0.0.1:5000/api/bookings`, {
+					await fetchApi(`/bookings`, {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${$auth.token}` },
 						body: JSON.stringify({ user_id: detailsData.user.id, class_id: bookingClassId, status_id: bookingStatusId })
 					});
-					if(!res.ok) throw new Error('Error creating booking');
 				}
 			} else if (innerModalType === 'advert') {
 				if (innerModalMode === 'edit') {
-					const res = await fetch(`http://127.0.0.1:5000/api/classes/${innerId}`, {
+					await fetchApi(`/classes/${innerId}`, {
 						method: 'PUT',
-						headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${$auth.token}` },
 						body: JSON.stringify({ title: advertTitle, price: advertPrice, is_active: advertIsActive ? 1 : 0 })
 					});
-					if(!res.ok) throw new Error('Error updating advert');
 				} else {
-					const res = await fetch(`http://127.0.0.1:5000/api/classes`, {
+					await fetchApi(`/classes`, {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${$auth.token}` },
 						body: JSON.stringify({ 
 							instructor_id: detailsData.user.id, 
 							class_type_id: advertClassTypeId,
@@ -191,44 +182,37 @@
 							capacity: 10
 						})
 					});
-					if(!res.ok) throw new Error('Error creating advert');
 				}
 			}
 			isInnerModalOpen = false;
 			await reloadDetails();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 
-	async function deleteInnerItem(type, id) {
+	async function deleteInnerItem(type: string, id: any) {
 		if (!confirm('Are you sure you want to delete this?')) return;
 		try {
-			const endpoint = type === 'booking' ? `/api/bookings/${id}` : `/api/classes/${id}`;
-			const res = await fetch(`http://127.0.0.1:5000${endpoint}`, {
-				method: 'DELETE',
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
+			const endpoint = type === 'booking' ? `/bookings/${id}` : `/classes/${id}`;
+			await fetchApi(endpoint, {
+				method: 'DELETE'
 			});
-			if(!res.ok) throw new Error(`Error deleting ${type}`);
 			await reloadDetails();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 
-	async function openDetailsModal(user) {
+	async function openDetailsModal(user: any) {
 		isDetailsModalOpen = true;
 		activeTab = 'profile';
 		detailsLoading = true;
 		detailsData = null;
 		
 		try {
-			const res = await fetch(`http://127.0.0.1:5000/api/admin/users/${user.id}/details`, {
-				headers: { 'Authorization': `Bearer ${$auth.token}` }
-			});
-			if (!res.ok) throw new Error('Error fetching details');
-			detailsData = await res.json();
-		} catch (err) {
+			detailsData = await fetchApi(`/admin/users/${user.id}/details`);
+		} catch (err: any) {
 			alert(err.message);
 			isDetailsModalOpen = false;
 		} finally {
@@ -238,12 +222,12 @@
 
 	async function saveUser() {
 		try {
-			const url = isEditing 
-				? `http://127.0.0.1:5000/api/admin/users/${currentUserId}`
-				: `http://127.0.0.1:5000/api/admin/users`;
+			const endpoint = isEditing 
+				? `/admin/users/${currentUserId}`
+				: `/admin/users`;
 			
 			const method = isEditing ? 'PUT' : 'POST';
-			const body = {
+			const body: any = {
 				username: formUsername,
 				email: formEmail,
 				first_name: formFirstName,
@@ -256,41 +240,27 @@
 				body.password = formPassword;
 			}
 
-			const res = await fetch(url, {
+			await fetchApi(endpoint, {
 				method,
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${$auth.token}`
-				},
 				body: JSON.stringify(body)
 			});
 
-			if (!res.ok) {
-				const data = await res.json();
-				throw new Error(data.message || 'Error saving user');
-			}
-
 			isCreateEditModalOpen = false;
 			await fetchUsers();
-		} catch (err) {
-			alert(err.message);
+		} catch (err: any) {
+			alert(err.message || 'Error saving user');
 		}
 	}
 
 	async function deleteUser() {
 		try {
-			const res = await fetch(`http://127.0.0.1:5000/api/admin/users/${currentUserId}`, {
-				method: 'DELETE',
-				headers: {
-					'Authorization': `Bearer ${$auth.token}`
-				}
+			await fetchApi(`/admin/users/${currentUserId}`, {
+				method: 'DELETE'
 			});
-
-			if (!res.ok) throw new Error('Error deleting user');
 
 			isDeleteModalOpen = false;
 			await fetchUsers();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
@@ -315,6 +285,25 @@
 	{:else if error}
 		<p class="error">{$t('admin.error_fetching')}: {error}</p>
 	{:else}
+		<div class="user-counters">
+			<div class="counter-badge role-admin">
+				<span class="material-icons">admin_panel_settings</span>
+				<strong>{$t('admin.admin')}:</strong> {countAdmin}
+			</div>
+			<div class="counter-badge role-instructor">
+				<span class="material-icons">school</span>
+				<strong>{$t('admin.instructor')}:</strong> {countInstructor}
+			</div>
+			<div class="counter-badge role-user">
+				<span class="material-icons">person</span>
+				<strong>{$t('admin.user')}:</strong> {countBasicUser}
+			</div>
+			<div class="counter-badge" style="background: #eee; color: #333;">
+				<span class="material-icons">groups</span>
+				<strong>Total:</strong> {users.length}
+			</div>
+		</div>
+
 		<div class="table-container">
 			<DataTable style="width: 100%;">
 				<Head>
@@ -331,7 +320,14 @@
 					{#each users as user}
 						<Row>
 							<Cell>{user.id}</Cell>
-							<Cell>{user.username}</Cell>
+							<Cell>
+								<div style="display: flex; align-items: center; gap: 8px;">
+									{#if user.last_active_at && (new Date().getTime() - new Date(user.last_active_at).getTime() < 5 * 60 * 1000)}
+										<span class="online-indicator" title="Online"></span>
+									{/if}
+									{user.username}
+								</div>
+							</Cell>
 							<Cell>{user.email}</Cell>
 							<Cell>
 								<span class="badge role-{user.role || 'user'}">
@@ -362,7 +358,7 @@
 	<Content>
 		<div class="form-container">
 			<Textfield bind:value={formUsername} label={$t('admin.username')} style="width: 100%;" disabled={isEditing} />
-			<Textfield bind:value={formEmail} label={$t('admin.email')} type="email" style="width: 100%;" />
+			<Textfield bind:value={formEmail} label={$t('admin.email')} type="email" style="width: 100%;" disabled={isEditing} />
 			{#if !isEditing}
 				<Textfield bind:value={formPassword} label="Password" type="password" style="width: 100%;" />
 			{/if}
@@ -635,12 +631,38 @@
 		font-weight: bold;
 		text-transform: uppercase;
 	}
-	.role-admin { background: #ffebee; color: #c62828; }
-	.role-instructor { background: #e3f2fd; color: #1565c0; }
-	.role-user { background: #f5f5f5; color: #616161; }
+	.badge.role-admin, .counter-badge.role-admin { background: #ffebee; color: #c62828; }
+	.badge.role-instructor, .counter-badge.role-instructor { background: #e3f2fd; color: #1565c0; }
+	.badge.role-user, .counter-badge.role-user { background: #e8f5e9; color: #2e7d32; }
+
+	.online-indicator {
+		width: 10px;
+		height: 10px;
+		background-color: #4caf50;
+		border-radius: 50%;
+		display: inline-block;
+		box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
+	}
+
+	.badge.tier-premium { background: #f3e5f5; color: #6a1b9a; }
+	.badge.tier-basic { background: #f5f5f5; color: #616161; }
 	
-	.tier-premium { background: #fff8e1; color: #f57f17; }
-	.tier-basic { background: #e8f5e9; color: #2e7d32; }
+	.user-counters {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+		flex-wrap: wrap;
+	}
+	
+	.counter-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border-radius: 8px;
+		font-size: 1rem;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	}
 
 	.form-container {
 		display: flex;

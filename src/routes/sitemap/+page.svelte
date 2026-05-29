@@ -21,6 +21,8 @@
 				<li><a href="/">{$t('nav.home')}</a></li>
 				<li><a href="/marketplace">{$t('nav.marketplace')}</a></li>
 				<li><a href="/instructors">{$t('nav.instructors')}</a></li>
+				<li><a href="/adverts">Adverts</a></li>
+				<li><a href="/about">{$t('footer.about')}</a></li>
 			</ul>
 		</section>
 
@@ -30,6 +32,7 @@
 				<li><a href="/contact">{$t('nav.contact')}</a></li>
 				<li><a href="/policies">{$t('nav.policies')}</a></li>
 				<li><a href="/levels">{$t('levels.title')}</a></li>
+				<li><a href="/gear-guide">Gear Guide</a></li>
 			</ul>
 		</section>
 
@@ -37,7 +40,9 @@
 			<h2>Account</h2>
 			<ul>
 				<li><a href="/profile">{$t('nav.profile')}</a></li>
+				<li><a href="/bookings">My Bookings</a></li>
 				<li><a href="/instructor/manage-ads">{$t('nav.manageAds')}</a></li>
+				<li><a href="/signup">Sign Up</a></li>
 			</ul>
 		</section>
 	</div>

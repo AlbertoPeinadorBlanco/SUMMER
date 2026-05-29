@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
+	import BannerAd from '$lib/components/BannerAd.svelte';
 	import Textfield from '@smui/textfield';
 	import Icon from '@smui/textfield/icon';
 
@@ -16,7 +17,15 @@
 		try {
 			const data = await fetchApi('/users?role=instructor');
 			if (data && !data.error) {
-				instructors = data;
+				// Sort: featured first, then premium, then the rest
+				instructors = data.sort((a: any, b: any) => {
+					const aFeatured = a.featured_until && new Date(a.featured_until) > new Date() ? 1 : 0;
+					const bFeatured = b.featured_until && new Date(b.featured_until) > new Date() ? 1 : 0;
+					if (bFeatured !== aFeatured) return bFeatured - aFeatured;
+					const aPremium = (a.tier === 'premium' || a.tier === 'summer_pass') ? 1 : 0;
+					const bPremium = (b.tier === 'premium' || b.tier === 'summer_pass') ? 1 : 0;
+					return bPremium - aPremium;
+				});
 				filteredInstructors = instructors;
 			}
 		} catch (error) {
@@ -25,6 +34,10 @@
 			loading = false;
 		}
 	});
+
+	function isFeatured(instructor: any) {
+		return instructor.featured_until && new Date(instructor.featured_until) > new Date();
+	}
 
 	$effect(() => {
 		if (searchQuery) {
@@ -41,6 +54,8 @@
 </script>
 
 <SEO title={$t('instructors.title')} description={$t('instructors.subtitle')} />
+
+<BannerAd placement="instructors_top" />
 
 <div class="instructors-header">
 	<div class="header-content">
@@ -75,7 +90,7 @@
 	{:else}
 		<div class="instructor-grid">
 			{#each filteredInstructors as instructor}
-				<a href="/marketplace/{instructor.id}" class="instructor-card premium-card">
+				<a href="/marketplace/{instructor.id}" class="instructor-card premium-card {isFeatured(instructor) ? 'is-featured' : ''}">
 					<div class="card-content">
 						<div class="avatar-container">
 							{#if instructor.profile_picture_url}
@@ -90,6 +105,40 @@
 						{#if instructor.specialization}
 							<span class="specialization-badge">{instructor.specialization}</span>
 						{/if}
+
+						<!-- Perk badges -->
+						<div class="perk-badges">
+							{#if isFeatured(instructor)}
+								<span class="perk-badge featured-badge">
+									<span class="material-icons">star</span>
+									{$t('profile_enhancements.currently_featured')}
+								</span>
+							{/if}
+							{#if instructor.tier === 'premium' || instructor.tier === 'summer_pass'}
+								<span class="perk-badge premium-badge">
+									<span class="material-icons">workspace_premium</span>
+									Premium
+								</span>
+							{/if}
+							{#if instructor.available_today && instructor.has_badge_upgrade}
+								<span class="perk-badge available-badge">
+									<span class="material-icons">event_available</span>
+									{$t('marketplace.available_today')}
+								</span>
+							{/if}
+							{#if instructor.has_video_upgrade}
+								<span class="perk-badge upgrade-badge">
+									<span class="material-icons">videocam</span>
+									Video
+								</span>
+							{/if}
+							{#if instructor.has_link_upgrade}
+								<span class="perk-badge upgrade-badge">
+									<span class="material-icons">link</span>
+									Online Booking
+								</span>
+							{/if}
+						</div>
 
 						<p class="instructor-bio">
 							{instructor.bio ? (instructor.bio.length > 100 ? instructor.bio.substring(0, 100) + '...' : instructor.bio) : ''}
@@ -160,69 +209,59 @@
 		border: 1px solid #eee;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
+		transition: transform 0.2s, box-shadow 0.2s;
 	}
 
-	.card-content {
-		padding: 2rem 1.5rem 1.5rem;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		flex: 1;
+	.instructor-card.is-featured {
+		border: 2px solid #FFD700;
+		box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
 	}
 
-	.avatar-container {
-		width: 100px;
-		height: 100px;
-		border-radius: 50%;
-		background-color: var(--primary-color-soft);
-		margin-bottom: 1rem;
+	.perk-badges {
 		display: flex;
-		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.4rem;
 		justify-content: center;
-		color: white;
-		overflow: hidden;
-		box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+		margin: 0.75rem 0;
 	}
 
-	.avatar-img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.avatar-placeholder {
-		font-size: 3rem;
-	}
-
-	.instructor-name {
-		font-size: 1.25rem;
-		color: var(--terciary-color);
-		margin: 0 0 0.5rem 0;
-	}
-
-	.specialization-badge {
-		background-color: var(--secondary-color);
-		color: white;
-		padding: 0.25rem 0.75rem;
+	.perk-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		padding: 3px 10px;
 		border-radius: 20px;
-		font-size: 0.8rem;
-		font-weight: 500;
-		margin-bottom: 1rem;
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
-	.instructor-bio {
-		color: #666;
-		font-size: 0.95rem;
-		line-height: 1.5;
-		margin: 0;
+	.perk-badge .material-icons {
+		font-size: 12px;
 	}
 
-	.card-footer {
-		padding: 1rem;
-		border-top: 1px solid #f0f0f0;
-		text-align: center;
-		background: #fafafa;
+	.featured-badge {
+		background: linear-gradient(135deg, #FFD700, #FFA500);
+		color: #5a3a00;
+		box-shadow: 0 2px 6px rgba(255, 165, 0, 0.4);
+	}
+
+	.premium-badge {
+		background: linear-gradient(135deg, #667eea, #764ba2);
+		color: white;
+	}
+
+	.available-badge {
+		background: #e8f5e9;
+		color: #2e7d32;
+		border: 1px solid #a5d6a7;
+	}
+
+	.upgrade-badge {
+		background: #e3f2fd;
+		color: #1565c0;
+		border: 1px solid #90caf9;
 	}
 
 	.view-profile-link {

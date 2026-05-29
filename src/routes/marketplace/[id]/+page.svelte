@@ -82,6 +82,38 @@
 						>{$formatPrice(teacher.price)}</span
 					>
 				</div>
+				<div class="perk-badges">
+					{#if teacher.is_featured}
+						<span class="perk-badge featured-badge">
+							<span class="material-icons" aria-hidden="true">star</span>
+							{$t('profile_enhancements.currently_featured')}
+						</span>
+					{/if}
+					{#if teacher.tier === 'premium' || teacher.tier === 'summer_pass'}
+						<span class="perk-badge premium-badge">
+							<span class="material-icons" aria-hidden="true">workspace_premium</span>
+							Premium
+						</span>
+					{/if}
+					{#if teacher.available_today}
+						<span class="perk-badge available-badge">
+							<span class="material-icons" aria-hidden="true">event_available</span>
+							{$t('marketplace.available_today')}
+						</span>
+					{/if}
+					{#if teacher.has_video_upgrade}
+						<span class="perk-badge upgrade-badge">
+							<span class="material-icons" aria-hidden="true">videocam</span>
+							Video
+						</span>
+					{/if}
+					{#if teacher.has_link_upgrade}
+						<span class="perk-badge upgrade-badge">
+							<span class="material-icons" aria-hidden="true">link</span>
+							Online Booking
+						</span>
+					{/if}
+				</div>
 			</div>
 		</div>
 
@@ -329,6 +361,52 @@
 		border-bottom: 2px solid var(--background-color);
 		padding-bottom: 0.5rem;
 		margin-top: 0;
+	}
+
+	.perk-badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 1rem;
+	}
+
+	.perk-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 12px;
+		border-radius: 20px;
+		font-size: 0.8rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.perk-badge .material-icons {
+		font-size: 14px;
+	}
+
+	.featured-badge {
+		background: linear-gradient(135deg, #FFD700, #FFA500);
+		color: #5a3a00;
+		box-shadow: 0 2px 8px rgba(255, 165, 0, 0.4);
+	}
+
+	.premium-badge {
+		background: linear-gradient(135deg, #667eea, #764ba2);
+		color: white;
+	}
+
+	.available-badge {
+		background: #e8f5e9;
+		color: #2e7d32;
+		border: 1px solid #a5d6a7;
+	}
+
+	.upgrade-badge {
+		background: #e3f2fd;
+		color: #1565c0;
+		border: 1px solid #90caf9;
 	}
 
 	.about-section p {

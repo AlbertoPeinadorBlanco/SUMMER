@@ -1,5 +1,7 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import { goto } from '$app/navigation';
+import { API_BASE_URL } from '$lib/api';
 
 export interface User {
 	id: number;
@@ -20,52 +22,64 @@ export interface User {
 }
 
 function createAuthStore() {
-	const isBrowser = browser;
-	const initialToken = isBrowser ? localStorage.getItem('auth_token') : null;
-	const initialUserStr = isBrowser ? localStorage.getItem('auth_user') : null;
-
-	let initialUser = null;
-	if (initialUserStr) {
-		try {
-			initialUser = JSON.parse(initialUserStr);
-		} catch (e) {
-			initialUser = null;
-		}
+	// Restore user profile from sessionStorage to avoid UI flash on reload
+	// (The actual auth is verified via the httpOnly cookie — this is just for display)
+	const storedUser = browser ? sessionStorage.getItem('auth_user') : null;
+	let initialUser: User | null = null;
+	if (storedUser) {
+		try { initialUser = JSON.parse(storedUser); } catch { initialUser = null; }
 	}
 
 	const { subscribe, set, update } = writable<{
-		token: string | null;
 		user: User | null;
 		isAuthenticated: boolean;
+		isLoading: boolean;
 	}>({
-		token: initialToken,
 		user: initialUser,
-		isAuthenticated: !!initialToken
+		isAuthenticated: !!initialUser,
+		isLoading: !initialUser // still loading if no cached user
 	});
+
+	// Called after login/register to set user state
+	function setUser(user: User) {
+		if (browser) sessionStorage.setItem('auth_user', JSON.stringify(user));
+		set({ user, isAuthenticated: true, isLoading: false });
+	}
+
+	// Restore session on page load by calling /api/auth/me
+	async function restoreSession() {
+		if (!browser) return;
+		try {
+			const res = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include' });
+			if (res.ok) {
+				const user: User = await res.json();
+				setUser(user);
+			} else {
+				set({ user: null, isAuthenticated: false, isLoading: false });
+				if (browser) sessionStorage.removeItem('auth_user');
+			}
+		} catch {
+			set({ user: null, isAuthenticated: false, isLoading: false });
+		}
+	}
 
 	return {
 		subscribe,
-		login: (token: string, user: User) => {
-			if (isBrowser) {
-				localStorage.setItem('auth_token', token);
-				localStorage.setItem('auth_user', JSON.stringify(user));
-			}
-			set({ token, user, isAuthenticated: true });
+		login: (user: User) => setUser(user),
+		logout: async () => {
+			try {
+				await fetch(`${API_BASE_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+			} catch { /* ignore */ }
+			if (browser) sessionStorage.removeItem('auth_user');
+			set({ user: null, isAuthenticated: false, isLoading: false });
+			if (browser) goto('/');
 		},
-		logout: () => {
-			if (isBrowser) {
-				localStorage.removeItem('auth_token');
-				localStorage.removeItem('auth_user');
-			}
-			set({ token: null, user: null, isAuthenticated: false });
-		},
+		restoreSession,
 		updateUser: (updates: Partial<User>) => {
 			update((state) => {
 				if (!state.user) return state;
 				const updatedUser = { ...state.user, ...updates };
-				if (isBrowser) {
-					localStorage.setItem('auth_user', JSON.stringify(updatedUser));
-				}
+				if (browser) sessionStorage.setItem('auth_user', JSON.stringify(updatedUser));
 				return { ...state, user: updatedUser };
 			});
 		}

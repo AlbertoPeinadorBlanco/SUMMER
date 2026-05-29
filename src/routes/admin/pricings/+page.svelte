@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
+	import { fetchApi } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
@@ -10,7 +11,7 @@
 	import Textfield from '@smui/textfield';
 	import IconButton from '@smui/icon-button';
 
-	let pricings = $state([]);
+	let pricings: any[] = $state([]);
 	let loading = $state(true);
 	let error = $state(null);
 
@@ -32,17 +33,15 @@
 	async function fetchPricings() {
 		try {
 			loading = true;
-			const res = await fetch('http://127.0.0.1:5000/api/pricings');
-			if (!res.ok) throw new Error('Failed to fetch pricings');
-			pricings = await res.json();
-		} catch (err) {
+			pricings = await fetchApi('/pricings');
+		} catch (err: any) {
 			error = err.message;
 		} finally {
 			loading = false;
 		}
 	}
 
-	function openEditModal(pricing) {
+	function openEditModal(pricing: any) {
 		currentPricingKey = pricing.item_key;
 		formPrice = pricing.price;
 		isModalOpen = true;
@@ -50,32 +49,26 @@
 
 	async function savePricing() {
 		try {
-			const res = await fetch(`http://127.0.0.1:5000/api/pricings/admin/${currentPricingKey}`, {
+			await fetchApi(`/pricings/admin/${currentPricingKey}`, {
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${$auth.token}`
-				},
 				body: JSON.stringify({ price: formPrice })
 			});
 
-			if (!res.ok) throw new Error('Error updating pricing');
-
 			isModalOpen = false;
 			await fetchPricings();
-		} catch (err) {
+		} catch (err: any) {
 			alert(err.message);
 		}
 	}
 </script>
 
-<SEO title="Platform Pricings" />
+<SEO title={$t('admin.pricings_title')} />
 
 <div class="admin-container">
 	<div class="header">
 		<div>
-			<h1>Platform Pricings</h1>
-			<p>Manage the global prices for platform subscriptions, upgrades, and features.</p>
+			<h1>{$t('admin.pricings_title')}</h1>
+			<p>{$t('admin.pricings_subtitle')}</p>
 		</div>
 	</div>
 
@@ -88,11 +81,11 @@
 			<DataTable style="width: 100%;">
 				<Head>
 					<Row>
-						<Cell>ID</Cell>
-						<Cell>Item Key</Cell>
-						<Cell>Description</Cell>
-						<Cell>Price</Cell>
-						<Cell>Actions</Cell>
+						<Cell>{$t('admin.id')}</Cell>
+						<Cell>{$t('admin.pricings_item_key')}</Cell>
+						<Cell>{$t('admin.pricings_description')}</Cell>
+						<Cell>{$t('admin.price')}</Cell>
+						<Cell>{$t('admin.actions')}</Cell>
 					</Row>
 				</Head>
 				<Body>
@@ -117,10 +110,10 @@
 
 <!-- Edit Modal -->
 <Dialog bind:open={isModalOpen} aria-labelledby="form-title">
-	<Title id="form-title">Edit Price: {currentPricingKey}</Title>
+	<Title id="form-title">{$t('admin.pricings_edit_title')}: {currentPricingKey}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formPrice} label="Price (EUR)" type="number" step="0.01" style="width: 100%;" />
+			<Textfield bind:value={formPrice} label={$t('admin.pricings_price_label')} type="number" step="0.01" style="width: 100%;" />
 		</div>
 	</Content>
 	<Actions>

@@ -19,35 +19,14 @@
 		error = '';
 
 		try {
-			// Send login request to the API
-			const res = await fetchApi('/users/login', {
+			// Login — server sets httpOnly cookie automatically
+			await fetchApi('/users/login', {
 				method: 'POST',
 				body: JSON.stringify({ email, password })
 			});
 
-			// Decode the JWT to get the user ID
-			// Real app: use jwt-decode library, here we just do a simple base64 decode
-			const base64Url = res.token.split('.')[1];
-			const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-			const jsonPayload = decodeURIComponent(
-				atob(base64)
-					.split('')
-					.map(function (c) {
-						return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-					})
-					.join('')
-			);
-
-			const payload = JSON.parse(jsonPayload);
-			const userId = payload.user.id;
-
-			// Set the token temporarily in localStorage so fetchApi can use it for the next request
-			localStorage.setItem('auth_token', res.token);
-
-			// Fetch the full user details to store in context
-			const userDetails = await fetchApi(`/users/${userId}`);
-
-			auth.login(res.token, userDetails);
+			// Restore full user profile from the new cookie
+			await auth.restoreSession();
 			open = false;
 		} catch (err: any) {
 			error = err.message || 'Login failed';

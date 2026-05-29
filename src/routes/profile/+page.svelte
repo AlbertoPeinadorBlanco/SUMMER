@@ -29,9 +29,8 @@
 
 	onMount(async () => {
 		try {
-			const res = await fetch('http://127.0.0.1:5000/api/users/featured');
-			if (res.ok) {
-				const data = await res.json();
+			const data = await fetchApi('/users/featured');
+			if (data) {
 				featured_instructor = data.featured;
 			}
 		} catch (e) {
@@ -69,7 +68,6 @@
 			await fetchApi(`/users/${user.id}`, {
 				method: 'PUT',
 				body: JSON.stringify({
-					email,
 					first_name,
 					last_name,
 					phone
@@ -77,7 +75,7 @@
 			});
 
 			// Update local auth store so layout / other components reflect new name
-			auth.updateUser({ email, first_name, last_name, phone });
+			auth.updateUser({ first_name, last_name, phone });
 			successMsg = 'Profile updated successfully!';
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
@@ -117,7 +115,7 @@
 		}
 	}
 
-	async function handleUpgrade() {
+	async function handleBuyTier(tier: string) {
 		if (!user) return;
 		loading = true;
 		error = '';
@@ -125,10 +123,11 @@
 
 		try {
 			await fetchApi(`/users/${user.id}/upgrade`, {
-				method: 'POST'
+				method: 'POST',
+				body: JSON.stringify({ tier })
 			});
-			auth.updateUser({ tier: 'premium' });
-			successMsg = 'Successfully upgraded to Premium!';
+			auth.updateUser({ tier });
+			successMsg = `Successfully upgraded to ${tier === 'summer_pass' ? 'Summer Pass' : 'Premium'}!`;
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
 			error = err.message || 'Upgrade failed';
@@ -192,9 +191,8 @@
 			successMsg = 'You are now the Featured Instructor of the Week!';
 			
 			// Refresh featured status
-			const res = await fetch('http://127.0.0.1:5000/api/users/featured');
-			if (res.ok) {
-				const data = await res.json();
+			const data = await fetchApi('/users/featured');
+			if (data) {
 				featured_instructor = data.featured;
 			}
 			
@@ -261,7 +259,7 @@
 						<div class="pricing-card">
 							<h4>Premium Monthly</h4>
 							<p class="price">€29/mo</p>
-							<Button variant="outlined" onclick={handleUpgrade} disabled={loading}>
+							<Button variant="outlined" onclick={() => handleBuyTier('premium')} disabled={loading}>
 								<Label>{loading ? 'Upgrading...' : 'Subscribe Monthly'}</Label>
 							</Button>
 						</div>
@@ -269,7 +267,7 @@
 							<h4>Summer Pass</h4>
 							<p class="price">€99 flat</p>
 							<p class="desc">Valid June - September</p>
-							<Button variant="raised" class="premium-button" onclick={handleUpgrade} disabled={loading}>
+							<Button variant="raised" class="premium-button" onclick={() => handleBuyTier('summer_pass')} disabled={loading}>
 								<Label>{loading ? 'Upgrading...' : 'Buy Summer Pass'}</Label>
 							</Button>
 						</div>
@@ -291,7 +289,7 @@
 						{#if user.has_video_upgrade}
 							<Textfield variant="outlined" bind:value={video_url} label={$t('profile_enhancements.video_url')} style="flex: 1;" />
 						{:else}
-							<Button variant="outlined" onclick={(e) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
 								<Label>{$t('profile_enhancements.unlock_5')}</Label>
 							</Button>
 						{/if}
@@ -306,7 +304,7 @@
 						{#if user.has_link_upgrade}
 							<Textfield variant="outlined" bind:value={booking_link} label={$t('profile_enhancements.booking_url')} style="flex: 1;" />
 						{:else}
-							<Button variant="outlined" onclick={(e) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
 								<Label>{$t('profile_enhancements.unlock_5')}</Label>
 							</Button>
 						{/if}
@@ -323,7 +321,7 @@
 								<input type="checkbox" bind:checked={available_today} /> {$t('profile_enhancements.enable_badge')}
 							</label>
 						{:else}
-							<Button variant="outlined" onclick={(e) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
 								<Label>{$t('profile_enhancements.unlock_2')}</Label>
 							</Button>
 						{/if}
@@ -359,26 +357,26 @@
 			<div class="tier-section">
 				<h3>{$t('profile_enhancements.tier_title')}</h3>
 				<p class="tier-desc">{$t('profile_enhancements.tier_desc')}</p>
-				<p><strong>{$t('profile_enhancements.current_tier')}</strong> {user.instructor_tier}</p>
+				<p><strong>{$t('profile_enhancements.current_tier')}</strong> {user.tier || 'basic'}</p>
 				
 				<div class="tiers-grid">
 					<!-- Summer Pass -->
-					<div class="tier-card {user.instructor_tier === 'summer_pass' ? 'active-tier' : ''}">
+					<div class="tier-card {user.tier === 'summer_pass' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.summer_pass')}</h4>
 						<p class="price">€99</p>
 						<p class="desc">{$t('profile_enhancements.summer_pass_desc')}</p>
-						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.instructor_tier === 'summer_pass'} class="premium-button">
-							<Label>{user.instructor_tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass')}</Label>
+						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.tier === 'summer_pass'} class="premium-button">
+							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass')}</Label>
 						</Button>
 					</div>
 
 					<!-- Monthly Premium -->
-					<div class="tier-card {user.instructor_tier === 'premium' ? 'active-tier' : ''}">
+					<div class="tier-card {user.tier === 'premium' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.premium_monthly')}</h4>
 						<p class="price">€15<span style="font-size: 1rem;">/mo</span></p>
 						<p class="desc">{$t('profile_enhancements.premium_monthly_desc')}</p>
-						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.instructor_tier === 'premium'} class="premium-button">
-							<Label>{user.instructor_tier === 'premium' ? 'Active' : $t('profile_enhancements.subscribe')}</Label>
+						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.tier === 'premium'} class="premium-button">
+							<Label>{user.tier === 'premium' ? 'Active' : $t('profile_enhancements.subscribe')}</Label>
 						</Button>
 					</div>
 				</div>
@@ -406,6 +404,7 @@
 				bind:value={email}
 				label="Email Address"
 				required
+				disabled
 				style="width: 100%;"
 			/>
 			<Textfield

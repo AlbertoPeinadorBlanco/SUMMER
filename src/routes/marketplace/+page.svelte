@@ -10,6 +10,7 @@
 	import { fetchApi } from '$lib/api';
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
+	import BannerAd from '$lib/components/BannerAd.svelte';
 
 	let { data } = $props();
 
@@ -136,6 +137,8 @@
 </script>
 
 <SEO title={$t('marketplace.title')} description={$t('marketplace.subtitle')} />
+
+<BannerAd placement="marketplace_top" />
 
 <div class="marketplace-header">
 	<div class="header">
@@ -284,6 +287,9 @@
 	{/each}
 </div>
 
+		<BannerAd placement="marketplace_sidebar" />
+
+		<!-- Shop Ads Area -->
 <!-- Booking Dialog -->
 <Dialog bind:open={isBookingDialogOpen} aria-labelledby="booking-title" aria-describedby="booking-content">
 	<DialogTitle id="booking-title">Confirm Booking</DialogTitle>

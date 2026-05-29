@@ -10,14 +10,23 @@
 	import { auth } from '$lib/stores/auth';
 	import { notifications } from '$lib/stores/notifications';
 	import LoginPopup from '$lib/components/LoginPopup.svelte';
+	import CookieConsent from '$lib/components/CookieConsent.svelte';
+	import { onMount } from 'svelte';
 
 	setupI18n();
+	onMount(() => {
+		// Restore session from httpOnly cookie on every page load
+		auth.restoreSession();
+	});
 
 	let { children } = $props();
 	let mobileMenuOpen = $state(false);
 	let showLogin = $state(false);
 	let userMenuOpen = $state(false);
 	let notifMenuOpen = $state(false);
+	let surfMenuOpen = $state(false);
+	let resourcesMenuOpen = $state(false);
+	let adminMenuOpen = $state(false);
 
 	let unreadCount = $derived($notifications.filter(n => !n.is_read).length);
 
@@ -29,7 +38,7 @@
 		}
 	});
 
-	async function markNotifRead(id) {
+	async function markNotifRead(id: any) {
 		await notifications.markAsRead(id);
 	}
 
@@ -76,24 +85,92 @@
 							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">home</span>
 							<Label>{$t('nav.home')}</Label>
 						</Button>
-						<Button href="/marketplace" class="nav-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;"
-								>storefront</span
-							>
-							<Label>{$t('nav.marketplace')}</Label>
-						</Button>
-						<Button href="/instructors" class="nav-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">groups</span>
-							<Label>{$t('nav.instructors')}</Label>
-						</Button>
-						<Button href="/policies" class="nav-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">policy</span>
-							<Label>{$t('nav.policies')}</Label>
-						</Button>
-						<Button href="/gear-guide" class="nav-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">surfing</span>
-							<Label>{$t('nav.gear_guide')}</Label>
-						</Button>
+
+						<!-- Surf Network Dropdown -->
+						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (surfMenuOpen = false)} role="group">
+							<Button onclick={() => (surfMenuOpen = !surfMenuOpen)} class="nav-btn">
+								<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">explore</span>
+								<Label>{$t('nav.network')}</Label>
+								<span class="material-icons" aria-hidden="true" style="margin-left: 4px; font-size: 1.2rem;">arrow_drop_down</span>
+							</Button>
+							{#if surfMenuOpen}
+								<div class="user-dropdown">
+									<a href="/instructors" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">groups</span>
+										{$t('nav.instructors')}
+									</a>
+									<a href="/marketplace" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">storefront</span>
+										{$t('nav.marketplace')}
+									</a>
+									<a href="/adverts" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">store</span>
+										{$t('nav.adverts')}
+									</a>
+								</div>
+							{/if}
+						</div>
+
+						<!-- Resources Dropdown -->
+						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (resourcesMenuOpen = false)} role="group">
+							<Button onclick={() => (resourcesMenuOpen = !resourcesMenuOpen)} class="nav-btn">
+								<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">library_books</span>
+								<Label>{$t('nav.resources')}</Label>
+								<span class="material-icons" aria-hidden="true" style="margin-left: 4px; font-size: 1.2rem;">arrow_drop_down</span>
+							</Button>
+							{#if resourcesMenuOpen}
+								<div class="user-dropdown">
+									<a href="/gear-guide" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">surfing</span>
+										{$t('nav.gear_guide')}
+									</a>
+									<a href="/policies" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">policy</span>
+										{$t('nav.policies')}
+									</a>
+								</div>
+							{/if}
+						</div>
+
+						<!-- Admin Dropdown (Only visible to admins) -->
+						{#if $auth.isAuthenticated && $auth.user && $auth.user.role === 'admin'}
+							<div class="user-menu-container" style="position: relative;" onmouseleave={() => (adminMenuOpen = false)} role="group">
+								<Button onclick={() => (adminMenuOpen = !adminMenuOpen)} class="nav-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">admin_panel_settings</span>
+									<Label>{$t('admin.title')}</Label>
+									<span class="material-icons" aria-hidden="true" style="margin-left: 4px; font-size: 1.2rem;">arrow_drop_down</span>
+								</Button>
+								{#if adminMenuOpen}
+									<div class="user-dropdown">
+										<a href="/admin" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">group</span>
+											{$t('admin.users_list')}
+										</a>
+										<a href="/admin/notifications" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">campaign</span>
+											{$t('nav.admin_notifications')}
+										</a>
+										<a href="/admin/external-ads" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">store</span>
+											{$t('nav.admin_external_ads')}
+										</a>
+										<a href="/admin/pricings" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">price_change</span>
+											{$t('nav.admin_pricings')}
+										</a>
+										<a href="/admin/logs" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">analytics</span>
+											{$t('nav.admin_logs')}
+										</a>
+										<a href="/admin/banners" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">view_carousel</span>
+											Banners
+										</a>
+									</div>
+								{/if}
+							</div>
+						{/if}
+
 						<Button href="/contact" class="nav-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">mail</span>
 							<Label>{$t('nav.contact')}</Label>
@@ -108,7 +185,7 @@
 					aria-label="User menu"
 				>
 					{#if $auth.isAuthenticated && $auth.user}
-						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (notifMenuOpen = false)}>
+						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (notifMenuOpen = false)} role="group">
 							<Button onclick={() => (notifMenuOpen = !notifMenuOpen)} class="nav-btn desktop-nav" style="min-width: 48px; padding: 0;">
 								<span class="material-icons" aria-hidden="true">notifications</span>
 								{#if unreadCount > 0}
@@ -121,7 +198,7 @@
 										<div style="padding: 1rem; text-align: center; color: #666;">No notifications</div>
 									{:else}
 										{#each $notifications as notif}
-											<div class="dropdown-item" style="flex-direction: column; align-items: flex-start; padding: 1rem; border-bottom: 1px solid #eee; {notif.is_read ? 'opacity: 0.6;' : 'font-weight: 600;'}" onclick={() => markNotifRead(notif.id)}>
+											<div class="dropdown-item" style="flex-direction: column; align-items: flex-start; padding: 1rem; border-bottom: 1px solid #eee; {notif.is_read ? 'opacity: 0.6;' : 'font-weight: 600;'}" onclick={() => markNotifRead(notif.id)} role="button" tabindex="0" onkeydown={(e) => { if(e.key === 'Enter') markNotifRead(notif.id); }}>
 												<div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 0.25rem; text-transform: uppercase;">{notif.type.replace('_', ' ')}</div>
 												<div style="font-size: 0.9rem; white-space: normal; line-height: 1.4;">{notif.message}</div>
 												<div style="font-size: 0.75rem; color: #999; margin-top: 0.5rem;">{new Date(notif.created_at).toLocaleString()}</div>
@@ -132,7 +209,7 @@
 							{/if}
 						</div>
 
-						<div class="user-menu-container" style="position: relative; margin-left: 0.5rem;" onmouseleave={() => (userMenuOpen = false)}>
+						<div class="user-menu-container" style="position: relative; margin-left: 0.5rem;" onmouseleave={() => (userMenuOpen = false)} role="group">
 							<Button onclick={() => (userMenuOpen = !userMenuOpen)} class="nav-btn user-btn desktop-nav">
 								{#if $auth.user.profile_picture_url}
 									<img src={`http://127.0.0.1:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
@@ -158,27 +235,6 @@
 											<span class="material-icons" aria-hidden="true">edit_note</span>
 											{$t('nav.manageAds')}
 										</a>
-									{/if}
-									{#if $auth.user.role === 'admin'}
-										<div class="dropdown-divider"></div>
-										<div class="dropdown-header">Administration</div>
-										<a href="/admin/notifications" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
-											<span class="material-icons" aria-hidden="true">campaign</span>
-											Manage Notifications
-										</a>
-										<a href="/admin/external-ads" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
-											<span class="material-icons" aria-hidden="true">store</span>
-											External Adverts
-										</a>
-										<a href="/admin/pricings" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
-											<span class="material-icons" aria-hidden="true">price_change</span>
-											Platform Pricings
-										</a>
-										<a href="/admin" class="dropdown-item admin-item" onclick={() => (userMenuOpen = false)}>
-											<span class="material-icons" aria-hidden="true">admin_panel_settings</span>
-											{$t('admin.title')}
-										</a>
-										<div class="dropdown-divider"></div>
 									{/if}
 									<button class="dropdown-item" onclick={() => { auth.logout(); userMenuOpen = false; }}>
 										<span class="material-icons" aria-hidden="true">logout</span>
@@ -263,6 +319,10 @@
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">groups</span>
 					<Label>{$t('nav.instructors')}</Label>
 				</Button>
+				<Button href="/adverts" onclick={toggleMobileMenu} class="mobile-menu-btn">
+					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">storefront</span>
+					<Label>{$t('nav.adverts')}</Label>
+				</Button>
 				<Button href="/policies" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">policy</span>
 					<Label>{$t('nav.policies')}</Label>
@@ -291,7 +351,11 @@
 						</Button>
 						<Button href="/admin/pricings" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">price_change</span>
-							<Label>Platform Pricings</Label>
+							<Label>{$t('admin.admin_pricings')}</Label>
+						</Button>
+						<Button href="/admin/logs" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">analytics</span>
+							<Label>{$t('admin.admin_logs')}</Label>
 						</Button>
 						<Button href="/admin" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">admin_panel_settings</span>
@@ -338,11 +402,11 @@
 			</nav>
 		{/if}
 
-		<main class="main-content" id="main-content" role="main">
+		<main class="main-content" id="main-content">
 			{@render children()}
 		</main>
 
-		<footer class="app-footer" role="contentinfo">
+		<footer class="app-footer">
 			<div class="footer-content">
 				<nav class="footer-links" aria-label="Footer navigation">
 					<a href="/about">{$t('footer.about')}</a>
@@ -354,6 +418,8 @@
 				<p>&copy; {new Date().getFullYear()} {$t('app.title')}. {$t('footer.rights')}</p>
 			</div>
 		</footer>
+		
+		<CookieConsent />
 	</div>
 
 	<LoginPopup bind:open={showLogin} />

@@ -1,38 +1,42 @@
-# Use an official Node.js runtime as a parent image
+# ─────────────────────────────────────────────
+# Stage 1: Build the SvelteKit app
+# ─────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install all dependencies (including devDependencies)
 RUN npm ci
 
-# Copy the rest of the application
 COPY . .
 
-# Build the SvelteKit app
+# VITE_API_URL must be injected at build time as a build arg
+# because Vite bakes env vars into the static bundle
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
-# --- Production Image ---
-FROM node:20-alpine
+# ─────────────────────────────────────────────
+# Stage 2: Production image (node adapter output)
+# ─────────────────────────────────────────────
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Install only production dependencies
-RUN npm ci --omit=dev
-
-# Copy the build output from the builder stage
+# The adapter-node build output
 COPY --from=builder /app/build ./build
-COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package.json ./package.json
+
+# Install only the production runtime dependency for adapter-node
+RUN npm install --omit=dev
+
+USER appuser
 
 EXPOSE 3000
-ENV PORT=3000
+
 ENV NODE_ENV=production
 
-# Start the Node.js server
-CMD ["node", "build"]
+CMD ["node", "build/index.js"]

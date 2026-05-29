@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { fetchApi } from '$lib/api';
+	import BannerAd from '$lib/components/BannerAd.svelte';
 	import Button, { Label } from '@smui/button';
 	import { t } from 'svelte-i18n';
 
@@ -53,6 +54,24 @@
 				<h2>{$t('gear_guide.essentials_title')}</h2>
 				<p>{$t('gear_guide.essentials_desc')}</p>
 			</section>
+
+			<section>
+				<h2>{$t('gear_guide.accessories_title')}</h2>
+				<p>{$t('gear_guide.accessories_desc')}</p>
+				<ul>
+					<li>{$t('gear_guide.accessories_leash')}</li>
+					<li>{$t('gear_guide.accessories_wax')}</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>{$t('gear_guide.sun_protection_title')}</h2>
+				<p>{$t('gear_guide.sun_protection_desc')}</p>
+				<ul>
+					<li>{$t('gear_guide.sun_protection_zinc')}</li>
+					<li>{$t('gear_guide.sun_protection_rashguard')}</li>
+				</ul>
+			</section>
 		</main>
 
 		<aside class="guide-sidebar">
@@ -78,6 +97,8 @@
 		</aside>
 	</div>
 </div>
+
+<BannerAd placement="gear_guide_bottom" />
 
 <style>
 	.guide-container {

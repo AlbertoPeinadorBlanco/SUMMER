@@ -36,6 +36,13 @@
 		} catch (e) {
 			console.error('Failed to load featured instructor', e);
 		}
+
+		if (window.location.search.includes('success=true')) {
+			successMsg = 'Payment successful! Your upgrade is now active.';
+			setTimeout(() => (successMsg = ''), 5000);
+			// Clean up URL
+			window.history.replaceState({}, document.title, window.location.pathname);
+		}
 	});
 
 	// Svelte 5 rune to sync auth user data to local form state once authenticated
@@ -119,19 +126,18 @@
 		if (!user) return;
 		loading = true;
 		error = '';
-		successMsg = '';
 
 		try {
-			await fetchApi(`/users/${user.id}/upgrade`, {
+			const item_key = tier === 'summer_pass' ? 'summer_pass' : 'premium_subscription';
+			const res = await fetchApi('/stripe/create-checkout-session', {
 				method: 'POST',
-				body: JSON.stringify({ tier })
+				body: JSON.stringify({ item_key })
 			});
-			auth.updateUser({ tier });
-			successMsg = `Successfully upgraded to ${tier === 'summer_pass' ? 'Summer Pass' : 'Premium'}!`;
-			setTimeout(() => (successMsg = ''), 3000);
+			if (res.url) {
+				window.location.href = res.url;
+			}
 		} catch (err: any) {
-			error = err.message || 'Upgrade failed';
-		} finally {
+			error = err.message || 'Checkout failed';
 			loading = false;
 		}
 	}
@@ -140,18 +146,18 @@
 		if (!user) return;
 		loading = true;
 		error = '';
-		successMsg = '';
 
 		try {
-			await fetchApi(`/users/${user.id}/upgrades/${type}`, {
-				method: 'POST'
+			const item_key = `${type}_upgrade`; // e.g. video_upgrade
+			const res = await fetchApi('/stripe/create-checkout-session', {
+				method: 'POST',
+				body: JSON.stringify({ item_key })
 			});
-			auth.updateUser({ [`has_${type}_upgrade`]: true });
-			successMsg = `${type} upgrade unlocked!`;
-			setTimeout(() => (successMsg = ''), 3000);
+			if (res.url) {
+				window.location.href = res.url;
+			}
 		} catch (err: any) {
-			error = err.message || 'Upgrade failed';
-		} finally {
+			error = err.message || 'Checkout failed';
 			loading = false;
 		}
 	}
@@ -182,24 +188,19 @@
 		if (!user) return;
 		loading = true;
 		error = '';
-		successMsg = '';
 
 		try {
-			await fetchApi(`/users/${user.id}/feature`, {
-				method: 'POST'
+			// First, check if there's already a featured instructor (we can hit the regular feature endpoint, or just attempt stripe and let it fail if not)
+			// For simplicity, we just trigger checkout
+			const res = await fetchApi('/stripe/create-checkout-session', {
+				method: 'POST',
+				body: JSON.stringify({ item_key: 'featured_instructor' })
 			});
-			successMsg = 'You are now the Featured Instructor of the Week!';
-			
-			// Refresh featured status
-			const data = await fetchApi('/users/featured');
-			if (data) {
-				featured_instructor = data.featured;
+			if (res.url) {
+				window.location.href = res.url;
 			}
-			
-			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
-			error = err.message || 'Failed to purchase featured spot';
-		} finally {
+			error = err.message || 'Checkout failed';
 			loading = false;
 		}
 	}
@@ -251,28 +252,42 @@
 		</div>
 
 		{#if user.role === 'instructor'}
+
+
 			<div class="tier-section">
-				<h3>Visibility Tier: <span class="tier-badge {user.tier === 'premium' ? 'premium' : ''}">{user.tier || 'basic'}</span></h3>
-				{#if user.tier !== 'premium'}
-					<p class="tier-desc">Choose a plan to pin your profile and classes to the top of the search results!</p>
-					<div class="pricing-options">
-						<div class="pricing-card">
-							<h4>Premium Monthly</h4>
-							<p class="price">€29/mo</p>
-							<Button variant="outlined" onclick={() => handleBuyTier('premium')} disabled={loading}>
-								<Label>{loading ? 'Upgrading...' : 'Subscribe Monthly'}</Label>
-							</Button>
-						</div>
-						<div class="pricing-card highlight">
-							<h4>Summer Pass</h4>
-							<p class="price">€99 flat</p>
-							<p class="desc">Valid June - September</p>
-							<Button variant="raised" class="premium-button" onclick={() => handleBuyTier('summer_pass')} disabled={loading}>
-								<Label>{loading ? 'Upgrading...' : 'Buy Summer Pass'}</Label>
-							</Button>
-						</div>
+				<h3>{$t('profile_enhancements.tier_title')}</h3>
+				<p class="tier-desc">{$t('profile_enhancements.tier_desc')}</p>
+				<p><strong>{$t('profile_enhancements.current_tier')}</strong> {user.tier || 'basic'}</p>
+				
+				<div class="tiers-grid">
+					<!-- Summer Pass -->
+					<div class="tier-card {user.tier === 'summer_pass' ? 'active-tier' : ''}">
+						<h4>{$t('profile_enhancements.summer_pass')}</h4>
+						<p class="price">€99</p>
+						<p class="desc">{$t('profile_enhancements.summer_pass_desc')}</p>
+						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.tier === 'summer_pass'} class="premium-button">
+							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass')}</Label>
+						</Button>
 					</div>
-				{/if}
+
+					<!-- Monthly Premium -->
+					<div class="tier-card {user.tier === 'premium' ? 'active-tier' : ''}">
+						<h4>{$t('profile_enhancements.premium_monthly')}</h4>
+						<p class="price">€15<span style="font-size: 1rem;">/mo</span></p>
+						<p class="desc">{$t('profile_enhancements.premium_monthly_desc')}</p>
+						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.tier === 'premium' || user.tier === 'summer_pass'} class="premium-button">
+							<Label>
+								{#if user.tier === 'premium'}
+									Active
+								{:else if user.tier === 'summer_pass'}
+									Included in Pass
+								{:else}
+									{$t('profile_enhancements.subscribe')}
+								{/if}
+							</Label>
+						</Button>
+					</div>
+				</div>
 			</div>
 
 			<div class="tier-section">
@@ -348,39 +363,21 @@
 							<p class="desc">Available now!</p>
 						{/if}
 					</div>
-					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || (featured_instructor && featured_instructor.id !== user.id)} class="premium-button" style="background-color: #FFD700; color: #000;">
-						<Label>{$t('profile_enhancements.buy_featured')}</Label>
+					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || !!featured_instructor} class="premium-button" style="background-color: {featured_instructor ? '#ccc' : '#FFD700'}; color: {featured_instructor ? '#666' : '#000'};">
+						<Label>
+							{#if featured_instructor && featured_instructor.id === user.id}
+								Active until {new Date(featured_instructor.featured_until).toLocaleDateString()}
+							{:else if featured_instructor}
+								Currently Unavailable
+							{:else}
+								{$t('profile_enhancements.buy_featured')}
+							{/if}
+						</Label>
 					</Button>
 				</div>
 			</div>
 
-			<div class="tier-section">
-				<h3>{$t('profile_enhancements.tier_title')}</h3>
-				<p class="tier-desc">{$t('profile_enhancements.tier_desc')}</p>
-				<p><strong>{$t('profile_enhancements.current_tier')}</strong> {user.tier || 'basic'}</p>
-				
-				<div class="tiers-grid">
-					<!-- Summer Pass -->
-					<div class="tier-card {user.tier === 'summer_pass' ? 'active-tier' : ''}">
-						<h4>{$t('profile_enhancements.summer_pass')}</h4>
-						<p class="price">€99</p>
-						<p class="desc">{$t('profile_enhancements.summer_pass_desc')}</p>
-						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.tier === 'summer_pass'} class="premium-button">
-							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass')}</Label>
-						</Button>
-					</div>
 
-					<!-- Monthly Premium -->
-					<div class="tier-card {user.tier === 'premium' ? 'active-tier' : ''}">
-						<h4>{$t('profile_enhancements.premium_monthly')}</h4>
-						<p class="price">€15<span style="font-size: 1rem;">/mo</span></p>
-						<p class="desc">{$t('profile_enhancements.premium_monthly_desc')}</p>
-						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.tier === 'premium'} class="premium-button">
-							<Label>{user.tier === 'premium' ? 'Active' : $t('profile_enhancements.subscribe')}</Label>
-						</Button>
-					</div>
-				</div>
-			</div>
 		{/if}
 
 		<form onsubmit={handleUpdate} class="profile-form">

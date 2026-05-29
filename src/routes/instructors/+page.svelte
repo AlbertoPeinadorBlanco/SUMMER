@@ -94,7 +94,7 @@
 					<div class="card-content">
 						<div class="avatar-container">
 							{#if instructor.profile_picture_url}
-								<img src={`http://127.0.0.1:5000${instructor.profile_picture_url}`} alt="{instructor.first_name}" class="avatar-img" loading="lazy" decoding="async" width="80" height="80" />
+								<img src={`http://localhost:5000${instructor.profile_picture_url}`} alt="{instructor.first_name}" class="avatar-img" loading="lazy" decoding="async" width="80" height="80" />
 							{:else}
 								<span class="material-icons avatar-placeholder" aria-hidden="true">person</span>
 							{/if}
@@ -212,9 +212,72 @@
 		transition: transform 0.2s, box-shadow 0.2s;
 	}
 
+	.instructor-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 8px 25px rgba(226, 109, 63, 0.15);
+	}
+
 	.instructor-card.is-featured {
 		border: 2px solid #FFD700;
 		box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+	}
+
+	.card-content {
+		padding: 2rem 1.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex-grow: 1;
+		text-align: center;
+	}
+
+	.avatar-container {
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		overflow: hidden;
+		background-color: #f5f5f5;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+		border: 4px solid white;
+		box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+	}
+
+	.avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.avatar-placeholder {
+		font-size: 50px;
+		color: #ccc;
+	}
+
+	.instructor-name {
+		font-size: 1.4rem;
+		color: var(--terciary-color);
+		margin: 0 0 0.5rem 0;
+		font-weight: 700;
+	}
+
+	.specialization-badge {
+		font-size: 0.85rem;
+		color: var(--primary-color);
+		background-color: var(--primary-color-soft);
+		padding: 0.25rem 0.75rem;
+		border-radius: 20px;
+		margin-bottom: 1rem;
+		font-weight: 600;
+	}
+
+	.instructor-bio {
+		font-size: 0.95rem;
+		color: #666;
+		line-height: 1.5;
+		margin: 1rem 0 0 0;
 	}
 
 	.perk-badges {
@@ -222,7 +285,7 @@
 		flex-wrap: wrap;
 		gap: 0.4rem;
 		justify-content: center;
-		margin: 0.75rem 0;
+		margin: 0.5rem 0 1rem 0;
 	}
 
 	.perk-badge {
@@ -262,6 +325,13 @@
 		background: #e3f2fd;
 		color: #1565c0;
 		border: 1px solid #90caf9;
+	}
+
+	.card-footer {
+		background-color: #fafafa;
+		padding: 1rem;
+		border-top: 1px solid #eee;
+		text-align: center;
 	}
 
 	.view-profile-link {

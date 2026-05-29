@@ -35,6 +35,7 @@
 		"admin_external_ads": "External Adverts",
 		"admin_pricings": "Platform Pricings",
 		"admin_logs": "Analytics & Logs",
+		"admin_coupons": "Digital Coupons",
 		"adverts": "Partner Shops"
 	},
 	"footer": {
@@ -206,7 +207,13 @@
 		"terms_2_title": "2. Booking and Cancellations",
 		"terms_2_desc": "All bookings are subject to availability. Cancellation policies, refunds, and rescheduling are determined independently by each instructor. Please contact your instructor directly to understand their specific cancellation and refund policy.",
 		"terms_3_title": "3. Instructor Liability",
-		"terms_3_desc": "SurfMarket acts solely as a marketplace connecting students with independent surf instructors. Surf instructors are independent contractors, and SurfMarket is not liable for any injuries, damages, or losses incurred during classes."
+		"terms_3_desc": "SurfMarket acts solely as a marketplace connecting students with independent surf instructors. Surf instructors are independent contractors, and SurfMarket is not liable for any injuries, damages, or losses incurred during classes.",
+		"behavior_title": "4. Behavior Policy",
+		"behavior_desc": "Users are expected to maintain respectful behavior towards instructors and other students. Any form of harassment, discrimination, or abusive behavior may result in immediate suspension or termination of your account.",
+		"communications_title": "5. Communications Policy",
+		"communications_desc": "All communications between students and instructors must be conducted through the platform's messaging system. Sharing personal contact information to circumvent platform bookings is strictly prohibited.",
+		"payments_title": "6. Payments Policy",
+		"payments_desc": "All payments for classes and subscriptions are securely processed through our authorized payment gateways. SurfMarket is not responsible for any direct transactions made outside of the platform."
 	},
 	"levels": {
 		"title": "Difficulty Levels",
@@ -425,6 +432,24 @@
 		"notif_type_system_alert": "System Alert",
 		"notif_type_booking_created": "Booking Created",
 		"notif_type_booking_updated": "Booking Updated",
-		"notif_type_subscription_updated": "Subscription Updated"
+		"notif_type_subscription_updated": "Subscription Updated",
+		"coupons_title": "Digital Coupons",
+		"coupons_subtitle": "Manage exclusive digital coupons for the marketplace.",
+		"coupons_create": "Create Coupon",
+		"coupons_shop_name": "Shop Name",
+		"coupons_discount_text": "Discount Text",
+		"coupons_code": "Coupon Code",
+		"coupons_image_url": "Image URL",
+		"coupons_link_url": "Link URL",
+		"coupons_active": "Active",
+		"coupons_inactive": "Inactive",
+		"coupons_create_title": "Create Coupon",
+		"coupons_edit_title": "Edit Coupon",
+		"coupons_delete_title": "Delete Coupon",
+		"coupons_delete_confirm": "Are you sure you want to delete this coupon?",
+		"coupons_is_active_label": "Coupon is Active",
+		"coupons_shop_name_label": "Shop Name (e.g. SurfShop)",
+		"coupons_discount_text_label": "Discount Text (e.g. 20% OFF)",
+		"coupons_code_label": "Code (e.g. SUMMER20)"
 	}
 }

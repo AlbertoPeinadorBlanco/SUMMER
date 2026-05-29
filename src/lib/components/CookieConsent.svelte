@@ -30,10 +30,10 @@
 			<p>{$t('cookie.message')}</p>
 		</div>
 		<div class="cookie-actions">
-			<Button variant="outlined" on:click={declineCookies} class="decline-btn">
+			<Button variant="outlined" onclick={declineCookies} class="decline-btn">
 				<Label>{$t('cookie.decline')}</Label>
 			</Button>
-			<Button variant="raised" on:click={acceptCookies} class="accept-btn">
+			<Button variant="raised" onclick={acceptCookies} class="accept-btn">
 				<Label>{$t('cookie.accept')}</Label>
 			</Button>
 		</div>
@@ -46,6 +46,7 @@
 		bottom: 0;
 		left: 0;
 		width: 100%;
+		box-sizing: border-box;
 		background: #1d3557;
 		color: white;
 		z-index: 9999;

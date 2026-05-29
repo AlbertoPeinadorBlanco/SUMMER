@@ -13,35 +13,41 @@
 
 	<div class="policies-content">
 		<section class="policy-section">
-			<h2>{$t('legal.privacy_policy')}</h2>
+			<h2>{$t('policies.privacy_title')}</h2>
 			<div class="legal-text">
-				<h3>1. Data Collection</h3>
-				<p>We collect information you provide directly to us, such as when you create or modify your account, request on-demand services, contact customer support, or otherwise communicate with us. This information may include: name, email, phone number, profile picture, and payment method.</p>
+				<h3>{$t('policies.privacy_1_title')}</h3>
+				<p>{$t('policies.privacy_1_desc')}</p>
 				
-				<h3>2. Use of Data</h3>
-				<p>We may use the information we collect about you to provide, maintain, and improve our services, including to facilitate payments, send receipts, provide products and services you request, develop new features, provide customer support to Users and Instructors, develop safety features, authenticate users, and send product updates and administrative messages.</p>
+				<h3>{$t('policies.privacy_2_title')}</h3>
+				<p>{$t('policies.privacy_2_desc')}</p>
 				
-				<h3>3. Cookies</h3>
-				<p>We use cookies and similar technologies for purposes such as authenticating users, remembering user preferences and settings, determining the popularity of content, delivering and measuring the effectiveness of advertising campaigns, and analyzing site traffic and trends.</p>
+				<h3>{$t('policies.privacy_3_title')}</h3>
+				<p>{$t('policies.privacy_3_desc')}</p>
 			</div>
 		</section>
 
 		<hr />
 
 		<section class="policy-section">
-			<h2>{$t('legal.terms_of_service')}</h2>
+			<h2>{$t('policies.terms_title')}</h2>
 			<div class="legal-text">
-				<h3>1. Acceptance of Terms</h3>
-				<p>By accessing and using SurfMarket, you agree to be bound by these Terms of Service. If you do not agree to these terms, you may not use our platform.</p>
+				<h3>{$t('policies.terms_1_title')}</h3>
+				<p>{$t('policies.terms_1_desc')}</p>
 				
-				<h3>2. User Responsibilities</h3>
-				<p>Users are responsible for maintaining the confidentiality of their account credentials. You agree to accept responsibility for all activities that occur under your account.</p>
+				<h3>{$t('policies.terms_2_title')}</h3>
+				<p>{$t('policies.terms_2_desc')}</p>
 				
-				<h3>3. Instructor Obligations</h3>
-				<p>Instructors offering services through SurfMarket must maintain appropriate certifications and insurance. SurfMarket acts solely as a marketplace and is not responsible for the safety or quality of the lessons provided.</p>
-				
-				<h3>4. Termination</h3>
-				<p>We reserve the right to suspend or terminate your access to the platform at any time, for any reason, including violation of these Terms of Service.</p>
+				<h3>{$t('policies.terms_3_title')}</h3>
+				<p>{$t('policies.terms_3_desc')}</p>
+
+				<h3>{$t('policies.behavior_title')}</h3>
+				<p>{$t('policies.behavior_desc')}</p>
+
+				<h3>{$t('policies.communications_title')}</h3>
+				<p>{$t('policies.communications_desc')}</p>
+
+				<h3>{$t('policies.payments_title')}</h3>
+				<p>{$t('policies.payments_desc')}</p>
 			</div>
 		</section>
 	</div>

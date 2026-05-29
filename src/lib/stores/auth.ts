@@ -52,8 +52,13 @@ function createAuthStore() {
 		try {
 			const res = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include' });
 			if (res.ok) {
-				const user: User = await res.json();
-				setUser(user);
+				const data = await res.json();
+				if (data.authenticated === false) {
+					set({ user: null, isAuthenticated: false, isLoading: false });
+					if (browser) sessionStorage.removeItem('auth_user');
+				} else {
+					setUser(data as User);
+				}
 			} else {
 				set({ user: null, isAuthenticated: false, isLoading: false });
 				if (browser) sessionStorage.removeItem('auth_user');

@@ -11,6 +11,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import LoginPopup from '$lib/components/LoginPopup.svelte';
 	import CookieConsent from '$lib/components/CookieConsent.svelte';
+	import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte';
 	import { onMount } from 'svelte';
 
 	setupI18n();
@@ -62,6 +63,8 @@
 		<meta name="description" content={$t('app.meta_description')} />
 	{/if}
 </svelte:head>
+
+<GoogleAnalytics />
 
 {#if $isLoading}
 	<div class="loading-screen">
@@ -166,6 +169,10 @@
 											<span class="material-icons" aria-hidden="true">view_carousel</span>
 											Banners
 										</a>
+										<a href="/admin/coupons" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">local_offer</span>
+											{$t('nav.admin_coupons')}
+										</a>
 									</div>
 								{/if}
 							</div>
@@ -179,7 +186,6 @@
 				</Section>
 				<Section
 					align="end"
-					toolbar
 					class="right-section"
 					role="navigation"
 					aria-label="User menu"
@@ -212,7 +218,7 @@
 						<div class="user-menu-container" style="position: relative; margin-left: 0.5rem;" onmouseleave={() => (userMenuOpen = false)} role="group">
 							<Button onclick={() => (userMenuOpen = !userMenuOpen)} class="nav-btn user-btn desktop-nav">
 								{#if $auth.user.profile_picture_url}
-									<img src={`http://127.0.0.1:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
+									<img src={`http://localhost:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
 								{:else}
 									<div class="nav-avatar-placeholder">
 										{$auth.user.username ? $auth.user.username.charAt(0).toUpperCase() : 'U'}
@@ -270,7 +276,6 @@
 				</Section>
 				<Section
 					align="end"
-					toolbar
 					class="mobile-nav-toggle"
 					role="navigation"
 					aria-label="Mobile controls"
@@ -482,7 +487,7 @@
 		background-color: var(--background-color);
 		padding: 1rem;
 		border-bottom: 2px solid var(--primary-color-soft);
-		position: absolute;
+		position: fixed;
 		top: 64px;
 		left: 0;
 		right: 0;

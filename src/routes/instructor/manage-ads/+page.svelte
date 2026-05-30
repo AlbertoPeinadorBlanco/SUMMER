@@ -21,6 +21,7 @@
 	let editingId = $state<number | null>(null);
 
 	let class_type_id = $state('1');
+	let sport_type = $state('surf');
 	let title = $state('');
 	let title_es = $state('');
 	let description = $state('');
@@ -123,6 +124,7 @@
 	function editClass(c: any) {
 		editingId = c.id;
 		class_type_id = (c.class_type === 'course' || c.class_type === 'curso') ? '2' : '1';
+		sport_type = c.sport_type || 'surf';
 		title = c.title || '';
 		title_es = c.title_es || '';
 		lastTranslatedTitleEs = title_es;
@@ -146,6 +148,7 @@
 	function cancelEdit() {
 		editingId = null;
 		class_type_id = '1';
+		sport_type = 'surf';
 		title = '';
 		title_es = '';
 		description = '';
@@ -220,6 +223,7 @@
 			const payload = {
 				instructor_id: user?.id,
 				class_type_id: parseInt(class_type_id),
+				sport_type,
 				title,
 				title_es,
 				description,
@@ -320,6 +324,21 @@
 						<Option value="1">{$t('createAd.type_class')}</Option>
 						<Option value="2">{$t('createAd.type_course')}</Option>
 					</Select>
+					<Select
+						variant="outlined"
+						bind:value={sport_type}
+						label={$t('sports.filter_sport')}
+						style="width: 100%;"
+					>
+						<Option value="surf">{$t('sports.surf')}</Option>
+						<Option value="windsurf">{$t('sports.windsurf')}</Option>
+						<Option value="paddle">{$t('sports.paddle')}</Option>
+						<Option value="kayak">{$t('sports.kayak')}</Option>
+						<Option value="snorkel">{$t('sports.snorkel')}</Option>
+						<Option value="other">{$t('sports.other')}</Option>
+					</Select>
+				</div>
+				<div class="form-row">
 					<Select
 						variant="outlined"
 						bind:value={difficulty_level}
@@ -493,6 +512,7 @@
 									<p class="ad-price">{$currencySymbol}{ad.price}</p>
 									<div class="ad-meta">
 										<span class="badge {ad.class_type}">{ad.class_type}</span>
+										<span class="badge sport">{ad.sport_type ? $t(`sports.${ad.sport_type}`) : $t('sports.surf')}</span>
 										<span class="badge level">Level {ad.difficulty_level || 1}</span>
 										{#if ad.is_online}
 											<span class="badge online">Online</span>

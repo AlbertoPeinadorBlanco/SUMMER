@@ -17,6 +17,7 @@
 	let searchQuery = $state('');
 	let selectedType = $state('all');
 	let selectedLevel = $state('all');
+	let selectedSport = $state('all');
 
 	// Booking state
 	let isBookingDialogOpen = $state(false);
@@ -112,7 +113,7 @@
 	let filteredClasses = $derived(
 		(data.classes || []).filter((c: any) => {
 			const instructorName = `${c.first_name || ''} ${c.last_name || ''}`.trim() || c.instructor_username || '';
-			const displayTitle = ($locale === 'es' && c.title_es) ? c.title_es : c.title;
+			const displayTitle = (($locale === 'es' && c.title_es) ? c.title_es : c.title) || '';
 			
 			// Text search
 			const matchesSearch = displayTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,7 +127,10 @@
 			const levelStr = String(c.difficulty_level || 1);
 			const matchesLevel = selectedLevel === 'all' || levelStr === selectedLevel;
 
-			return matchesSearch && matchesType && matchesLevel;
+			// Sport filter
+			const matchesSport = selectedSport === 'all' || (c.sport_type || 'surf') === selectedSport;
+
+			return matchesSearch && matchesType && matchesLevel && matchesSport;
 		})
 	);
 	
@@ -169,6 +173,16 @@
 			<option value="all">{$t('marketplace.filter_type_all')}</option>
 			<option value="class">{$t('marketplace.filter_type_class')}</option>
 			<option value="course">{$t('marketplace.filter_type_course')}</option>
+		</select>
+		
+		<select bind:value={selectedSport} class="filter-select" aria-label={$t('sports.filter_sport')}>
+			<option value="all">{$t('sports.all')}</option>
+			<option value="surf">{$t('sports.surf')}</option>
+			<option value="windsurf">{$t('sports.windsurf')}</option>
+			<option value="paddle">{$t('sports.paddle')}</option>
+			<option value="kayak">{$t('sports.kayak')}</option>
+			<option value="snorkel">{$t('sports.snorkel')}</option>
+			<option value="other">{$t('sports.other')}</option>
 		</select>
 		
 		<select bind:value={selectedLevel} class="filter-select" aria-label={$t('marketplace.filter_level')}>
@@ -237,6 +251,7 @@
 									</span>
 								{/if}
 								<span class="badge {ad.class_type}">{ad.class_type}</span>
+								<span class="badge sport">{ad.sport_type ? $t(`sports.${ad.sport_type}`) : $t('sports.surf')}</span>
 								<span class="badge level">Level {ad.difficulty_level || 1}</span>
 							</div>
 						</div>

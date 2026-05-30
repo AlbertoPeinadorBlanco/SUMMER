@@ -1,108 +1,42 @@
 <script lang="ts">
     import { t } from 'svelte-i18n';
     import { onMount, onDestroy } from 'svelte';
+    import { regions, selectedBeach, initGeolocation } from '$lib/stores/location';
 
-    const regions = [
-        {
-            name: 'Costa Occidental',
-            beaches: [
-                { name: 'Tapia de Casariego', lat: 43.57, lon: -6.94 },
-                { name: 'Playa de Navia', lat: 43.55, lon: -6.72 },
-                { name: 'Luarca (Playa del Barco)', lat: 43.55, lon: -6.54 },
-                { name: 'Cabo Busto', lat: 43.57, lon: -6.24 }
-            ]
-        },
-        {
-            name: 'Costa Central',
-            beaches: [
-                { name: 'Salinas', lat: 43.57, lon: -5.96 },
-                { name: 'Xagó', lat: 43.60, lon: -5.91 },
-                { name: 'San Lorenzo (Gijón)', lat: 43.54, lon: -5.65 },
-                { name: 'El Arbeyal (Gijón)', lat: 43.54, lon: -5.69 },
-                { name: 'Playa de Verdicio', lat: 43.59, lon: -5.87 }
-            ]
-        },
-        {
-            name: 'Costa Oriental',
-            beaches: [
-                { name: 'Rodiles', lat: 43.53, lon: -5.38 },
-                { name: 'Playa de Poo', lat: 43.43, lon: -4.80 },
-                { name: 'San Antolín', lat: 43.44, lon: -4.87 },
-                { name: 'Playa de Toró (Llanes)', lat: 43.42, lon: -4.76 },
-                { name: 'Playa de Borizo (Llanes)', lat: 43.42, lon: -4.74 }
-            ]
-        }
-    ];
-
-    let selectedBeach = $state(regions[1].beaches[2]); // San Lorenzo as default
-    let weatherData = $state(null);
-    let marineData = $state(null);
+    let weatherData = $state<any>(null);
+    let marineData = $state<any>(null);
     let loading = $state(true);
     let error = $state(false);
     let refreshInterval;
 
-    function getWindDirection(degree) {
+    function getWindDirection(degree: number) {
         const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
         return directions[Math.round(degree / 45) % 8];
     }
 
-    function getLightHours(sunset) {
+    function getLightHours(sunset: string | null) {
         if (!sunset) return '--';
         const now = new Date();
         const end = new Date(sunset);
-        const diffMs = end - now;
+        const diffMs = end.getTime() - now.getTime();
         if (diffMs < 0) return '0.0';
         return (diffMs / (1000 * 60 * 60)).toFixed(1);
     }
 
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; // km
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
 
-    function findNearestBeach(userLat, userLon) {
-        let nearest = null;
-        let minDistance = Infinity;
-        for (const region of regions) {
-            for (const beach of region.beaches) {
-                const distance = calculateDistance(userLat, userLon, beach.lat, beach.lon);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearest = beach;
-                }
-            }
-        }
-        return nearest;
-    }
 
-    async function fetchConditions(beach) {
+    async function fetchConditions(beach: any) {
         loading = true;
         error = false;
         try {
-            const [weatherRes, marineRes] = await Promise.all([
-                fetch(`https://api.open-meteo.com/v1/forecast?latitude=${beach.lat}&longitude=${beach.lon}&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,visibility&daily=sunrise,sunset,uv_index_max&timezone=auto`),
-                fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${beach.lat}&longitude=${beach.lon}&current=wave_height,wave_period`)
-            ]);
-
-            if (!weatherRes.ok || !marineRes.ok) throw new Error('API fetch failed');
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${API_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`);
             
-            weatherData = await weatherRes.json();
-            const marineJson = await marineRes.json();
+            if (!res.ok) throw new Error('API fetch failed');
             
-            if (marineJson.current) {
-                marineData = marineJson.current;
-            } else if (marineJson.hourly) {
-                marineData = {
-                    wave_height: marineJson.hourly.wave_height[0],
-                    wave_period: marineJson.hourly.wave_period[0]
-                };
-            }
+            const data = await res.json();
+            weatherData = data.weather;
+            marineData = data.marine;
         } catch (e) {
             console.error('Failed to fetch live conditions', e);
             error = true;
@@ -112,25 +46,14 @@
     }
 
     $effect(() => {
-        fetchConditions(selectedBeach);
+        if ($selectedBeach) {
+            fetchConditions($selectedBeach);
+        }
     });
 
     onMount(() => {
         // Refresh every hour (3600000 ms)
-        refreshInterval = setInterval(() => {
-            fetchConditions(selectedBeach);
-        }, 3600000);
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const nearest = findNearestBeach(position.coords.latitude, position.coords.longitude);
-                if (nearest) {
-                    selectedBeach = nearest;
-                }
-            }, (error) => {
-                console.warn("Geolocation denied or failed", error);
-            });
-        }
+        initGeolocation();
     });
 
     onDestroy(() => {
@@ -138,7 +61,7 @@
     });
 
     // Helper to map Open-Meteo WMO codes to human readable text/icons
-    function getWeatherDescription(code) {
+    function getWeatherDescription(code: number) {
         if (code === 0) return { textKey: 'weather.clear_sky', icon: 'wb_sunny', color: '#fdd835' };
         if (code >= 1 && code <= 3) return { textKey: 'weather.partly_cloudy', icon: 'cloud', color: '#90a4ae' };
         if (code >= 45 && code <= 48) return { textKey: 'weather.fog', icon: 'foggy', color: '#b0bec5' };
@@ -155,7 +78,7 @@
             <span class="material-icons location-icon">location_on</span>
             <h3>{$t('weather.live_conditions')}</h3>
         </div>
-        <select class="beach-selector" bind:value={selectedBeach}>
+        <select class="beach-selector" bind:value={$selectedBeach}>
             {#each regions as region}
                 <optgroup label={region.name}>
                     {#each region.beaches as beach}

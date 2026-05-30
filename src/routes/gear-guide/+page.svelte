@@ -72,6 +72,21 @@
 					<li>{$t('gear_guide.sun_protection_rashguard')}</li>
 				</ul>
 			</section>
+
+			<section>
+				<h2>{$t('gear_guide.paddle_title')}</h2>
+				<p>{$t('gear_guide.paddle_desc')}</p>
+			</section>
+
+			<section>
+				<h2>{$t('gear_guide.kayak_title')}</h2>
+				<p>{$t('gear_guide.kayak_desc')}</p>
+			</section>
+
+			<section>
+				<h2>{$t('gear_guide.snorkel_title')}</h2>
+				<p>{$t('gear_guide.snorkel_desc')}</p>
+			</section>
 		</main>
 
 		<aside class="guide-sidebar">

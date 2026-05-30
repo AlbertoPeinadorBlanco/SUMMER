@@ -2,6 +2,8 @@
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
+	import Card, { Content } from '@smui/card';
+	import { pricings } from '$lib/stores/pricings';
 
 </script>
 
@@ -33,7 +35,7 @@
 						<h3>{$t('instructor_guide.premium_title')}</h3>
 					</div>
 					<p>{$t('instructor_guide.premium_desc')}</p>
-					<div class="price">€9.99 / month</div>
+					<div class="price">€{$pricings.premium_subscription} / month</div>
 				</Content>
 			</Card>
 			<Card class="tier-card premium-card summer-pass">
@@ -43,7 +45,7 @@
 						<h3>{$t('instructor_guide.pass_title')}</h3>
 					</div>
 					<p>{$t('instructor_guide.pass_desc')}</p>
-					<div class="price">€49.99 / year</div>
+					<div class="price">€{$pricings.summer_pass} / year</div>
 				</Content>
 			</Card>
 		</div>

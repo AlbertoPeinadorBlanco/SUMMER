@@ -26,14 +26,26 @@
 }
 
 [data-theme="dark"] {
-	--primary-color: #5ea3d0;       /* Lightened slightly to maintain visibility and contrast */
-	--secondary-color: #e88258;     /* Brightened slightly to keep its energetic "pop" */
-	--terciary-color: #315c7c;      /* Lightened to act as a mid-tone accent */
-	--primary-color-soft: #1d3a4f;  /* Darkened heavily */
-	--background-color: #0b161f;    /* A very deep, cool blue-grey */
-	--surface-color: #132433;       /* Slightly lighter than background */
-	--text-color: #e8f0f5;          /* An off-white icy blue */
-	--border-color: #243d52;        /* A muted, low-contrast line */
+	--primary-color: #7abdec;       /* Brighter primary for better contrast */
+	--secondary-color: #f6946e;     /* Brighter secondary */
+	--terciary-color: #4b89b4;      /* Brighter tertiary */
+	--primary-color-soft: #1f4764;  /* Lighter soft color */
+	--background-color: #121e29;    /* Lighter background */
+	--surface-color: #1c2d3d;       /* Lighter surface */
+	--text-color: #ffffff;          /* Pure white text */
+	--border-color: #3b576e;        /* Lighter borders */
+
+	/* SMUI Dark Mode specific overrides */
+	--mdc-theme-on-surface: #ffffff;
+	--mdc-theme-text-primary-on-background: #ffffff;
+	--mdc-text-field-ink-color: #ffffff;
+	--mdc-text-field-label-ink-color: #b0c4de;
+	--mdc-text-field-outlined-idle-border-color: #3b576e;
+	--mdc-text-field-outlined-hover-border-color: #5ea3d0;
+	--mdc-select-ink-color: #ffffff;
+	--mdc-select-label-ink-color: #b0c4de;
+	--mdc-select-outlined-idle-border-color: #3b576e;
+	--mdc-select-dropdown-icon-color: #ffffff;
 }
 
 body {

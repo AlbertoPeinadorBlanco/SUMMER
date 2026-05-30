@@ -2,10 +2,13 @@
 	import { t } from 'svelte-i18n';
 	import Textfield from '@smui/textfield';
 	import Button, { Label } from '@smui/button';
+	import Card, { Content } from '@smui/card';
+	import { pricings } from '$lib/stores/pricings';
 	import { auth } from '$lib/stores/auth';
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
+	import { isGeolocationEnabled } from '$lib/stores/location';
 	import { onMount } from 'svelte';
 
 	let user = $derived($auth.user);
@@ -317,7 +320,7 @@
 					<!-- Summer Pass -->
 					<div class="tier-card {user.tier === 'summer_pass' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.summer_pass')}</h4>
-						<p class="price">€99</p>
+						<p class="price">€{$pricings.summer_pass}</p>
 						<p class="desc">{$t('profile_enhancements.summer_pass_desc')}</p>
 						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.tier === 'summer_pass'} class="premium-button">
 							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass')}</Label>
@@ -327,7 +330,7 @@
 					<!-- Monthly Premium -->
 					<div class="tier-card {user.tier === 'premium' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.premium_monthly')}</h4>
-						<p class="price">€15<span style="font-size: 1rem;">/mo</span></p>
+						<p class="price">€{$pricings.premium_subscription}<span style="font-size: 1rem;">/mo</span></p>
 						<p class="desc">{$t('profile_enhancements.premium_monthly_desc')}</p>
 						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.tier === 'premium' || user.tier === 'summer_pass'} class="premium-button">
 							<Label>
@@ -359,7 +362,7 @@
 							<Textfield variant="outlined" bind:value={video_url} label={$t('profile_enhancements.video_url')} style="flex: 1;" />
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock_5')}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $pricings.video_upgrade } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -374,7 +377,7 @@
 							<Textfield variant="outlined" bind:value={booking_link} label={$t('profile_enhancements.booking_url')} style="flex: 1;" />
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock_5')}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $pricings.link_upgrade } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -391,7 +394,7 @@
 							</label>
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock_2')}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $pricings.badge_upgrade } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -424,7 +427,7 @@
 							{:else if featured_instructor === 'full'}
 								Currently Unavailable
 							{:else}
-								{$t('profile_enhancements.buy_featured')}
+								{$t('profile_enhancements.buy_featured', { values: { price: $pricings.featured_instructor } })}
 							{/if}
 						</Label>
 					</Button>
@@ -470,6 +473,19 @@
 				<Label>{loading ? 'Saving...' : 'Save Changes'}</Label>
 			</Button>
 		</form>
+
+		<div class="tier-section" style="margin-top: 2rem;">
+			<h3>Settings</h3>
+			<div class="upgrade-row">
+				<div class="upgrade-info">
+					<h4>{$t('geolocation.toggle_label')}</h4>
+					<p class="desc">{$t('geolocation.toggle_desc')}</p>
+				</div>
+				<label style="display: flex; align-items: center; gap: 0.5rem;">
+					<input type="checkbox" bind:checked={$isGeolocationEnabled} />
+				</label>
+			</div>
+		</div>
 	{:else}
 		<div class="loading">Loading profile...</div>
 	{/if}

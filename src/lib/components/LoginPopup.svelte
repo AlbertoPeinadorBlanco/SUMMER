@@ -5,6 +5,7 @@
 	import { t } from 'svelte-i18n';
 	import { auth } from '$lib/stores/auth';
 	import { fetchApi } from '$lib/api';
+	import { goto } from '$app/navigation';
 
 	let { open = $bindable(false) } = $props();
 
@@ -28,6 +29,9 @@
 			// Restore full user profile from the new cookie
 			await auth.restoreSession();
 			open = false;
+			
+			// Redirect to profile page
+			goto('/profile');
 		} catch (err: any) {
 			error = err.message || 'Login failed';
 		} finally {

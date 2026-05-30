@@ -8,6 +8,8 @@
 	import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
 	import Tab, { Label as TabLabel } from '@smui/tab';
 	import TabBar from '@smui/tab-bar';
+	import Textfield from '@smui/textfield';
+	import Select, { Option } from '@smui/select';
 
 	let activeTab = $state('analytics');
 	let auditLogs: any[] = $state([]);
@@ -19,6 +21,56 @@
 		popular_endpoints: []
 	});
 	let loading = $state(true);
+
+	// Filters
+	let filterAction = $state('All');
+	let filterEntity = $state('All');
+	let searchQuery = $state('');
+
+	let uniqueActions = $derived(
+		Array.from(new Set(
+			(activeTab === 'user_audit' ? userAuditLogs : auditLogs).map(l => l.action)
+		)).sort()
+	);
+
+	let uniqueEntities = $derived(
+		Array.from(new Set(
+			(activeTab === 'user_audit' ? userAuditLogs : auditLogs).map(l => l.entity_type)
+		)).sort()
+	);
+
+	$effect(() => {
+		// Reset filters on tab change
+		if (activeTab) {
+			filterAction = 'All';
+			filterEntity = 'All';
+			searchQuery = '';
+		}
+	});
+
+	let filteredUserLogs = $derived(
+		userAuditLogs.filter(log => {
+			const actionMatch = filterAction === 'All' ? true : log.action === filterAction;
+			const entityMatch = filterEntity === 'All' ? true : log.entity_type === filterEntity;
+			const searchMatch = searchQuery ? (
+				(log.user_username || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+				(log.details ? JSON.stringify(log.details).toLowerCase().includes(searchQuery.toLowerCase()) : false)
+			) : true;
+			return actionMatch && entityMatch && searchMatch;
+		})
+	);
+
+	let filteredAuditLogs = $derived(
+		auditLogs.filter(log => {
+			const actionMatch = filterAction === 'All' ? true : log.action === filterAction;
+			const entityMatch = filterEntity === 'All' ? true : log.entity_type === filterEntity;
+			const searchMatch = searchQuery ? (
+				(log.admin_username || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+				(log.details ? JSON.stringify(log.details).toLowerCase().includes(searchQuery.toLowerCase()) : false)
+			) : true;
+			return actionMatch && entityMatch && searchMatch;
+		})
+	);
 
 	onMount(async () => {
 		if (!$auth.isAuthenticated || $auth.user?.role !== 'admin') {
@@ -70,6 +122,34 @@
 		</div>
 	{:else}
 		<div class="tab-content">
+			{#if activeTab === 'user_audit' || activeTab === 'audit'}
+				<div class="filter-bar" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; background: var(--surface-color); padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center;">
+					<div style="flex: 1;">
+						<Select bind:value={filterAction} label="Filter by Action" style="width: 100%;">
+							<Option value="All">All Actions</Option>
+							{#each uniqueActions as action}
+								<Option value={action}>{action}</Option>
+							{/each}
+						</Select>
+					</div>
+					<div style="flex: 1;">
+						<Select bind:value={filterEntity} label="Filter by Entity" style="width: 100%;">
+							<Option value="All">All Entities</Option>
+							{#each uniqueEntities as entity}
+								<Option value={entity}>{entity}</Option>
+							{/each}
+						</Select>
+					</div>
+					<div style="flex: 1.5;">
+						<Textfield bind:value={searchQuery} label="Search User or Details..." style="width: 100%;">
+							{#snippet trailingIcon()}
+								<span class="material-icons">search</span>
+							{/snippet}
+						</Textfield>
+					</div>
+				</div>
+			{/if}
+
 			{#if activeTab === 'analytics'}
 				<div class="kpi-grid">
 					<div class="kpi-card">
@@ -124,7 +204,7 @@
 							</Row>
 						</Head>
 						<Body>
-							{#each userAuditLogs as log}
+							{#each filteredUserLogs as log}
 								<Row>
 									<Cell>{new Date(log.created_at).toLocaleString()}</Cell>
 									<Cell>
@@ -137,7 +217,7 @@
 									<Cell>{log.entity_type}</Cell>
 									<Cell>{log.entity_id || '-'}</Cell>
 									<Cell>
-										<div class="details-cell">
+										<div class="details-cell" title={log.details ? JSON.stringify(log.details) : ''}>
 											{log.details ? JSON.stringify(log.details) : '-'}
 										</div>
 									</Cell>
@@ -161,7 +241,7 @@
 							</Row>
 						</Head>
 						<Body>
-							{#each auditLogs as log}
+							{#each filteredAuditLogs as log}
 								<Row>
 									<Cell>{new Date(log.created_at).toLocaleString()}</Cell>
 									<Cell>
@@ -174,7 +254,7 @@
 									<Cell>{log.entity_type}</Cell>
 									<Cell>{log.entity_id || '-'}</Cell>
 									<Cell>
-										<div class="details-cell">
+										<div class="details-cell" title={log.details ? JSON.stringify(log.details) : ''}>
 											{log.details ? JSON.stringify(log.details) : '-'}
 										</div>
 									</Cell>

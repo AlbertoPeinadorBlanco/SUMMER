@@ -11,8 +11,10 @@
 	import { notifications } from '$lib/stores/notifications';
 	import LoginPopup from '$lib/components/LoginPopup.svelte';
 	import CookieConsent from '$lib/components/CookieConsent.svelte';
+	import GeolocationNotice from '$lib/components/GeolocationNotice.svelte';
 	import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte';
 	import { theme, toggleTheme } from '$lib/stores/theme';
+	import { selectedBeach, userLocationName, isGeolocationEnabled } from '$lib/stores/location';
 	import { onMount } from 'svelte';
 
 	let shareUrl = '';
@@ -95,6 +97,17 @@
 						{$t('app.title')}
 					</Title>
 					<div class="desktop-nav" role="navigation" aria-label="Desktop menu">
+						{#if !$isGeolocationEnabled}
+							<div class="header-location" style="display: flex; align-items: center; margin-right: 1.5rem; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;" title={$t('nav.location_disabled')}>
+								<span class="material-icons" style="font-size: 1.1rem; margin-right: 4px; color: #ffeb3b;">location_off</span>
+								{$t('nav.location_disabled')}
+							</div>
+						{:else if $userLocationName}
+							<div class="header-location" style="display: flex; align-items: center; margin-right: 1.5rem; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;">
+								<span class="material-icons" style="font-size: 1.1rem; margin-right: 4px;">location_on</span>
+								{$userLocationName}
+							</div>
+						{/if}
 						<Button href="/" class="nav-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">home</span>
 							<Label>{$t('nav.home')}</Label>
@@ -345,6 +358,12 @@
 
 		{#if mobileMenuOpen}
 			<nav class="mobile-menu" aria-label="Mobile menu">
+				{#if $userLocationName}
+					<div class="mobile-menu-location" style="display: flex; align-items: center; padding: 1rem; margin-bottom: 0.5rem; background: rgba(226, 109, 63, 0.1); border-radius: 8px; color: var(--primary-color); font-weight: bold;">
+						<span class="material-icons" style="font-size: 1.2rem; margin-right: 8px;">location_on</span>
+						{$userLocationName}
+					</div>
+				{/if}
 				<Button href="/" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">home</span>
 					<Label>{$t('nav.home')}</Label>
@@ -489,6 +508,7 @@
 		</footer>
 		
 		<CookieConsent />
+		<GeolocationNotice />
 	</div>
 
 	<LoginPopup bind:open={showLogin} />

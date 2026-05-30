@@ -50,6 +50,15 @@
 				<p>{$t('policies.payments_desc')}</p>
 			</div>
 		</section>
+
+		<hr />
+
+		<section class="policy-section">
+			<h2>{$t('geolocation.policy_title')}</h2>
+			<div class="legal-text">
+				<p>{$t('geolocation.policy_desc')}</p>
+			</div>
+		</section>
 	</div>
 </div>
 

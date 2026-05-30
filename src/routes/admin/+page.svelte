@@ -449,7 +449,7 @@
 					</div>
 					
 					{#if detailsData.user.role === 'instructor' || detailsData.user.role === 'admin'}
-						<h3 style="margin-top: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Instructor Profile</h3>
+						<h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Instructor Profile</h3>
 						<div class="details-grid">
 							<div class="detail-item" style="grid-column: span 2;"><strong>{$t('admin.bio')}:</strong> {detailsData.user.bio || '-'}</div>
 							<div class="detail-item"><strong>{$t('admin.specialization')}:</strong> {detailsData.user.specialization || '-'}</div>
@@ -619,7 +619,7 @@
 		color: #415a77;
 	}
 	.table-container {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 		overflow: hidden;

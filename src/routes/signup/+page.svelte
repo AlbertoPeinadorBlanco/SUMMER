@@ -63,16 +63,16 @@
 	}
 </script>
 
-<SEO title="Sign Up" description="Create a new account on SurfMarket" />
+<SEO title={$t('auth.signup_title')} description="Create a new account on SurfMarket" />
 
 <div class="signup-container">
-	<h1>Create an Account</h1>
+	<h1>{$t('auth.signup_title')}</h1>
 
 	{#if success}
 		<div class="success-message">
 			<span class="material-icons">check_circle</span>
-			<p>Account created successfully! You can now log in.</p>
-			<p>Redirecting to home...</p>
+			<p>{$t('auth.success_msg')}</p>
+			<p>{$t('auth.redirecting')}</p>
 		</div>
 	{:else}
 		{#if error}
@@ -83,44 +83,44 @@
 			<div class="role-selector">
 				<label>
 					<input type="radio" bind:group={role} value="user" />
-					<span>Student</span>
+					<span>{$t('auth.student')}</span>
 				</label>
 				<label>
 					<input type="radio" bind:group={role} value="instructor" />
-					<span>Instructor</span>
+					<span>{$t('auth.instructor')}</span>
 				</label>
 			</div>
 
 			<div class="form-row">
-				<Textfield variant="outlined" bind:value={first_name} label="First Name" required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
-				<Textfield variant="outlined" bind:value={last_name} label="Last Name" required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
+				<Textfield variant="outlined" bind:value={first_name} label={$t('auth.first_name')} required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
+				<Textfield variant="outlined" bind:value={last_name} label={$t('auth.last_name')} required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
 			</div>
 
-			<Textfield variant="outlined" bind:value={username} label="Username" required />
+			<Textfield variant="outlined" bind:value={username} label={$t('auth.username')} required />
 			<Textfield
 				variant="outlined"
 				type="email"
 				bind:value={email}
-				label="Email Address"
+				label={$t('auth.email')}
 				required
 			/>
-			<Textfield variant="outlined" type="tel" bind:value={phone} label="Phone Number" />
+			<Textfield variant="outlined" type="tel" bind:value={phone} label={$t('auth.phone')} />
 			<Textfield
 				variant="outlined"
 				type="password"
 				bind:value={password}
-				label="Password (min 9 chars)"
+				label={$t('auth.password_min')}
 				required
 				input$minlength={9}
 			/>
 
 			{#if role === 'instructor'}
 				<div class="instructor-fields">
-					<h3>Instructor Details</h3>
+					<h3>{$t('auth.inst_details')}</h3>
 					<Textfield
 						variant="outlined"
 						bind:value={specialization}
-						label="Specialization (e.g. Longboard)"
+						label={$t('auth.spec')}
 						required
 						style="width: 100%; margin-bottom: 1rem;"
 					/>
@@ -128,7 +128,7 @@
 						textarea
 						variant="outlined"
 						bind:value={bio}
-						label="Biography"
+						label={$t('auth.bio')}
 						required
 						style="width: 100%;"
 					/>
@@ -146,11 +146,11 @@
 			</div>
 
 			<Button type="submit" variant="raised" disabled={loading || !consent} class="premium-button submit-btn">
-				<Label>{loading ? 'Creating...' : 'Sign Up'}</Label>
+				<Label>{loading ? $t('auth.creating') : $t('auth.signup_btn')}</Label>
 			</Button>
 		</form>
 
-		<p class="login-prompt">Already have an account? Use the Login button in the menu.</p>
+		<p class="login-prompt">{$t('auth.already_account')}</p>
 	{/if}
 </div>
 
@@ -159,7 +159,7 @@
 		max-width: 500px;
 		margin: 2rem auto;
 		padding: 2rem;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}

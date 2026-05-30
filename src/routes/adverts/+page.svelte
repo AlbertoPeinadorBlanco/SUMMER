@@ -66,7 +66,7 @@
 			variant="outlined"
 			bind:value={searchQuery}
 			label={$t('adverts.search_placeholder')}
-			style="width: 100%; max-width: 500px; background: white;"
+			style="width: 100%; max-width: 500px; background: var(--surface-color);"
 		>
 			{#snippet leadingIcon()}
 				<Icon class="material-icons" aria-hidden="true">search</Icon>
@@ -98,7 +98,7 @@
 		<div class="advert-grid">
 			{#each filteredAdverts as ad}
 				<div class="advert-card premium-card">
-					<div class="card-image" style="background-image: url({ad.image_url});" role="img" aria-label={ad.shop_name}></div>
+					<div class="card-image" style="background-image: url('{ad.image_url}');" role="img" aria-label={ad.shop_name}></div>
 					
 					<div class="card-content">
 						<h2 class="shop-name">{ad.shop_name}</h2>
@@ -124,9 +124,9 @@
 
 <style>
 	.adverts-header {
-		background-color: white;
+		background-color: var(--surface-color);
 		padding: 3rem 1rem 2rem;
-		border-bottom: 1px solid #eaeaea;
+		border-bottom: 1px solid var(--border-color);
 		text-align: center;
 	}
 
@@ -160,7 +160,7 @@
 		border: 1px solid #ccc;
 		border-radius: 4px;
 		font-size: 1rem;
-		background: white;
+		background: var(--surface-color);
 		height: 56px;
 		min-width: 200px;
 		outline: none;
@@ -179,12 +179,12 @@
 	}
 
 	.advert-card {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		border: 1px solid #eee;
+		border: 1px solid var(--border-color);
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		transition: transform 0.2s, box-shadow 0.2s;
@@ -201,7 +201,7 @@
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border-color);
 	}
 
 	.card-content {

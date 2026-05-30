@@ -68,7 +68,7 @@
 			variant="outlined"
 			bind:value={searchQuery}
 			label={$t('instructors.search_placeholder')}
-			style="width: 100%; max-width: 600px; background: white;"
+			style="width: 100%; max-width: 600px; background: var(--surface-color);"
 		>
 			{#snippet leadingIcon()}
 				<Icon class="material-icons" aria-hidden="true">search</Icon>
@@ -157,9 +157,9 @@
 
 <style>
 	.instructors-header {
-		background-color: white;
+		background-color: var(--surface-color);
 		padding: 3rem 1rem 2rem;
-		border-bottom: 1px solid #eaeaea;
+		border-bottom: 1px solid var(--border-color);
 		text-align: center;
 	}
 
@@ -199,14 +199,14 @@
 	}
 
 	.instructor-card {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		text-decoration: none;
 		color: inherit;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		border: 1px solid #eee;
+		border: 1px solid var(--border-color);
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		transition: transform 0.2s, box-shadow 0.2s;
@@ -330,7 +330,7 @@
 	.card-footer {
 		background-color: #fafafa;
 		padding: 1rem;
-		border-top: 1px solid #eee;
+		border-top: 1px solid var(--border-color);
 		text-align: center;
 	}
 

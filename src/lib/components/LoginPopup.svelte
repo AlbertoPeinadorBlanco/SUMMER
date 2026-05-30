@@ -37,7 +37,7 @@
 </script>
 
 <Dialog bind:open aria-labelledby="login-title" aria-describedby="login-content">
-	<Title id="login-title">Login</Title>
+	<Title id="login-title">{$t('auth.login_title')}</Title>
 	<Content id="login-content">
 		{#if error}
 			<div class="error-msg" role="alert">{error}</div>
@@ -47,7 +47,7 @@
 				variant="outlined"
 				type="text"
 				bind:value={email}
-				label="Email or Username"
+				label={$t('auth.email_or_username')}
 				required
 				input$autocomplete="username"
 				style="width: 100%; margin-bottom: 1rem;"
@@ -56,7 +56,7 @@
 				variant="outlined"
 				type="password"
 				bind:value={password}
-				label="Password"
+				label={$t('auth.password')}
 				required
 				input$minlength={9}
 				input$autocomplete="current-password"
@@ -64,16 +64,16 @@
 			/>
 			<div class="actions">
 				<Button onclick={() => (open = false)} type="button">
-					<Label>Cancel</Label>
+					<Label>{$t('auth.cancel')}</Label>
 				</Button>
 				<Button variant="raised" type="submit" disabled={loading} class="premium-button">
-					<Label>{loading ? 'Logging in...' : 'Login'}</Label>
+					<Label>{loading ? $t('auth.logging_in') : $t('auth.login_btn')}</Label>
 				</Button>
 			</div>
 		</form>
 		<div class="signup-prompt">
 			<p>
-				Don't have an account? <a href="/signup" onclick={() => (open = false)}>Sign up here</a>
+				{$t('auth.no_account')} <a href="/signup" onclick={() => (open = false)}>{$t('auth.signup_here')}</a>
 			</p>
 		</div>
 	</Content>

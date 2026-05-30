@@ -55,6 +55,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			has_video_upgrade: !!u.has_video_upgrade,
 			has_link_upgrade: !!u.has_link_upgrade,
 			has_badge_upgrade: !!u.has_badge_upgrade,
+			is_verified: !!u.is_verified,
 			classes: teacherClasses
 		};
 

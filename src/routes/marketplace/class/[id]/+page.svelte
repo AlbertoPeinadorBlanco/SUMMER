@@ -295,7 +295,7 @@
 		border-radius: 6px;
 		text-transform: uppercase;
 		font-weight: bold;
-		background: white;
+		background: var(--surface-color);
 		box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 	}
 
@@ -338,7 +338,7 @@
 		font-size: 2.5rem;
 		font-weight: 800;
 		color: var(--primary-color);
-		background: white;
+		background: var(--surface-color);
 		padding: 0.5rem 1.5rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.1);
@@ -353,7 +353,7 @@
 	}
 
 	.details-section {
-		background: white;
+		background: var(--surface-color);
 		padding: 2.5rem;
 		border-radius: 16px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
@@ -430,7 +430,7 @@
 		gap: 1rem;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border-color);
 	}
 
 	.instructor-avatar {

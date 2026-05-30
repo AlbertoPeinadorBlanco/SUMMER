@@ -155,7 +155,7 @@
 			variant="outlined"
 			bind:value={searchQuery}
 			label={$t('marketplace.search_placeholder')}
-			style="width: 100%; max-width: 600px; background: white; border-radius: 4px;"
+			style="width: 100%; max-width: 600px; background: var(--surface-color); border-radius: 4px;"
 			input$aria-label="Search classes"
 		>
 			{#snippet leadingIcon()}
@@ -206,7 +206,7 @@
 				<PrimaryAction onclick={() => window.location.href = `/marketplace/class/${ad.id}`} aria-label="Class {ad.title}">
 					<Media
 						class="card-media"
-						style="background-image: url({ad.image_url ? `http://127.0.0.1:5000${ad.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f4f8fa;"
+						style="background-image: url('{ad.image_url ? `http://127.0.0.1:5000${ad.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f4f8fa;"
 						aspectRatio="16x9"
 						aria-label="Photo of {ad.title}"
 					/>
@@ -221,6 +221,16 @@
 										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">stars</span> Premium
 									</span>
 								{/if}
+								{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
+									<span class="badge featured-badge" title="Instructor of the Week">
+										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">military_tech</span> Featured
+									</span>
+								{/if}
+								{#if ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)}
+									<span class="badge bumped-badge" title="Boosted Advert">
+										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">bolt</span> Boosted
+									</span>
+								{/if}
 								{#if ad.available_today}
 									<span class="badge available-today-badge" title={$t('marketplace.available_today')}>
 										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">event_available</span> {$t('marketplace.available_today')}
@@ -232,7 +242,14 @@
 						</div>
 
 						<div class="instructor-info">
-							<img src={ad.profile_picture_url ? `http://127.0.0.1:5000${ad.profile_picture_url}` : 'https://ui-avatars.com/api/?name=' + (ad.first_name || ad.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="48" height="48" />
+							<div style="position: relative; display: inline-block; flex-shrink: 0; line-height: 0;">
+								<img src={ad.profile_picture_url ? `http://127.0.0.1:5000${ad.profile_picture_url}` : 'https://ui-avatars.com/api/?name=' + (ad.first_name || ad.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="48" height="48" />
+								{#if ad.is_verified === 1 || ad.is_verified === true}
+									<div class="verified-badge-small" title="Verified Instructor" style="position: absolute; bottom: -2px; right: -2px; background: var(--surface-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2196f3; padding: 1px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+										<span class="material-icons" aria-hidden="true" style="font-size: 14px;">verified</span>
+									</div>
+								{/if}
+							</div>
 							<div class="instructor-text">
 								<span class="instructor-name">{ad.first_name || ad.instructor_username}</span>
 								<div class="instructor-contact">
@@ -409,7 +426,7 @@
 		padding: 0.75rem 1rem;
 		border-radius: 4px;
 		border: 1px solid #ccc;
-		background-color: white;
+		background-color: var(--surface-color);
 		font-family: var(--font-style);
 		color: var(--text-color);
 		font-size: 1rem;
@@ -510,9 +527,22 @@
 		color: #2e7d32;
 	}
 	.badge.premium-badge {
-		background: linear-gradient(135deg, #FFD700, #FDB931);
-		color: #fff;
-		text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+		background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+		color: #000;
+		font-weight: bold;
+		box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+	}
+	.badge.featured-badge {
+		background: linear-gradient(135deg, var(--secondary-color) 0%, #ff5722 100%);
+		color: white;
+		font-weight: bold;
+		box-shadow: 0 2px 4px rgba(232, 130, 88, 0.4);
+	}
+	.badge.bumped-badge {
+		background: linear-gradient(135deg, var(--primary-color) 0%, #4facfe 100%);
+		color: white;
+		font-weight: bold;
+		box-shadow: 0 2px 4px rgba(94, 163, 208, 0.4);
 	}
 	.badge.available-today-badge {
 		background: #dcedc8;
@@ -558,7 +588,7 @@
 		grid-column: 1 / -1;
 		text-align: center;
 		padding: 4rem 1rem;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}
@@ -574,7 +604,7 @@
 	}
 
 	.sponsored-banner {
-		background: white;
+		background: var(--surface-color);
 		border: 2px solid var(--primary-color-soft);
 		border-radius: 12px;
 		padding: 1.5rem;
@@ -628,7 +658,7 @@
 		margin-top: 2rem;
 		border: 2px dashed var(--primary-color);
 		border-radius: 8px;
-		background: #fff9f5;
+		background: var(--surface-color);
 		overflow: hidden;
 		text-align: left;
 	}
@@ -664,7 +694,7 @@
 		font-size: 0.95rem;
 	}
 	.coupon-code {
-		background: white;
+		background: var(--surface-color);
 		border: 1px solid #ccc;
 		padding: 0.25rem 0.5rem;
 		border-radius: 4px;

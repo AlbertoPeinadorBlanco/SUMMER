@@ -50,7 +50,7 @@
 	.level-card {
 		display: flex;
 		align-items: center;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);

@@ -68,7 +68,7 @@
 	}
 
 	.about-section {
-		background: white;
+		background: var(--surface-color);
 		padding: 2.5rem;
 		border-radius: 12px;
 		border: 1px solid rgba(226, 109, 63, 0.1);

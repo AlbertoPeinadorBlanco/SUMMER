@@ -12,13 +12,24 @@
 	import LoginPopup from '$lib/components/LoginPopup.svelte';
 	import CookieConsent from '$lib/components/CookieConsent.svelte';
 	import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte';
+	import { theme, toggleTheme } from '$lib/stores/theme';
 	import { onMount } from 'svelte';
+
+	let shareUrl = '';
+	let shareText = encodeURIComponent('Check out SUMMER - The best surfing platform!');
 
 	setupI18n();
 	onMount(() => {
 		// Restore session from httpOnly cookie on every page load
 		auth.restoreSession();
+		shareUrl = encodeURIComponent(window.location.origin);
 	});
+
+	function copyToClipboard() {
+		navigator.clipboard.writeText(decodeURIComponent(shareUrl)).then(() => {
+			alert('Link copied to clipboard!');
+		});
+	}
 
 	let { children } = $props();
 	let mobileMenuOpen = $state(false);
@@ -131,6 +142,10 @@
 										<span class="material-icons" aria-hidden="true">policy</span>
 										{$t('nav.policies')}
 									</a>
+									<a href="/instructor-guide" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">help_outline</span>
+										{$t('nav.instructor_guide')}
+									</a>
 								</div>
 							{/if}
 						</div>
@@ -204,7 +219,7 @@
 										<div style="padding: 1rem; text-align: center; color: #666;">No notifications</div>
 									{:else}
 										{#each $notifications as notif}
-											<div class="dropdown-item" style="flex-direction: column; align-items: flex-start; padding: 1rem; border-bottom: 1px solid #eee; {notif.is_read ? 'opacity: 0.6;' : 'font-weight: 600;'}" onclick={() => markNotifRead(notif.id)} role="button" tabindex="0" onkeydown={(e) => { if(e.key === 'Enter') markNotifRead(notif.id); }}>
+											<div class="dropdown-item" style="flex-direction: column; align-items: flex-start; padding: 1rem; border-bottom: 1px solid var(--border-color); {notif.is_read ? 'opacity: 0.6;' : 'font-weight: 600;'}" onclick={() => markNotifRead(notif.id)} role="button" tabindex="0" onkeydown={(e) => { if(e.key === 'Enter') markNotifRead(notif.id); }}>
 												<div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 0.25rem; text-transform: uppercase;">{notif.type.replace('_', ' ')}</div>
 												<div style="font-size: 0.9rem; white-space: normal; line-height: 1.4;">{notif.message}</div>
 												<div style="font-size: 0.75rem; color: #999; margin-top: 0.5rem;">{new Date(notif.created_at).toLocaleString()}</div>
@@ -273,6 +288,16 @@
 					>
 						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
 					</Button>
+					<Button
+						onclick={toggleTheme}
+						variant="outlined"
+						class="lang-btn desktop-nav theme-toggle-btn"
+						aria-label="Toggle theme"
+					>
+						<span class="material-icons" aria-hidden="true">
+							{$theme === 'dark' ? 'dark_mode' : 'light_mode'}
+						</span>
+					</Button>
 				</Section>
 				<Section
 					align="end"
@@ -295,6 +320,16 @@
 						aria-label="Toggle language"
 					>
 						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
+					</Button>
+					<Button
+						onclick={toggleTheme}
+						class="lang-btn-mobile theme-toggle-btn"
+						style="min-width: 48px; padding: 0;"
+						aria-label="Toggle theme"
+					>
+						<span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">
+							{$theme === 'dark' ? 'dark_mode' : 'light_mode'}
+						</span>
 					</Button>
 					<IconButton
 						class="material-icons"
@@ -331,6 +366,10 @@
 				<Button href="/policies" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">policy</span>
 					<Label>{$t('nav.policies')}</Label>
+				</Button>
+				<Button href="/instructor-guide" onclick={toggleMobileMenu} class="mobile-menu-btn">
+					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">help_outline</span>
+					<Label>{$t('nav.instructor_guide')}</Label>
 				</Button>
 				<Button href="/contact" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">mail</span>
@@ -412,15 +451,40 @@
 		</main>
 
 		<footer class="app-footer">
-			<div class="footer-content">
-				<nav class="footer-links" aria-label="Footer navigation">
+			<div class="footer-content" style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+				<nav class="footer-links" aria-label="Footer navigation" style="justify-content: center; margin: 0;">
 					<a href="/about">{$t('footer.about')}</a>
 					<a href="/contact">{$t('nav.contact')}</a>
 					<a href="/sitemap">{$t('footer.sitemap')}</a>
 					<a href="/policies">{$t('footer.privacy')}</a>
 					<a href="/policies">{$t('footer.terms')}</a>
 				</nav>
-				<p>&copy; {new Date().getFullYear()} {$t('app.title')}. {$t('footer.rights')}</p>
+				
+				<div class="footer-bottom">
+					<div class="footer-copyright">
+						<p>&copy; {new Date().getFullYear()} <a href="/" class="copyright-link">{$t('app.title')}</a>. {$t('footer.rights')}</p>
+					</div>
+					<div class="footer-share-section">
+						<span>Share Surfmarket</span>
+						<div class="footer-share-buttons">
+							<a href={`whatsapp://send?text=${shareText}%20${shareUrl}`} target="_blank" class="share-icon" title="Share on WhatsApp">
+								<svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+							</a>
+							<a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" class="share-icon" title="Share on Facebook">
+								<svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+							</a>
+							<a href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`} target="_blank" class="share-icon" title="Share on X">
+								<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+							</a>
+							<a href={`https://t.me/share/url?url=${shareUrl}&text=${shareText}`} target="_blank" class="share-icon" title="Share on Telegram">
+								<svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+							</a>
+							<button onclick={copyToClipboard} class="share-icon" title="Copy Link" style="background:none; border:none; padding:0; cursor:pointer;">
+								<span class="material-icons" style="font-size:20px;">content_copy</span>
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</footer>
 		
@@ -502,9 +566,9 @@
 		margin-bottom: 0.5rem;
 		color: var(--terciary-color) !important;
 		font-size: 1.1rem !important;
-		background-color: white !important;
+		background-color: var(--surface-color) !important;
 		border-radius: 8px !important;
-		border: 1px solid #eaeaea !important;
+		border: 1px solid var(--border-color) !important;
 	}
 
 	:global(.nav-btn) {
@@ -516,7 +580,7 @@
 		position: absolute;
 		top: 100%;
 		right: 0;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.2);
 		padding: 0.5rem 0;
@@ -626,6 +690,7 @@
 	}
 
 	.app-footer {
+		position: relative;
 		background-color: var(--terciary-color);
 		color: #fff;
 		padding: 2rem 1rem;
@@ -688,6 +753,76 @@
 		.mobile-menu {
 			display: flex;
 		}
+		
+		.footer-bottom {
+			flex-direction: column;
+			gap: 1.5rem;
+		}
+		.footer-share-section {
+			position: static !important;
+			justify-content: center !important;
+		}
+	}
+
+	.footer-bottom {
+		display: flex; 
+		justify-content: center;
+		width: 100%; 
+		align-items: center;
+	}
+	
+	.footer-copyright {
+		text-align: center;
+	}
+	
+	.footer-copyright p {
+		margin: 0;
+	}
+
+	.copyright-link {
+		color: var(--primary-color);
+		text-decoration: underline;
+		font-weight: bold;
+		transition: opacity 0.2s;
+	}
+
+	.copyright-link:hover {
+		opacity: 0.8;
+	}
+	
+	.footer-share-section {
+		position: absolute;
+		right: 2rem;
+		bottom: 2rem;
+		display: flex; 
+		align-items: center; 
+		gap: 1rem;
+	}
+	
+	.footer-share-section span {
+		opacity: 0.8; 
+		font-size: 0.9rem; 
+		white-space: nowrap;
+	}
+
+	.footer-share-buttons {
+		display: flex; 
+		gap: 0.75rem; 
+		align-items: center;
+	}
+
+	.share-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: inherit;
+		opacity: 0.8;
+		transition: opacity 0.2s, color 0.2s;
+	}
+
+	.share-icon:hover {
+		opacity: 1;
+		color: var(--primary-color);
 	}
 
 	.nav-avatar-placeholder {

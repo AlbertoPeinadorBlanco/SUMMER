@@ -6,7 +6,7 @@
 	import BannerAd from '$lib/components/BannerAd.svelte';
 
 	let { data } = $props();
-	let featured = $derived(data?.featured);
+	let featured_instructors = $derived(data?.featured_instructors || []);
 </script>
 
 <SEO title={$t('nav.home')} description={$t('home.hero_desc')} />
@@ -30,21 +30,33 @@
 
 <BannerAd placement="home_top" />
 
-{#if featured}
+{#if featured_instructors.length > 0}
 <section class="featured-instructor" aria-labelledby="featured-title">
-	<div class="featured-card premium-card">
-		<div class="featured-badge"><span class="material-icons">star</span> {$t('home.featured_instructor')} <span class="material-icons">star</span></div>
-		<div class="featured-content">
-			<div class="featured-image" style="background-image: url({featured.profile_picture_url ? `http://127.0.0.1:5000${featured.profile_picture_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80'});"></div>
-			<div class="featured-info">
-				<h2 id="featured-title">{featured.first_name || featured.username} {featured.last_name || ''}</h2>
-				<h3 class="specialty">{featured.specialization || 'Surfing Instructor'}</h3>
-				<p>{featured.bio || ''}</p>
-				<Button variant="raised" href={`/marketplace/${featured.id}`} class="premium-button">
-					<Label>{$t('instructors.view_profile')}</Label>
-				</Button>
+	<h2 id="featured-title" style="text-align: center; margin-bottom: 2rem; color: var(--terciary-color);">{$t('home.featured_instructor')}</h2>
+	<div class="featured-grid">
+		{#each featured_instructors as featured}
+		<div class="featured-card premium-card">
+			<div class="featured-badge"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span></div>
+			<div class="featured-content">
+				<div class="featured-image-container" style="position: relative; display: inline-block;">
+					<div class="featured-image" style="background-image: url({featured.profile_picture_url ? `http://127.0.0.1:5000${featured.profile_picture_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80'});"></div>
+					{#if featured.is_verified === 1 || featured.is_verified === true}
+						<div class="verified-badge-profile" title="Verified User" style="position: absolute; bottom: 15px; right: 0; background: var(--surface-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2196f3; padding: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+							<span class="material-icons" aria-hidden="true" style="font-size: 24px;">verified</span>
+						</div>
+					{/if}
+				</div>
+				<div class="featured-info">
+					<h3>{featured.first_name || featured.username} {featured.last_name || ''}</h3>
+					<h4 class="specialty">{featured.specialization || 'Surfing Instructor'}</h4>
+					<p>{(featured.bio || '').substring(0, 80)}{featured.bio?.length > 80 ? '...' : ''}</p>
+					<Button variant="raised" href={`/marketplace/${featured.id}`} class="premium-button">
+						<Label>{$t('instructors.view_profile')}</Label>
+					</Button>
+				</div>
 			</div>
 		</div>
+		{/each}
 	</div>
 </section>
 {/if}
@@ -130,7 +142,7 @@
 	}
 
 	.step-card {
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		text-align: center;
@@ -156,56 +168,65 @@
 	.featured-instructor {
 		margin-bottom: 4rem;
 	}
+	.featured-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 2rem;
+	}
 	.featured-card {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 16px;
 		padding: 2rem;
 		position: relative;
 		border: 2px solid #FFD700;
 		box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
 	}
 	.featured-badge {
 		position: absolute;
 		top: -15px;
-		left: 2rem;
 		background: linear-gradient(135deg, #FFD700, #FDB931);
 		color: white;
 		padding: 0.5rem 1rem;
 		border-radius: 20px;
 		font-weight: bold;
-		text-transform: uppercase;
-		font-size: 0.85rem;
 		box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 	}
 	.featured-content {
 		display: flex;
-		gap: 2rem;
+		flex-direction: column;
 		align-items: center;
 		margin-top: 1rem;
+		width: 100%;
 	}
 	.featured-image {
-		width: 150px;
-		height: 150px;
+		width: 120px;
+		height: 120px;
 		border-radius: 50%;
 		background-size: cover;
 		background-position: center;
 		flex-shrink: 0;
 		border: 4px solid var(--primary-color-soft);
+		margin-bottom: 1rem;
 	}
-	.featured-info h2 {
+	.featured-info h3 {
 		margin: 0 0 0.5rem 0;
 		color: var(--terciary-color);
-		font-size: 2rem;
+		font-size: 1.5rem;
 	}
 	.featured-info .specialty {
 		color: var(--secondary-color);
 		margin: 0 0 1rem 0;
-		font-size: 1.1rem;
+		font-size: 1rem;
 	}
 	.featured-info p {
 		color: #555;
 		margin-bottom: 1.5rem;
 		line-height: 1.6;
+		font-size: 0.9rem;
 	}
 
 	@media (max-width: 768px) {
@@ -217,13 +238,8 @@
 			font-size: 2.5rem;
 		}
 
-		.featured-content {
-			flex-direction: column;
-			text-align: center;
-		}
-		.featured-badge {
-			left: 50%;
-			transform: translateX(-50%);
+		.featured-grid {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

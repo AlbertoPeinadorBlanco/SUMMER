@@ -5,10 +5,10 @@ export const load: PageLoad = async ({ fetch }) => {
 		const res = await fetch('http://127.0.0.1:5000/api/users/featured');
 		if (res.ok) {
 			const data = await res.json();
-			return { featured: data.featured };
+			return { featured_instructors: data.featured || [] };
 		}
 	} catch (e) {
-		console.error("Failed to load featured instructor", e);
+		console.error("Failed to load featured instructors", e);
 	}
-	return { featured: null };
+	return { featured_instructors: [] };
 };

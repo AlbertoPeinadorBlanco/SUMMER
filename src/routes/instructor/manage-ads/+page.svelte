@@ -182,6 +182,20 @@
 		}
 	}
 
+	async function boostAdvert(classId: number) {
+		try {
+			const res = await fetchApi('/stripe/create-checkout-session', {
+				method: 'POST',
+				body: JSON.stringify({ item_key: 'bump_advert', class_id: classId })
+			});
+			if (res.url) {
+				window.location.href = res.url;
+			}
+		} catch (err: any) {
+			alert('Failed to initiate checkout: ' + err.message);
+		}
+	}
+
 	async function openPupilsDialog(ad: any) {
 		selectedAdForPupils = ad;
 		pupilsDialog = true;
@@ -262,6 +276,19 @@
 <SEO title={$t('nav.manageAds')} />
 
 <div class="manage-ads-container">
+	<div class="guide-banner">
+		<div class="guide-banner-content">
+			<span class="material-icons guide-icon">school</span>
+			<div>
+				<strong>{$t('manageAds.guide_banner_title')}</strong>
+				<p>{$t('manageAds.guide_banner_desc')}</p>
+			</div>
+		</div>
+		<Button variant="outlined" href="/instructor-guide" class="guide-btn">
+			<Label>{$t('manageAds.guide_banner_btn')}</Label>
+		</Button>
+	</div>
+
 	<div class="split-layout">
 		<!-- Left Side: Form -->
 		<div class="form-section">
@@ -480,6 +507,10 @@
 									<span class="bookings-count">({ad.bookings_count || 0} {$t('manageAds.bookings')})</span>
 								</div>
 								<div class="ad-actions">
+									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00; margin-right: 8px;">
+										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">rocket_launch</span>
+										<Label>Boost (2€)</Label>
+									</Button>
 									<Button variant="outlined" onclick={() => editClass(ad)}>
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">edit</span>
 										<Label>{$t('manageAds.edit')}</Label>
@@ -559,9 +590,47 @@
 <style>
 	.manage-ads-container {
 		max-width: 1200px;
-		margin: 2rem auto;
-		padding: 0 1rem;
+		margin: 0 auto;
+		padding: 2rem;
 	}
+
+	.guide-banner {
+		background: linear-gradient(135deg, var(--primary-color-soft) 0%, var(--primary-color) 100%);
+		color: white;
+		padding: 1.5rem 2rem;
+		border-radius: 12px;
+		margin-bottom: 2rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	}
+
+	.guide-banner-content {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.guide-icon {
+		font-size: 32px;
+	}
+
+	.guide-banner-content p {
+		margin: 0.25rem 0 0 0;
+		opacity: 0.9;
+	}
+
+	:global(.guide-btn) {
+		color: white !important;
+		border-color: rgba(255,255,255,0.5) !important;
+		white-space: nowrap;
+	}
+
+	:global(.guide-btn:hover) {
+		background-color: rgba(255,255,255,0.1) !important;
+	}
+
 	.split-layout {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -569,13 +638,13 @@
 		align-items: flex-start;
 	}
 	.form-section {
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}
 	.sidebar {
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
@@ -692,10 +761,10 @@
 		flex-direction: column;
 		gap: 1.5rem;
 		padding: 1.5rem;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(226, 109, 63, 0.08);
-		border: 1px solid #eee;
+		border: 1px solid var(--border-color);
 		transition: all 0.2s ease;
 	}
 	.ad-card-top {

@@ -80,7 +80,7 @@
 		max-width: 1000px;
 		margin: 2rem auto;
 		padding: 2rem;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}
@@ -113,7 +113,7 @@
 	}
 	.booking-card {
 		background: #f9f9f9;
-		border: 1px solid #eaeaea;
+		border: 1px solid var(--border-color);
 		border-radius: 8px;
 		padding: 1.5rem;
 		transition: transform 0.2s, box-shadow 0.2s;
@@ -128,7 +128,7 @@
 		align-items: flex-start;
 		margin-bottom: 1rem;
 		padding-bottom: 1rem;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border-color);
 	}
 	.booking-header h3 {
 		margin: 0;

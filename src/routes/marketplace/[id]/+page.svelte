@@ -65,12 +65,19 @@
 		</Button>
 
 		<div class="profile-header">
-			<div
-				class="profile-image"
-				style="background-image: url({teacher.image});"
-				role="img"
-				aria-label="Profile photo of {teacher.name}"
-			></div>
+			<div style="position: relative; display: inline-block;">
+				<div
+					class="profile-image"
+					style="background-image: url({teacher.image}); margin: 0;"
+					role="img"
+					aria-label="Profile photo of {teacher.name}"
+				></div>
+				{#if teacher.is_verified}
+					<div class="verified-badge-large" title="Verified Instructor" style="position: absolute; bottom: 5px; right: 5px; background: var(--surface-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2196f3; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+						<span class="material-icons" aria-hidden="true" style="font-size: 32px;">verified</span>
+					</div>
+				{/if}
+			</div>
 			<div class="profile-info">
 				<h1 id="profile-name">{teacher.name}</h1>
 				<h2 class="specialty">{teacher.specialty}</h2>
@@ -277,7 +284,7 @@
 		display: flex;
 		gap: 2rem;
 		align-items: center;
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
@@ -334,7 +341,7 @@
 	.about-section,
 	.classes-section,
 	.video-section {
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
@@ -422,7 +429,7 @@
 	}
 
 	:global(.class-card) {
-		border: 1px solid #eaeaea;
+		border: 1px solid var(--border-color);
 	}
 
 	:global(.class-card h4) {
@@ -439,7 +446,7 @@
 	}
 
 	.contact-box {
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
@@ -481,7 +488,7 @@
 		margin-top: 2rem;
 		border: 2px dashed var(--primary-color);
 		border-radius: 8px;
-		background: #fff9f5;
+		background: var(--surface-color);
 		overflow: hidden;
 		text-align: left;
 	}
@@ -517,7 +524,7 @@
 		font-size: 0.95rem;
 	}
 	.coupon-code {
-		background: white;
+		background: var(--surface-color);
 		border: 1px solid #ccc;
 		padding: 0.25rem 0.5rem;
 		border-radius: 4px;

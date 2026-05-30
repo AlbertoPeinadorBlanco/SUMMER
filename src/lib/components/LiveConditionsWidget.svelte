@@ -294,7 +294,7 @@
         font-size: 0.95rem;
         font-weight: 600;
         color: #1d3557;
-        background-color: white;
+        background-color: var(--surface-color);
         cursor: pointer;
         outline: none;
         transition: border-color 0.2s, box-shadow 0.2s;

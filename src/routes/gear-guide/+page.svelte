@@ -125,7 +125,7 @@
 		gap: 3rem;
 	}
 	.guide-main section {
-		background: white;
+		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -148,7 +148,7 @@
 		padding-left: 1.5rem;
 	}
 	.sponsors-box {
-		background: #fffcf0;
+		background: var(--surface-color);
 		border: 2px solid #FFD700;
 		padding: 2rem;
 		border-radius: 12px;
@@ -172,7 +172,7 @@
 		gap: 1.5rem;
 	}
 	.sponsor-card {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		padding: 1rem;
 		box-shadow: 0 2px 8px rgba(0,0,0,0.05);

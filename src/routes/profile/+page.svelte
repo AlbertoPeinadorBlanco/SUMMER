@@ -30,8 +30,12 @@
 	onMount(async () => {
 		try {
 			const data = await fetchApi('/users/featured');
-			if (data) {
-				featured_instructor = data.featured;
+			if (data && Array.isArray(data.featured)) {
+				featured_instructor = data.featured.find((f: any) => f.id === user?.id) || null;
+				// If not currently featured, but there are 3 featured already, we might want to know if it's full
+				if (!featured_instructor && data.featured.length >= 3) {
+					featured_instructor = 'full'; // use a special value or add a state var
+				}
 			}
 		} catch (e) {
 			console.error('Failed to load featured instructor', e);
@@ -117,6 +121,23 @@
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
 			error = err.message || 'Failed to upload picture.';
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function handleResendVerification() {
+		if (!user) return;
+		loading = true;
+		error = '';
+		successMsg = '';
+
+		try {
+			const res = await fetchApi('/auth/resend-verification', { method: 'POST' });
+			successMsg = res.message || 'Verification email sent!';
+			setTimeout(() => (successMsg = ''), 5000);
+		} catch (err: any) {
+			error = err.message || 'Failed to resend verification.';
 		} finally {
 			loading = false;
 		}
@@ -213,6 +234,34 @@
 		<h1>My Profile</h1>
 		<p class="subtitle">Update your personal information.</p>
 
+		{#if user.role === 'instructor'}
+			<div class="guide-banner">
+				<div class="guide-banner-content">
+					<span class="material-icons guide-icon">school</span>
+					<div>
+						<strong>{$t('profile.guide_banner_title')}</strong>
+						<p>{$t('profile.guide_banner_desc')}</p>
+					</div>
+				</div>
+				<Button variant="outlined" href="/instructor-guide" class="guide-btn">
+					<Label>{$t('profile.guide_banner_btn')}</Label>
+				</Button>
+			</div>
+		{/if}
+
+		{#if user.is_verified === 0 || user.is_verified === false}
+			<div class="verification-alert">
+				<span class="material-icons info-icon">info</span>
+				<div class="alert-content">
+					<strong>Verify your email</strong>
+					<p>Please check your inbox to verify your email address to unlock all features.</p>
+				</div>
+				<Button variant="outlined" onclick={handleResendVerification} disabled={loading} style="border-color: #E26D3F; color: #E26D3F;">
+					<Label>Resend Email</Label>
+				</Button>
+			</div>
+		{/if}
+
 		{#if successMsg}
 			<div class="success-msg">
 				<span class="material-icons">check_circle</span>
@@ -234,6 +283,11 @@
 				{:else}
 					<div class="avatar-placeholder">
 						{username ? username.charAt(0).toUpperCase() : 'U'}
+					</div>
+				{/if}
+				{#if user.is_verified === 1 || user.is_verified === true}
+					<div class="verified-badge-profile" title="Verified User">
+						<span class="material-icons" aria-hidden="true">verified</span>
 					</div>
 				{/if}
 			</div>
@@ -351,23 +405,23 @@
 			<div class="tier-section">
 				<h3>{$t('profile_enhancements.featured_title')}</h3>
 				<p class="tier-desc">{$t('profile_enhancements.featured_desc')}</p>
-				<div class="upgrade-row" style="border: 2px solid #FFD700; padding: 1.5rem; border-radius: 8px; background: #fffcf0;">
+				<div class="upgrade-row" style="border: 2px solid #FFD700; padding: 1.5rem; border-radius: 8px; background: var(--surface-color);">
 					<div class="upgrade-info">
 						<h4>{$t('profile_enhancements.homepage_spotlight')}</h4>
-						{#if featured_instructor && featured_instructor.id === user.id}
+						{#if featured_instructor && featured_instructor !== 'full'}
 							<p class="desc" style="color: #2e7d32; font-weight: bold;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">check_circle</span> {$t('profile_enhancements.currently_featured')}</p>
 							<p class="desc">{$t('profile_enhancements.expires_on')}: {new Date(featured_instructor.featured_until).toLocaleDateString()}</p>
-						{:else if featured_instructor}
-							<p class="desc" style="color: #d32f2f;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">lock</span> {$t('profile_enhancements.taken_until')} {new Date(featured_instructor.featured_until).toLocaleDateString()}</p>
+						{:else if featured_instructor === 'full'}
+							<p class="desc" style="color: #d32f2f;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">lock</span> All featured spots are currently taken.</p>
 						{:else}
-							<p class="desc">Available now!</p>
+							<p class="desc">Available now! Secure your spot on the homepage for 7 days.</p>
 						{/if}
 					</div>
 					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || !!featured_instructor} class="premium-button" style="background-color: {featured_instructor ? '#ccc' : '#FFD700'}; color: {featured_instructor ? '#666' : '#000'};">
 						<Label>
-							{#if featured_instructor && featured_instructor.id === user.id}
+							{#if featured_instructor && featured_instructor !== 'full'}
 								Active until {new Date(featured_instructor.featured_until).toLocaleDateString()}
-							{:else if featured_instructor}
+							{:else if featured_instructor === 'full'}
 								Currently Unavailable
 							{:else}
 								{$t('profile_enhancements.buy_featured')}
@@ -423,16 +477,53 @@
 
 <style>
 	.profile-dashboard {
-		max-width: 600px;
-		margin: 2rem auto;
+		max-width: 800px;
+		margin: 0 auto;
 		padding: 2rem;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 	}
+
+	.guide-banner {
+		background: linear-gradient(135deg, var(--primary-color-soft) 0%, var(--primary-color) 100%);
+		color: white;
+		padding: 1.5rem 2rem;
+		border-radius: 12px;
+		margin-bottom: 2rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	}
+
+	.guide-banner-content {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.guide-icon {
+		font-size: 32px;
+	}
+
+	.guide-banner-content p {
+		margin: 0.25rem 0 0 0;
+		opacity: 0.9;
+	}
+
+	:global(.guide-btn) {
+		color: white !important;
+		border-color: rgba(255,255,255,0.5) !important;
+		white-space: nowrap;
+	}
+
+	:global(.guide-btn:hover) {
+		background-color: rgba(255,255,255,0.1) !important;
+	}
+
 	h1 {
 		color: var(--terciary-color);
-		margin-top: 0;
 		margin-bottom: 0.5rem;
 	}
 	.subtitle {
@@ -474,31 +565,73 @@
 		border-radius: 4px;
 		margin-bottom: 1.5rem;
 	}
+
+	.verification-alert {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		background: #fff3e0;
+		border-left: 4px solid #ff9800;
+		padding: 1rem 1.5rem;
+		border-radius: 4px;
+		margin-bottom: 1.5rem;
+	}
+	.verification-alert .info-icon {
+		color: #ff9800;
+		font-size: 24px;
+	}
+	.verification-alert .alert-content {
+		flex: 1;
+	}
+	.verification-alert .alert-content strong {
+		display: block;
+		color: #e65100;
+		margin-bottom: 0.25rem;
+	}
+	.verification-alert .alert-content p {
+		margin: 0;
+		color: #666;
+		font-size: 0.9rem;
+	}
+
 	.avatar-section {
 		display: flex;
 		align-items: center;
 		gap: 1.5rem;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border-color);
 	}
 	.avatar-preview {
 		width: 100px;
 		height: 100px;
 		border-radius: 50%;
-		overflow: hidden;
-		background: #f5f5f5;
+		
+		background: #eee;
+		position: relative;
+	}
+	.verified-badge-profile {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		background: var(--surface-color);
+		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex-shrink: 0;
+		color: #2196f3;
+		padding: 2px;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 	}
-	.avatar-preview img {
+	.verified-badge-profile .material-icons {
+		font-size: 24px;
+	}
+	.avatar-preview img { border-radius: 50%; 
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
-	.avatar-placeholder {
+	.avatar-placeholder { border-radius: 50%; 
 		width: 100%;
 		height: 100%;
 		background-color: var(--secondary-color);
@@ -531,7 +664,7 @@
 		padding: 1.5rem;
 		border-radius: 8px;
 		margin-bottom: 2rem;
-		border: 1px solid #eee;
+		border: 1px solid var(--border-color);
 	}
 	.tier-section h3 {
 		margin-top: 0;
@@ -567,7 +700,7 @@
 		border-radius: 8px;
 		padding: 1.5rem;
 		text-align: center;
-		background: white;
+		background: var(--surface-color);
 	}
 	.pricing-card.highlight {
 		border: 2px solid var(--primary-color);
@@ -594,7 +727,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 0;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border-color);
 		gap: 1rem;
 	}
 	.upgrade-row:last-of-type {

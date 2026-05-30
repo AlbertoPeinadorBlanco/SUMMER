@@ -20,6 +20,15 @@
 		<!-- Material Components Web CSS -->
 		<link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" />
 	</head>
+	<script>
+		let theme = localStorage.getItem('theme');
+		if (!theme) {
+			theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		}
+		if (theme === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'dark');
+		}
+	</script>
 	<body data-sveltekit-preload-data="hover">
 		<div class="sveltekit-container">%sveltekit.body%</div>
 	</body>

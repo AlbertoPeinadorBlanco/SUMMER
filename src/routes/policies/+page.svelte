@@ -58,7 +58,7 @@
 		max-width: 900px;
 		margin: 2rem auto;
 		padding: 2rem;
-		background: white;
+		background: var(--surface-color);
 		border-radius: 12px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 	}
@@ -67,7 +67,7 @@
 		text-align: center;
 		margin-bottom: 3rem;
 		padding-bottom: 2rem;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border-color);
 	}
 
 	.policies-header h1 {

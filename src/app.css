@@ -10,16 +10,30 @@
 	--primary-color-soft: #8dbbd4;
 	--font-style: 'Roboto', sans-serif;
 
+	--surface-color: #ffffff;
+	--border-color: #eaeaea;
+
 	/* SMUI variable overrides */
 	--mdc-theme-primary: var(--primary-color);
 	--mdc-theme-secondary: var(--secondary-color);
 	--mdc-theme-background: var(--background-color);
-	--mdc-theme-surface: #ffffff;
+	--mdc-theme-surface: var(--surface-color);
 	--mdc-theme-error: #b00020;
 	--mdc-theme-on-primary: #ffffff;
 	--mdc-theme-on-secondary: #ffffff;
 	--mdc-theme-on-surface: var(--text-color);
 	--mdc-typography-font-family: var(--font-style);
+}
+
+[data-theme="dark"] {
+	--primary-color: #5ea3d0;       /* Lightened slightly to maintain visibility and contrast */
+	--secondary-color: #e88258;     /* Brightened slightly to keep its energetic "pop" */
+	--terciary-color: #315c7c;      /* Lightened to act as a mid-tone accent */
+	--primary-color-soft: #1d3a4f;  /* Darkened heavily */
+	--background-color: #0b161f;    /* A very deep, cool blue-grey */
+	--surface-color: #132433;       /* Slightly lighter than background */
+	--text-color: #e8f0f5;          /* An off-white icy blue */
+	--border-color: #243d52;        /* A muted, low-contrast line */
 }
 
 body {

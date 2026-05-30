@@ -87,7 +87,7 @@
 				</div>
 
 				<div class="table-container" style="margin-top: 2rem;">
-					<h3 style="padding: 1rem 1.5rem; margin: 0; background: #fafafa; border-bottom: 1px solid #eee;">
+					<h3 style="padding: 1rem 1.5rem; margin: 0; background: #fafafa; border-bottom: 1px solid var(--border-color);">
 						{$t('admin.analytics_popular')}
 					</h3>
 					<DataTable style="width: 100%;">
@@ -216,7 +216,7 @@
 		gap: 1.5rem;
 	}
 	.kpi-card {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		padding: 1.5rem;
 		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -237,7 +237,7 @@
 		color: var(--terciary-color);
 	}
 	.table-container {
-		background: white;
+		background: var(--surface-color);
 		border-radius: 8px;
 		box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 		overflow: hidden;

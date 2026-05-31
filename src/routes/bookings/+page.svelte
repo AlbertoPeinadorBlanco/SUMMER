@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
+	import { formatPrice } from '$lib/stores/currency';
 	import { auth } from '$lib/stores/auth';
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
@@ -37,19 +38,19 @@
 	});
 </script>
 
-<SEO title="My Bookings" />
+<SEO title={$t('my_bookings_page.title')} />
 
 <div class="bookings-dashboard">
 	{#if user}
 		<div class="my-bookings-section">
-			<h1>My Bookings</h1>
-			<p class="subtitle">Track the status of your requested classes.</p>
+			<h1>{$t('my_bookings_page.title')}</h1>
+			<p class="subtitle">{$t('my_bookings_page.subtitle')}</p>
 			{#if loadingBookings}
-				<div class="loading">Loading bookings...</div>
+				<div class="loading">{$t('my_bookings_page.loading')}</div>
 			{:else if myBookings.length === 0}
 				<div class="empty-state">
 					<span class="material-icons" style="font-size: 3rem; color: #ccc;">event_busy</span>
-					<p>You haven't booked any classes yet.</p>
+					<p>{$t('my_bookings_page.no_bookings')}</p>
 				</div>
 			{:else}
 				<div class="bookings-grid">
@@ -57,13 +58,13 @@
 						<div class="booking-card">
 							<div class="booking-header">
 								<h3>{booking.title}</h3>
-								<span class="status-badge status-{booking.status}">{booking.status}</span>
+								<span class="status-badge status-{booking.status}">{$t('manageAds.status_' + booking.status, { default: booking.status })}</span>
 							</div>
 							<div class="booking-details">
 								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">person</span> {booking.instructor_first_name} {booking.instructor_last_name}</p>
-								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">place</span> {booking.location || 'TBD'}</p>
-								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">payments</span> €{booking.price}</p>
-								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">calendar_today</span> {booking.starts_at ? new Date(booking.starts_at).toLocaleString() : 'TBD'}</p>
+								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">place</span> {booking.location || $t('my_bookings_page.tbd')}</p>
+								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">payments</span> {$formatPrice(booking.price)}</p>
+								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">calendar_today</span> {booking.starts_at ? new Date(booking.starts_at).toLocaleString() : $t('my_bookings_page.tbd')}</p>
 							</div>
 						</div>
 					{/each}
@@ -71,7 +72,7 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="loading">Loading bookings...</div>
+		<div class="loading">{$t('my_bookings_page.loading')}</div>
 	{/if}
 </div>
 

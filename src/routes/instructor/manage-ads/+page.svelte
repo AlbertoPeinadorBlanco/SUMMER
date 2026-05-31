@@ -7,13 +7,14 @@
 	import Dialog, { Title, Content as DialogContent, Actions, InitialFocus } from '@smui/dialog';
 	import { t, locale } from 'svelte-i18n';
 	import { auth } from '$lib/stores/auth';
-	import { currencySymbol } from '$lib/stores/currency';
+	import { currencySymbol, formatPrice } from '$lib/stores/currency';
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let user = $derived($auth.user);
 	let isAuthenticated = $derived($auth.isAuthenticated);
+	let labelSportType = $derived($t('marketplace.filter_sport'));
 
 	let classes: any[] = $state([]);
 	let loadingClasses = $state(true);
@@ -224,13 +225,13 @@
 				instructor_id: user?.id,
 				class_type_id: parseInt(class_type_id),
 				sport_type,
-				title,
+				title: title || title_es,
 				title_es,
-				description,
+				description: description || description_es,
 				description_es,
 				price: parseFloat(price) || 0,
-				capacity: parseInt(capacity) || null,
-				duration_minutes: parseInt(duration_minutes) || null,
+				capacity: parseInt(capacity) || 1,
+				duration_minutes: parseInt(duration_minutes) || 10,
 				starts_at: starts_at ? new Date(starts_at).toISOString() : null,
 				ends_at: ends_at ? new Date(ends_at).toISOString() : null,
 				location,
@@ -270,7 +271,11 @@
 				successMsg = '';
 			}, 3000);
 		} catch (err: any) {
-			error = err.message || $t('createAd.error_msg');
+			if (err.errors && Array.isArray(err.errors)) {
+				error = err.errors.map((e: any) => Object.values(e)[0]).join(', ');
+			} else {
+				error = err.message || $t('createAd.error_msg');
+			}
 		} finally {
 			loading = false;
 		}
@@ -324,19 +329,17 @@
 						<Option value="1">{$t('createAd.type_class')}</Option>
 						<Option value="2">{$t('createAd.type_course')}</Option>
 					</Select>
-					<Select
-						variant="outlined"
-						bind:value={sport_type}
-						label={$t('sports.filter_sport')}
-						style="width: 100%;"
-					>
-						<Option value="surf">{$t('sports.surf')}</Option>
-						<Option value="windsurf">{$t('sports.windsurf')}</Option>
-						<Option value="paddle">{$t('sports.paddle')}</Option>
-						<Option value="kayak">{$t('sports.kayak')}</Option>
-						<Option value="snorkel">{$t('sports.snorkel')}</Option>
-						<Option value="other">{$t('sports.other')}</Option>
-					</Select>
+					<div class="native-select-wrapper">
+						<label class="native-select-label">{labelSportType}</label>
+						<select bind:value={sport_type} class="native-select">
+							<option value="surf">{$t('sports.surf')}</option>
+							<option value="windsurf">{$t('sports.windsurf')}</option>
+							<option value="paddle">{$t('sports.paddle')}</option>
+							<option value="kayak">{$t('sports.kayak')}</option>
+							<option value="snorkel">{$t('sports.snorkel')}</option>
+							<option value="other">{$t('sports.other')}</option>
+						</select>
+					</div>
 				</div>
 				<div class="form-row">
 					<Select
@@ -358,13 +361,6 @@
 						required
 						style="width: 100%;"
 					/>
-					<Textfield
-						variant="outlined"
-						bind:value={title}
-						label={$t('createAd.form_title_en')}
-						disabled
-						style="width: 100%;"
-					/>
 				</div>
 
 				<div class="form-row">
@@ -373,15 +369,6 @@
 						textarea
 						bind:value={description_es}
 						label={$t('createAd.form_desc_es')}
-						style="width: 100%;"
-						input$rows={4}
-					/>
-					<Textfield
-						variant="outlined"
-						textarea
-						bind:value={description}
-						label={$t('createAd.form_desc_en')}
-						disabled
 						style="width: 100%;"
 						input$rows={4}
 					/>
@@ -419,7 +406,7 @@
 						input$min="10"
 						style="width: 100%;"
 					/>
-					<Textfield variant="outlined" bind:value={location} label={$t('createAd.form_location')} />
+					<Textfield variant="outlined" bind:value={location} label={$t('createAd.form_location')} required style="width: 100%;" />
 				</div>
 
 				<div class="form-row">
@@ -428,12 +415,14 @@
 						type="datetime-local"
 						bind:value={starts_at}
 						label={$t('createAd.form_starts_at')}
+						required
 					/>
 					<Textfield
 						variant="outlined"
 						type="datetime-local"
 						bind:value={ends_at}
 						label={$t('createAd.form_ends_at')}
+						required
 					/>
 				</div>
 
@@ -488,7 +477,7 @@
 		<div class="sidebar">
 			<div class="earnings-summary">
 				<h3>{$t('manageAds.total_earnings')}</h3>
-				<div class="earnings-amount">{$currencySymbol}{totalEarnings}</div>
+				<div class="earnings-amount">{$formatPrice(totalEarnings)}</div>
 			</div>
 
 			<h2>{$t('manageAds.my_ads')}</h2>
@@ -509,7 +498,7 @@
 								{/if}
 								<div class="ad-info">
 									<h3>{($locale === 'es' && ad.title_es) ? ad.title_es.charAt(0).toUpperCase() + ad.title_es.slice(1) : ad.title ? ad.title.charAt(0).toUpperCase() + ad.title.slice(1) : ''}</h3>
-									<p class="ad-price">{$currencySymbol}{ad.price}</p>
+									<p class="ad-price">{$formatPrice(ad.price)}</p>
 									<div class="ad-meta">
 										<span class="badge {ad.class_type}">{ad.class_type}</span>
 										<span class="badge sport">{ad.sport_type ? $t(`sports.${ad.sport_type}`) : $t('sports.surf')}</span>
@@ -523,7 +512,7 @@
 							<div class="ad-card-bottom">
 								<div class="ad-earnings">
 									<span class="material-icons" aria-hidden="true">payments</span>
-									<span>{$t('manageAds.earnings')}: <strong>{$currencySymbol}{parseFloat(ad.price) * (ad.bookings_count || 0)}</strong></span>
+									<span>{$t('manageAds.earnings')}: <strong>{$formatPrice(parseFloat(ad.price) * (ad.bookings_count || 0))}</strong></span>
 									<span class="bookings-count">({ad.bookings_count || 0} {$t('manageAds.bookings')})</span>
 								</div>
 								<div class="ad-actions">
@@ -716,6 +705,38 @@
 	}
 	.checkbox-container {
 		margin-top: -0.5rem;
+	}
+	.native-select-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		width: 100%;
+	}
+	.native-select-label {
+		font-size: 0.75rem;
+		color: var(--mdc-text-field-label-ink-color, #666);
+		padding-left: 2px;
+		font-weight: 500;
+	}
+	.native-select {
+		width: 100%;
+		height: 56px;
+		padding: 0 1rem;
+		border: 1px solid rgba(0, 0, 0, 0.38);
+		border-radius: 4px;
+		font-size: 1rem;
+		background: var(--surface-color);
+		color: var(--text-color);
+		outline: none;
+		cursor: pointer;
+		transition: border-color 0.2s;
+	}
+	.native-select:hover {
+		border-color: rgba(0, 0, 0, 0.87);
+	}
+	.native-select:focus {
+		border-color: var(--primary-color);
+		border-width: 2px;
 	}
 	.actions {
 		display: flex;

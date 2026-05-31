@@ -7,6 +7,16 @@
 
 	let { data } = $props();
 	let featured_instructors = $derived(data?.featured_instructors || []);
+	let defaultBio = $derived($t('home.default_bio'));
+
+	function truncateWords(text: string, limit: number = 50) {
+		if (!text) return '';
+		const words = text.split(/\s+/);
+		if (words.length > limit) {
+			return words.slice(0, limit).join(' ') + '...';
+		}
+		return text;
+	}
 </script>
 
 <SEO title={$t('nav.home')} description={$t('home.hero_desc')} />
@@ -49,8 +59,8 @@
 				<div class="featured-info">
 					<h3>{featured.first_name || featured.username} {featured.last_name || ''}</h3>
 					<h4 class="specialty">{featured.specialization || 'Surfing Instructor'}</h4>
-					<p>{(featured.bio || '').substring(0, 80)}{featured.bio?.length > 80 ? '...' : ''}</p>
-					<Button variant="raised" href={`/marketplace/${featured.id}`} class="premium-button">
+					<p>{truncateWords(typeof featured.bio === 'string' && featured.bio.trim() ? featured.bio : defaultBio, 50)}</p>
+					<Button variant="raised" href={`/marketplace/${featured.id}`} class="premium-button" style="margin-top: auto;">
 						<Label>{$t('instructors.view_profile')}</Label>
 					</Button>
 				</div>
@@ -201,6 +211,13 @@
 		align-items: center;
 		margin-top: 1rem;
 		width: 100%;
+		flex-grow: 1;
+	}
+	.featured-info {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		width: 100%;
 	}
 	.featured-image {
 		width: 120px;
@@ -227,6 +244,12 @@
 		margin-bottom: 1.5rem;
 		line-height: 1.6;
 		font-size: 0.9rem;
+	}
+
+	@media (max-width: 1024px) {
+		.featured-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 768px) {

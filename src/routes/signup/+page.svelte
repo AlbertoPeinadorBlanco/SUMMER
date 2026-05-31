@@ -4,6 +4,7 @@
 	import Button, { Label } from '@smui/button';
 	import Checkbox from '@smui/checkbox';
 	import FormField from '@smui/form-field';
+	import Dialog, { Title, Content as DialogContent, Actions } from '@smui/dialog';
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
@@ -23,6 +24,7 @@
 
 	let loading = $state(false);
 	let error = $state('');
+	let openPolicies = $state(false);
 	let success = $state(false);
 
 	async function handleSignup(e: Event) {
@@ -103,8 +105,17 @@
 				bind:value={email}
 				label={$t('auth.email')}
 				required
+				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
+				input$title="Please enter a valid email address with a domain (e.g. .com)"
 			/>
-			<Textfield variant="outlined" type="tel" bind:value={phone} label={$t('auth.phone')} />
+			<Textfield 
+				variant="outlined" 
+				type="tel" 
+				bind:value={phone} 
+				label={$t('auth.phone')} 
+				input$pattern={'^6[0-9]{8}$'} 
+				input$title="Phone number must start with 6 and be exactly 9 digits long" 
+			/>
 			<Textfield
 				variant="outlined"
 				type="password"
@@ -136,13 +147,13 @@
 			{/if}
 
 			<div class="consent-field">
-				<FormField>
-					<Checkbox bind:checked={consent} required />
-					<span slot="label">
-						{$t('legal.agree_to')} <a href="/policies" target="_blank">{$t('legal.terms_of_service')}</a> 
-						{$t('legal.and')} <a href="/policies" target="_blank">{$t('legal.privacy_policy')}</a>.
+				<label class="consent-label">
+					<input type="checkbox" bind:checked={consent} required />
+					<span>
+						{$t('legal.agree_to')} <a href="#" onclick={(e) => { e.preventDefault(); openPolicies = true; }}>{$t('legal.terms_of_service')}</a> 
+						{$t('legal.and')} <a href="#" onclick={(e) => { e.preventDefault(); openPolicies = true; }}>{$t('legal.privacy_policy')}</a>.
 					</span>
-				</FormField>
+				</label>
 			</div>
 
 			<Button type="submit" variant="raised" disabled={loading || !consent} class="premium-button submit-btn">
@@ -151,6 +162,37 @@
 		</form>
 
 		<p class="login-prompt">{$t('auth.already_account')}</p>
+
+		<!-- Policies Dialog -->
+		<Dialog bind:open={openPolicies} aria-labelledby="policies-title" aria-describedby="policies-content" surface$style="max-width: 600px; width: 100%;">
+			<Title id="policies-title">{$t('legal.policies_title')}</Title>
+			<DialogContent id="policies-content" style="max-height: 60vh; overflow-y: auto;">
+				<div class="legal-text">
+					<h2 style="color: var(--terciary-color); margin-bottom: 1rem;">{$t('policies.terms_title')}</h2>
+					<h3>{$t('policies.terms_1_title')}</h3>
+					<p>{$t('policies.terms_1_desc')}</p>
+					<h3>{$t('policies.terms_2_title')}</h3>
+					<p>{$t('policies.terms_2_desc')}</p>
+					<h3>{$t('policies.terms_3_title')}</h3>
+					<p>{$t('policies.terms_3_desc')}</p>
+					
+					<hr style="border: 0; height: 1px; background: #eee; margin: 2rem 0;" />
+
+					<h2 style="color: var(--terciary-color); margin-bottom: 1rem;">{$t('policies.privacy_title')}</h2>
+					<h3>{$t('policies.privacy_1_title')}</h3>
+					<p>{$t('policies.privacy_1_desc')}</p>
+					<h3>{$t('policies.privacy_2_title')}</h3>
+					<p>{$t('policies.privacy_2_desc')}</p>
+					<h3>{$t('policies.privacy_3_title')}</h3>
+					<p>{$t('policies.privacy_3_desc')}</p>
+				</div>
+			</DialogContent>
+			<Actions>
+				<Button onclick={() => (openPolicies = false)}>
+					<Label>{$t('contact.close', { default: 'Close' })}</Label>
+				</Button>
+			</Actions>
+		</Dialog>
 	{/if}
 </div>
 
@@ -209,8 +251,48 @@
 		font-size: 1.1rem;
 	}
 	.consent-field {
-		margin-top: 0.5rem;
+		margin-bottom: 2rem;
+		text-align: left;
+	}
+
+	.consent-label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		font-size: 0.9rem;
+		color: var(--text-color);
+		cursor: pointer;
+	}
+
+	.consent-label input[type="checkbox"] {
+		width: 18px;
+		height: 18px;
+		cursor: pointer;
+	}
+
+	.consent-label a {
+		color: var(--primary-color);
+		text-decoration: underline;
+	}
+	
+	.legal-text h3 {
+		font-size: 1.1rem;
+		margin-bottom: 0.5rem;
+		color: var(--text-color);
+	}
+	
+	.legal-text p {
+		font-size: 0.95rem;
+		color: #555;
+		margin-bottom: 1rem;
+		line-height: 1.5;
+	}
+
+	:global([data-theme="dark"]) .legal-text p {
+		color: #ccc;
+	}
+	:global([data-theme="dark"]) .legal-text h3 {
+		color: #eee;
 	}
 	.consent-field a {
 		color: var(--secondary-color);

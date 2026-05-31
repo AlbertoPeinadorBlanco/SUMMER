@@ -17,6 +17,8 @@
 	let contactName = $state('');
 	let contactEmail = $state('');
 	let contactMessage = $state('');
+	let contactLoading = $state(false);
+	let contactError = $state('');
 	let contactSuccessDialogOpen = $state(false);
 	let activeCoupon: any = $state(null);
 
@@ -31,12 +33,25 @@
 		}
 	});
 
-	function handleContact(e: Event) {
+	async function handleContact(e: Event) {
 		e.preventDefault();
-		contactSuccessDialogOpen = true;
-		contactName = '';
-		contactEmail = '';
-		contactMessage = '';
+		if (!teacher) return;
+		contactLoading = true;
+		contactError = '';
+		try {
+			await fetchApi(`/users/${teacher.id}/contact`, {
+				method: 'POST',
+				body: JSON.stringify({ contactName, contactEmail, contactMessage })
+			});
+			contactSuccessDialogOpen = true;
+			contactName = '';
+			contactEmail = '';
+			contactMessage = '';
+		} catch (err: any) {
+			contactError = err.message || 'Failed to send message';
+		} finally {
+			contactLoading = false;
+		}
 	}
 
 	function getTitle(surfClass: any) {
@@ -93,7 +108,7 @@
 					{#if teacher.is_featured}
 						<span class="perk-badge featured-badge">
 							<span class="material-icons" aria-hidden="true">star</span>
-							{$t('profile_enhancements.currently_featured')}
+							{$t('profile_enhancements.public_featured')}
 						</span>
 					{/if}
 					{#if teacher.tier === 'premium' || teacher.tier === 'summer_pass'}
@@ -152,18 +167,20 @@
 						{#each teacher.classes as surfClass}
 							<Card class="class-card premium-card" role="listitem" style="cursor: pointer;" onclick={() => window.location.href = `/marketplace/class/${surfClass.id}`}>
 								<Content>
-									<h4>{getTitle(surfClass)}</h4>
+									<div class="class-card-header">
+										<h4>{getTitle(surfClass)}</h4>
+										<span class="class-price">{$formatPrice(surfClass.price, surfClass.class_type === 'course' || surfClass.class_type === 'curso')}</span>
+									</div>
 									<div class="class-meta">
-										<span
-											><strong>{$t('profile.class_duration')}:</strong> {surfClass.duration}</span
-										>
-										<span
-											><strong>Type:</strong> <span style="text-transform: capitalize;">{surfClass.class_type}</span></span
-										>
-										<span><strong>Level:</strong> {surfClass.difficulty_level || 1}</span>
-										<span
-											><strong>{$t('profile.price')}:</strong> {$formatPrice(surfClass.price, surfClass.class_type === 'course' || surfClass.class_type === 'curso')}</span
-										>
+										<span class="meta-item">
+											<span class="material-icons">schedule</span> {surfClass.duration}
+										</span>
+										<span class="meta-item">
+											<span class="material-icons">surfing</span> <span style="text-transform: capitalize;">{surfClass.class_type}</span>
+										</span>
+										<span class="meta-item">
+											<span class="material-icons">signal_cellular_alt</span> Lvl {surfClass.difficulty_level || 1}
+										</span>
 									</div>
 								</Content>
 							</Card>
@@ -184,35 +201,53 @@
 				{/if}
 				<div class="contact-box" role="region" aria-labelledby="contact-title">
 					<h3 id="contact-title">{$t('profile.contact_title')}</h3>
-					<form onsubmit={handleContact} class="contact-form">
-						<Textfield
-							variant="outlined"
-							bind:value={contactName}
-							label={$t('profile.form_name')}
-							required
-							style="width: 100%; margin-bottom: 1rem;"
-						/>
-						<Textfield
-							variant="outlined"
-							type="email"
-							bind:value={contactEmail}
-							label={$t('profile.form_email')}
-							required
-							style="width: 100%; margin-bottom: 1rem;"
-						/>
-						<Textfield
-							variant="outlined"
-							textarea
-							bind:value={contactMessage}
-							label={$t('profile.form_message')}
-							required
-							style="width: 100%; margin-bottom: 1rem;"
-							input$rows={4}
-						/>
-						<Button type="submit" variant="raised" class="premium-button submit-btn">
-							<Label>{$t('profile.form_submit')}</Label>
-						</Button>
-					</form>
+					
+					{#if teacher.allow_communications === false || teacher.allow_communications === 0}
+						<div style="margin-top: 1rem; padding: 1rem; background: #ffebee; color: #c62828; border-radius: 8px; text-align: center;">
+							<strong>Notice</strong><br>
+							This instructor does not accept direct messages at this time.
+						</div>
+					{:else}
+						{#if contactError}
+							<div style="margin-bottom: 1rem; padding: 0.5rem; background: #ffebee; color: #c62828; border-radius: 4px; font-size: 0.9rem;">
+								{contactError}
+							</div>
+						{/if}
+						<form onsubmit={handleContact} class="contact-form">
+							<Textfield
+								variant="outlined"
+								bind:value={contactName}
+								label={$t('profile.form_name')}
+								required
+								disabled={contactLoading}
+								style="width: 100%; margin-bottom: 1rem;"
+							/>
+							<Textfield
+								variant="outlined"
+								type="email"
+								bind:value={contactEmail}
+								label={$t('profile.form_email')}
+								required
+								disabled={contactLoading}
+								input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
+								input$title="Please enter a valid email address with a domain (e.g. .com)"
+								style="width: 100%; margin-bottom: 1rem;"
+							/>
+							<Textfield
+								variant="outlined"
+								textarea
+								bind:value={contactMessage}
+								label={$t('profile.form_message')}
+								required
+								disabled={contactLoading}
+								style="width: 100%; margin-bottom: 1rem;"
+								input$rows={4}
+							/>
+							<Button type="submit" variant="raised" class="premium-button submit-btn" disabled={contactLoading}>
+								<Label>{contactLoading ? 'Sending...' : $t('profile.form_submit')}</Label>
+							</Button>
+						</form>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -430,19 +465,62 @@
 
 	:global(.class-card) {
 		border: 1px solid var(--border-color);
+		background: var(--surface-color);
+		padding: 0.5rem;
+		border-radius: 12px;
+	}
+
+	:global(.class-card-header) {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		border-bottom: 1px solid var(--border-color);
+		padding-bottom: 0.75rem;
 	}
 
 	:global(.class-card h4) {
-		margin: 0 0 0.5rem 0;
+		margin: 0;
 		color: var(--terciary-color);
+		font-size: 1.25rem;
+	}
+
+	:global(.class-price) {
+		font-weight: bold;
+		color: var(--primary-color);
 		font-size: 1.1rem;
+		background: var(--primary-color-soft);
+		padding: 6px 14px;
+		border-radius: 20px;
 	}
 
 	.class-meta {
 		display: flex;
-		justify-content: space-between;
-		font-size: 0.9rem;
+		flex-wrap: wrap;
+		gap: 1rem;
+		font-size: 0.95rem;
 		color: #666;
+		align-items: center;
+	}
+
+	.meta-item {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: #f4f8fa;
+		padding: 6px 12px;
+		border-radius: 8px;
+		font-weight: 500;
+	}
+
+	.meta-item .material-icons {
+		font-size: 18px;
+		color: var(--secondary-color);
+	}
+
+	:global([data-theme="dark"]) .meta-item {
+		background: rgba(255, 255, 255, 0.05);
+		color: #ddd;
 	}
 
 	.contact-box {

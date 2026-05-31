@@ -1,0 +1,86 @@
+[
+  {
+    "url": "http://localhost:4173/",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost--2026_05_31_05_20_00.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost--2026_05_31_05_20_00.report.json",
+    "summary": {
+      "performance": 0.61,
+      "accessibility": 0.87,
+      "best-practices": 0.93,
+      "seo": 0.91
+    }
+  },
+  {
+    "url": "http://localhost:4173/marketplace",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-marketplace-2026_05_31_05_20_27.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-marketplace-2026_05_31_05_20_27.report.json",
+    "summary": {
+      "performance": 0.64,
+      "accessibility": 0.9,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4173/instructors",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-instructors-2026_05_31_05_20_45.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-instructors-2026_05_31_05_20_45.report.json",
+    "summary": {
+      "performance": 0.6,
+      "accessibility": 0.88,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4173/gear-guide",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-gear_guide-2026_05_31_05_21_02.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-gear_guide-2026_05_31_05_21_02.report.json",
+    "summary": {
+      "performance": 0.65,
+      "accessibility": 0.89,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4173/instructor-guide",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-instructor_guide-2026_05_31_05_21_19.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-instructor_guide-2026_05_31_05_21_19.report.json",
+    "summary": {
+      "performance": 0.35,
+      "accessibility": 0.88,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4173/contact",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-contact-2026_05_31_05_21_38.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-contact-2026_05_31_05_21_38.report.json",
+    "summary": {
+      "performance": 0.64,
+      "accessibility": 0.87,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4173/signup",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-signup-2026_05_31_05_21_55.report.html",
+    "jsonPath": "C:\\Users\\jazzm\\Desktop\\SURFING\\CODE\\SUMMER\\lhci-reports\\localhost-signup-2026_05_31_05_21_55.report.json",
+    "summary": {
+      "performance": 0.65,
+      "accessibility": 0.83,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  }
+]

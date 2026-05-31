@@ -9,6 +9,7 @@
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import { isGeolocationEnabled } from '$lib/stores/location';
+	import { formatPrice } from '$lib/stores/currency';
 	import { onMount } from 'svelte';
 
 	let user = $derived($auth.user);
@@ -23,6 +24,7 @@
 	let video_url = $state('');
 	let booking_link = $state('');
 	let available_today = $state(false);
+	let allow_communications = $state(true);
 
 	let loading = $state(false);
 	let error = $state('');
@@ -45,7 +47,7 @@
 		}
 
 		if (window.location.search.includes('success=true')) {
-			successMsg = 'Payment successful! Your upgrade is now active.';
+			successMsg = $t('profile.alerts.payment_success');
 			setTimeout(() => (successMsg = ''), 5000);
 			// Clean up URL
 			window.history.replaceState({}, document.title, window.location.pathname);
@@ -64,6 +66,7 @@
 			video_url = user.video_url || '';
 			booking_link = user.booking_link || '';
 			available_today = user.available_today || false;
+			allow_communications = user.allow_communications !== undefined ? !!user.allow_communications : true;
 		} else if (isAuthenticated === false) {
 			// Redirect if not logged in
 			goto('/');
@@ -90,13 +93,13 @@
 
 			// Update local auth store so layout / other components reflect new name
 			auth.updateUser({ first_name, last_name, phone });
-			successMsg = 'Profile updated successfully!';
+			successMsg = $t('profile.alerts.profile_updated');
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
 			if (err.errors && Array.isArray(err.errors)) {
 				error = err.errors.map((e: any) => Object.values(e)[0]).join(', ');
 			} else {
-				error = err.message || 'Update failed';
+				error = err.message || $t('profile.alerts.update_failed');
 			}
 		} finally {
 			loading = false;
@@ -120,10 +123,10 @@
 			});
 			profile_picture_url = res.profile_picture_url;
 			auth.updateUser({ profile_picture_url });
-			successMsg = 'Profile picture updated successfully!';
+			successMsg = $t('profile.alerts.picture_updated');
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
-			error = err.message || 'Failed to upload picture.';
+			error = err.message || $t('profile.alerts.picture_failed');
 		} finally {
 			loading = false;
 		}
@@ -137,10 +140,10 @@
 
 		try {
 			const res = await fetchApi('/auth/resend-verification', { method: 'POST' });
-			successMsg = res.message || 'Verification email sent!';
+			successMsg = res.message || $t('profile.alerts.verification_sent');
 			setTimeout(() => (successMsg = ''), 5000);
 		} catch (err: any) {
-			error = err.message || 'Failed to resend verification.';
+			error = err.message || $t('profile.alerts.verification_failed');
 		} finally {
 			loading = false;
 		}
@@ -161,7 +164,7 @@
 				window.location.href = res.url;
 			}
 		} catch (err: any) {
-			error = err.message || 'Checkout failed';
+			error = err.message || $t('profile.alerts.checkout_failed');
 			loading = false;
 		}
 	}
@@ -181,7 +184,7 @@
 				window.location.href = res.url;
 			}
 		} catch (err: any) {
-			error = err.message || 'Checkout failed';
+			error = err.message || $t('profile.alerts.checkout_failed');
 			loading = false;
 		}
 	}
@@ -196,13 +199,13 @@
 		try {
 			await fetchApi(`/users/${user.id}/instructor-profile`, {
 				method: 'PUT',
-				body: JSON.stringify({ video_url, booking_link, available_today })
+				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications })
 			});
-			auth.updateUser({ video_url, booking_link, available_today });
-			successMsg = 'Instructor profile updated successfully!';
+			auth.updateUser({ video_url, booking_link, available_today, allow_communications });
+			successMsg = $t('profile.alerts.instructor_updated');
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
-			error = err.message || 'Update failed';
+			error = err.message || $t('profile.alerts.update_failed');
 		} finally {
 			loading = false;
 		}
@@ -224,7 +227,7 @@
 				window.location.href = res.url;
 			}
 		} catch (err: any) {
-			error = err.message || 'Checkout failed';
+			error = err.message || $t('profile.alerts.checkout_failed');
 			loading = false;
 		}
 	}
@@ -314,23 +317,26 @@
 			<div class="tier-section">
 				<h3>{$t('profile_enhancements.tier_title')}</h3>
 				<p class="tier-desc">{$t('profile_enhancements.tier_desc')}</p>
-				<p><strong>{$t('profile_enhancements.current_tier')}</strong> {user.tier || 'basic'}</p>
+				<p>
+					<strong>{$t('profile_enhancements.current_tier')}</strong> 
+					<span class="tier-badge {user.tier || 'basic'}">{$t('admin.' + (user.tier || 'basic'), { default: user.tier || 'Basic' })}</span>
+				</p>
 				
 				<div class="tiers-grid">
 					<!-- Summer Pass -->
 					<div class="tier-card {user.tier === 'summer_pass' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.summer_pass')}</h4>
-						<p class="price">€{$pricings.summer_pass}</p>
+						<p class="price">{$formatPrice($pricings.summer_pass)}</p>
 						<p class="desc">{$t('profile_enhancements.summer_pass_desc')}</p>
 						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.tier === 'summer_pass'} class="premium-button">
-							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass')}</Label>
+							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass', { values: { price: $formatPrice($pricings.summer_pass) } })}</Label>
 						</Button>
 					</div>
 
 					<!-- Monthly Premium -->
 					<div class="tier-card {user.tier === 'premium' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.premium_monthly')}</h4>
-						<p class="price">€{$pricings.premium_subscription}<span style="font-size: 1rem;">/mo</span></p>
+						<p class="price">{$formatPrice($pricings.premium_subscription)}<span style="font-size: 1rem;">/mo</span></p>
 						<p class="desc">{$t('profile_enhancements.premium_monthly_desc')}</p>
 						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.tier === 'premium' || user.tier === 'summer_pass'} class="premium-button">
 							<Label>
@@ -339,7 +345,7 @@
 								{:else if user.tier === 'summer_pass'}
 									Included in Pass
 								{:else}
-									{$t('profile_enhancements.subscribe')}
+									{$t('profile_enhancements.subscribe', { values: { price: $formatPrice($pricings.premium_subscription) } })}
 								{/if}
 							</Label>
 						</Button>
@@ -362,7 +368,7 @@
 							<Textfield variant="outlined" bind:value={video_url} label={$t('profile_enhancements.video_url')} style="flex: 1;" />
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $pricings.video_upgrade } })}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.video_upgrade) } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -377,7 +383,7 @@
 							<Textfield variant="outlined" bind:value={booking_link} label={$t('profile_enhancements.booking_url')} style="flex: 1;" />
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $pricings.link_upgrade } })}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.link_upgrade) } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -394,9 +400,20 @@
 							</label>
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $pricings.badge_upgrade } })}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.badge_upgrade) } })}</Label>
 							</Button>
 						{/if}
+					</div>
+
+					<!-- Allow Communications Toggle -->
+					<div class="upgrade-row">
+						<div class="upgrade-info">
+							<h4>Allow Direct Messages</h4>
+							<p class="desc">Enable users to send you messages through your public profile.</p>
+						</div>
+						<label style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+							<input type="checkbox" bind:checked={allow_communications} /> Allow Messages
+						</label>
 					</div>
 
 					<Button type="submit" variant="raised" disabled={loading} class="premium-button save-btn">
@@ -413,7 +430,7 @@
 						<h4>{$t('profile_enhancements.homepage_spotlight')}</h4>
 						{#if featured_instructor && featured_instructor !== 'full'}
 							<p class="desc" style="color: #2e7d32; font-weight: bold;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">check_circle</span> {$t('profile_enhancements.currently_featured')}</p>
-							<p class="desc">{$t('profile_enhancements.expires_on')}: {new Date(featured_instructor.featured_until).toLocaleDateString()}</p>
+							<p class="desc">{$t('profile_enhancements.expires_on')}: {new Date(featured_instructor.featured_until).toLocaleDateString('en-GB')}</p>
 						{:else if featured_instructor === 'full'}
 							<p class="desc" style="color: #d32f2f;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">lock</span> All featured spots are currently taken.</p>
 						{:else}
@@ -423,11 +440,11 @@
 					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || !!featured_instructor} class="premium-button" style="background-color: {featured_instructor ? '#ccc' : '#FFD700'}; color: {featured_instructor ? '#666' : '#000'};">
 						<Label>
 							{#if featured_instructor && featured_instructor !== 'full'}
-								Active until {new Date(featured_instructor.featured_until).toLocaleDateString()}
+								Active until {new Date(featured_instructor.featured_until).toLocaleDateString('en-GB')}
 							{:else if featured_instructor === 'full'}
 								Currently Unavailable
 							{:else}
-								{$t('profile_enhancements.buy_featured', { values: { price: $pricings.featured_instructor } })}
+								{$t('profile_enhancements.buy_featured', { values: { price: $formatPrice($pricings.featured_instructor) } })}
 							{/if}
 						</Label>
 					</Button>
@@ -458,6 +475,8 @@
 				bind:value={email}
 				label="Email Address"
 				required
+				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
+				input$title="Please enter a valid email address with a domain (e.g. .com)"
 				disabled
 				style="width: 100%;"
 			/>
@@ -466,6 +485,8 @@
 				type="tel"
 				bind:value={phone}
 				label="Phone Number"
+				input$pattern={'^6[0-9]{8}$'}
+				input$title="Phone number must start with 6 and be exactly 9 digits long"
 				style="width: 100%;"
 			/>
 
@@ -482,7 +503,7 @@
 					<p class="desc">{$t('geolocation.toggle_desc')}</p>
 				</div>
 				<label style="display: flex; align-items: center; gap: 0.5rem;">
-					<input type="checkbox" bind:checked={$isGeolocationEnabled} />
+					<input type="checkbox" bind:checked={$isGeolocationEnabled} aria-label={$t('geolocation.toggle_label')} />
 				</label>
 			</div>
 		</div>
@@ -705,38 +726,47 @@
 		color: #fff;
 		text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 	}
-	.pricing-options {
-		display: flex;
-		gap: 1rem;
-		margin-top: 1rem;
+	.tier-badge.summer_pass {
+		background: linear-gradient(135deg, var(--secondary-color), #ff8a65);
+		color: #fff;
+		text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 	}
-	.pricing-card {
+	.tiers-grid {
+		display: flex;
+		gap: 1.5rem;
+		margin-top: 1.5rem;
+	}
+	.tier-card {
 		flex: 1;
-		border: 1px solid #ccc;
+		border: 1px solid var(--border-color);
 		border-radius: 8px;
-		padding: 1.5rem;
+		padding: 2rem;
 		text-align: center;
 		background: var(--surface-color);
+		display: flex;
+		flex-direction: column;
 	}
-	.pricing-card.highlight {
+	.tier-card.active-tier {
 		border: 2px solid var(--primary-color);
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.2);
 		position: relative;
 	}
-	.pricing-card h4 {
+	.tier-card h4 {
 		margin-top: 0;
 		color: var(--terciary-color);
+		font-size: 1.25rem;
 	}
-	.pricing-card .price {
-		font-size: 1.5rem;
+	.tier-card .price {
+		font-size: 2rem;
 		font-weight: bold;
 		color: var(--primary-color);
-		margin: 0.5rem 0;
+		margin: 1rem 0;
 	}
-	.pricing-card .desc {
-		font-size: 0.85rem;
+	.tier-card .desc {
+		font-size: 0.95rem;
 		color: #666;
-		margin-bottom: 1rem;
+		margin-bottom: 1.5rem;
+		flex-grow: 1;
 	}
 	.upgrade-row {
 		display: flex;
@@ -765,5 +795,38 @@
 		.pricing-options {
 			flex-direction: column;
 		}
+	}
+
+	/* Dark mode overrides */
+	:global([data-theme="dark"]) .tier-section {
+		background: rgba(255, 255, 255, 0.02);
+	}
+	:global([data-theme="dark"]) .tier-desc,
+	:global([data-theme="dark"]) .tier-card .desc,
+	:global([data-theme="dark"]) .upgrade-info .desc {
+		color: #ccc;
+	}
+	:global([data-theme="dark"]) .upload-btn {
+		background: rgba(255, 255, 255, 0.1);
+		color: white;
+	}
+	:global([data-theme="dark"]) .upload-btn:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+	:global([data-theme="dark"]) .avatar-preview {
+		background: #333;
+	}
+	:global([data-theme="dark"]) .verification-alert {
+		background: rgba(255, 152, 0, 0.15);
+	}
+	:global([data-theme="dark"]) .verification-alert .alert-content p {
+		color: #ddd;
+	}
+	:global([data-theme="dark"]) .tier-badge {
+		background: rgba(255, 255, 255, 0.1);
+		color: #ddd;
+	}
+	:global([data-theme="dark"]) .subtitle {
+		color: #ccc;
 	}
 </style>

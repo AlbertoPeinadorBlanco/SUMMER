@@ -12,6 +12,16 @@
 	let filteredInstructors: any[] = $state([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
+	let defaultBio = $derived($t('home.default_bio'));
+
+	function truncateWords(text: string, limit: number = 50) {
+		if (!text) return '';
+		const words = text.split(/\s+/);
+		if (words.length > limit) {
+			return words.slice(0, limit).join(' ') + '...';
+		}
+		return text;
+	}
 
 	onMount(async () => {
 		try {
@@ -90,7 +100,12 @@
 	{:else}
 		<div class="instructor-grid">
 			{#each filteredInstructors as instructor}
-				<a href="/marketplace/{instructor.id}" class="instructor-card premium-card {isFeatured(instructor) ? 'is-featured' : ''}">
+				<a href="/marketplace/{instructor.id}" class="instructor-card premium-card {isFeatured(instructor) ? 'is-featured' : ''}" style="position: relative;">
+					{#if isFeatured(instructor)}
+						<div class="featured-star-badge" title={$t('profile_enhancements.public_featured')}>
+							<span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span>
+						</div>
+					{/if}
 					<div class="card-content">
 						<div class="avatar-container">
 							{#if instructor.profile_picture_url}
@@ -108,12 +123,6 @@
 
 						<!-- Perk badges -->
 						<div class="perk-badges">
-							{#if isFeatured(instructor)}
-								<span class="perk-badge featured-badge">
-									<span class="material-icons">star</span>
-									{$t('profile_enhancements.currently_featured')}
-								</span>
-							{/if}
 							{#if instructor.tier === 'premium' || instructor.tier === 'summer_pass'}
 								<span class="perk-badge premium-badge">
 									<span class="material-icons">workspace_premium</span>
@@ -141,7 +150,7 @@
 						</div>
 
 						<p class="instructor-bio">
-							{instructor.bio ? (instructor.bio.length > 100 ? instructor.bio.substring(0, 100) + '...' : instructor.bio) : ''}
+							{truncateWords(typeof instructor.bio === 'string' && instructor.bio.trim() ? instructor.bio : defaultBio, 50)}
 						</p>
 					</div>
 					<div class="card-footer">
@@ -207,7 +216,6 @@
 		flex-direction: column;
 		height: 100%;
 		border: 1px solid var(--border-color);
-		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		transition: transform 0.2s, box-shadow 0.2s;
 	}
@@ -304,10 +312,20 @@
 		font-size: 12px;
 	}
 
-	.featured-badge {
-		background: linear-gradient(135deg, #FFD700, #FFA500);
-		color: #5a3a00;
-		box-shadow: 0 2px 6px rgba(255, 165, 0, 0.4);
+	.featured-star-badge {
+		position: absolute;
+		top: -12px;
+		right: -12px;
+		background: linear-gradient(135deg, #FFD700, #FDB931);
+		color: white;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+		z-index: 10;
 	}
 
 	.premium-badge {
@@ -332,6 +350,12 @@
 		padding: 1rem;
 		border-top: 1px solid var(--border-color);
 		text-align: center;
+		border-bottom-left-radius: 11px;
+		border-bottom-right-radius: 11px;
+	}
+
+	:global([data-theme="dark"]) .card-footer {
+		background-color: var(--primary-color-soft);
 	}
 
 	.view-profile-link {

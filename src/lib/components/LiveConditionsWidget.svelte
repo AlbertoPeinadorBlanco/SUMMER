@@ -30,7 +30,9 @@
         error = false;
         try {
             const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            const res = await fetch(`${API_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`);
+            const res = await fetch(`${API_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`, {
+                cache: 'no-store'
+            });
             
             if (!res.ok) throw new Error('API fetch failed');
             
@@ -52,7 +54,6 @@
     });
 
     onMount(() => {
-        // Refresh every hour (3600000 ms)
         initGeolocation();
     });
 
@@ -78,7 +79,7 @@
             <span class="material-icons location-icon">location_on</span>
             <h3>{$t('weather.live_conditions')}</h3>
         </div>
-        <select class="beach-selector" bind:value={$selectedBeach}>
+        <select class="beach-selector" bind:value={$selectedBeach} aria-label="Select a beach location">
             {#each regions as region}
                 <optgroup label={region.name}>
                     {#each region.beaches as beach}
@@ -233,6 +234,17 @@
         box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
     }
 
+    :global([data-theme='dark']) .beach-selector {
+        color: white;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    }
+
+    :global([data-theme='dark']) .beach-selector option,
+    :global([data-theme='dark']) .beach-selector optgroup {
+        background-color: var(--surface-color);
+        color: white;
+    }
+
     .location-icon {
         color: #e63946;
         margin-right: 8px;
@@ -347,5 +359,28 @@
         .beach-selector {
             width: 100%;
         }
+    }
+
+    /* Dark Theme Overrides */
+    :global([data-theme='dark']) .widget-container {
+        background: rgba(30, 30, 36, 0.85);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #f5f5f5;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    :global([data-theme='dark']) .widget-header h3 {
+        color: #e0e0e0;
+    }
+    :global([data-theme='dark']) .beach-selector {
+        border-color: #444;
+    }
+    :global([data-theme='dark']) .metric-card {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    :global([data-theme='dark']) .metric-info .value {
+        color: #f5f5f5;
+    }
+    :global([data-theme='dark']) .metric-info .label {
+        color: #aaa;
     }
 </style>

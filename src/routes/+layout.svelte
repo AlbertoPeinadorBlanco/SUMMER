@@ -98,12 +98,16 @@
 					</Title>
 					<div class="desktop-nav" role="navigation" aria-label="Desktop menu">
 						{#if !$isGeolocationEnabled}
-							<div class="header-location" style="display: flex; align-items: center; margin-right: 1.5rem; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;" title={$t('nav.location_disabled')}>
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div onclick={() => $isGeolocationEnabled = true} class="header-location" style="display: flex; align-items: center; margin-right: 1.5rem; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; cursor: pointer;" title={$t('nav.location_disabled')}>
 								<span class="material-icons" style="font-size: 1.1rem; margin-right: 4px; color: #ffeb3b;">location_off</span>
 								{$t('nav.location_disabled')}
 							</div>
 						{:else if $userLocationName}
-							<div class="header-location" style="display: flex; align-items: center; margin-right: 1.5rem; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;">
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div onclick={() => $isGeolocationEnabled = false} class="header-location" style="display: flex; align-items: center; margin-right: 1.5rem; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; cursor: pointer;" title="Disable Location">
 								<span class="material-icons" style="font-size: 1.1rem; margin-right: 4px;">location_on</span>
 								{$userLocationName}
 							</div>
@@ -220,7 +224,7 @@
 				>
 					{#if $auth.isAuthenticated && $auth.user}
 						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (notifMenuOpen = false)} role="group">
-							<Button onclick={() => (notifMenuOpen = !notifMenuOpen)} class="nav-btn desktop-nav" style="min-width: 48px; padding: 0;">
+							<Button onclick={() => (notifMenuOpen = !notifMenuOpen)} class="nav-btn desktop-nav" style="min-width: 48px; padding: 0;" aria-label="Toggle notifications">
 								<span class="material-icons" aria-hidden="true">notifications</span>
 								{#if unreadCount > 0}
 									<span style="position: absolute; top: 0px; right: 4px; background: #e63946; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold;">{unreadCount}</span>
@@ -244,7 +248,7 @@
 						</div>
 
 						<div class="user-menu-container" style="position: relative; margin-left: 0.5rem;" onmouseleave={() => (userMenuOpen = false)} role="group">
-							<Button onclick={() => (userMenuOpen = !userMenuOpen)} class="nav-btn user-btn desktop-nav">
+							<Button onclick={() => (userMenuOpen = !userMenuOpen)} class="nav-btn user-btn desktop-nav" aria-label="Toggle user menu">
 								{#if $auth.user.profile_picture_url}
 									<img src={`http://localhost:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
 								{:else}
@@ -262,7 +266,7 @@
 									</a>
 									<a href="/bookings" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">book_online</span>
-										My Bookings
+										{$t('nav.my_bookings')}
 									</a>
 									{#if $auth.user.role === 'instructor'}
 										<a href="/instructor/manage-ads" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
@@ -358,8 +362,17 @@
 
 		{#if mobileMenuOpen}
 			<nav class="mobile-menu" aria-label="Mobile menu">
-				{#if $userLocationName}
-					<div class="mobile-menu-location" style="display: flex; align-items: center; padding: 1rem; margin-bottom: 0.5rem; background: rgba(226, 109, 63, 0.1); border-radius: 8px; color: var(--primary-color); font-weight: bold;">
+				{#if !$isGeolocationEnabled}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<div onclick={() => $isGeolocationEnabled = true} class="mobile-menu-location" style="display: flex; align-items: center; padding: 1rem; margin-bottom: 0.5rem; background: rgba(226, 109, 63, 0.1); border-radius: 8px; color: #f57c00; font-weight: bold; cursor: pointer;" title="Enable Location">
+						<span class="material-icons" style="font-size: 1.2rem; margin-right: 8px;">location_off</span>
+						{$t('nav.location_disabled')}
+					</div>
+				{:else if $userLocationName}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<div onclick={() => $isGeolocationEnabled = false} class="mobile-menu-location" style="display: flex; align-items: center; padding: 1rem; margin-bottom: 0.5rem; background: rgba(226, 109, 63, 0.1); border-radius: 8px; color: var(--primary-color); font-weight: bold; cursor: pointer;" title="Disable Location">
 						<span class="material-icons" style="font-size: 1.2rem; margin-right: 8px;">location_on</span>
 						{$userLocationName}
 					</div>
@@ -438,7 +451,7 @@
 					</Button>
 					<Button href="/bookings" onclick={toggleMobileMenu} class="mobile-menu-btn">
 						<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">book_online</span>
-						<Label>My Bookings</Label>
+						<Label>{$t('nav.my_bookings')}</Label>
 					</Button>
 					<Button
 						onclick={() => {
@@ -471,7 +484,7 @@
 
 		<footer class="app-footer">
 			<div class="footer-content" style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
-				<nav class="footer-links" aria-label="Footer navigation" style="justify-content: center; margin: 0;">
+				<nav class="footer-links" aria-label="Footer navigation">
 					<a href="/about">{$t('footer.about')}</a>
 					<a href="/contact">{$t('nav.contact')}</a>
 					<a href="/sitemap">{$t('footer.sitemap')}</a>
@@ -498,8 +511,8 @@
 							<a href={`https://t.me/share/url?url=${shareUrl}&text=${shareText}`} target="_blank" class="share-icon" title="Share on Telegram">
 								<svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
 							</a>
-							<button onclick={copyToClipboard} class="share-icon" title="Copy Link" style="background:none; border:none; padding:0; cursor:pointer;">
-								<span class="material-icons" style="font-size:20px;">content_copy</span>
+							<button onclick={copyToClipboard} class="share-icon" title="Copy Link" aria-label="Copy to clipboard" style="background:none; border:none; padding:0; cursor:pointer;">
+								<span class="material-icons" aria-hidden="true" style="font-size:20px;">content_copy</span>
 							</button>
 						</div>
 					</div>
@@ -726,14 +739,22 @@
 		gap: 1rem;
 	}
 
+	.footer-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem 1.5rem;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+	}
+
 	.footer-links a {
 		color: var(--primary-color-soft);
-		text-decoration: none;
-		margin: 0 1rem;
+		text-decoration: underline;
 	}
 
 	.footer-links a:hover {
-		text-decoration: underline;
+		opacity: 0.8;
 	}
 
 	.loading-screen {
@@ -759,8 +780,8 @@
 		}
 	}
 
-	/* Mobile friendliness */
-	@media (max-width: 600px) {
+	/* Mobile and Tablet friendliness */
+	@media (max-width: 1024px) {
 		.main-content {
 			padding: 1rem;
 		}
@@ -804,6 +825,10 @@
 		text-decoration: underline;
 		font-weight: bold;
 		transition: opacity 0.2s;
+	}
+
+	:global([data-theme="dark"]) .copyright-link {
+		color: #1a4a7a;
 	}
 
 	.copyright-link:hover {

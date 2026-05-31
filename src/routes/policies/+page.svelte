@@ -81,7 +81,7 @@
 
 	.policies-header h1 {
 		font-size: 2.5rem;
-		color: #1d3557;
+		color: var(--terciary-color);
 		margin-bottom: 1rem;
 	}
 
@@ -101,7 +101,7 @@
 	}
 
 	.legal-text h3 {
-		color: #1d3557;
+		color: var(--terciary-color);
 		font-size: 1.2rem;
 		margin: 1.5rem 0 0.5rem 0;
 	}

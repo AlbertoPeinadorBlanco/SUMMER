@@ -46,6 +46,8 @@
 				bind:value={email}
 				label={$t('contact.form_email')}
 				required
+				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
+				input$title="Please enter a valid email address with a domain (e.g. .com)"
 				style="width: 100%;"
 			></Textfield>
 		</div>

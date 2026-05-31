@@ -231,14 +231,22 @@
 		gap: 4px;
 	}
 
+	:global([data-theme="dark"]) .location-badge {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
 	.location-badge .material-icons {
 		font-size: 16px;
 	}
 
 	.card-footer {
 		padding: 1.5rem;
-		border-top: 1px solid #f0f0f0;
+		border-top: 1px solid var(--border-color);
 		background: #fafafa;
+	}
+
+	:global([data-theme="dark"]) .card-footer {
+		background: var(--surface-color);
 	}
 
 	.loading-state, .empty-state {

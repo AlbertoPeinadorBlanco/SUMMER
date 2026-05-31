@@ -26,6 +26,7 @@
 		"login": "Login",
 		"createAd": "Create Ad",
 		"manageAds": "Manage My Adverts",
+		"my_bookings": "My Bookings",
 		"network": "Network",
 		"resources": "Resources",
 		"instructors": "Instructors",
@@ -83,7 +84,8 @@
 		"step2_desc": "Choose a time that works for you and secure your spot instantly.",
 		"step3_title": "3. Hit the Waves",
 		"step3_desc": "Meet your instructor at the beach and improve your skills.",
-		"featured_instructor": "Featured Instructor of the Week"
+		"featured_instructor": "Featured Instructors of the Week",
+		"default_bio": "Certified instructor ready to help you hit the waves. Book a session today to improve your skills!"
 	},
 	"marketplace": {
 		"title": "Explore Classes & Courses",
@@ -185,8 +187,19 @@
 		"contact_success_desc": "Your message to {name} has been sent.",
 		"close": "Close",
 		"guide_banner_title": "Need help understanding subscriptions?",
-		"guide_banner_desc": "Check out the new Instructor Guide to learn about Premium and Summer Pass.",
-		"guide_banner_btn": "Read the Guide"
+		"guide_banner_desc": "Check out the new Instructor Guide to learn about Premium and the Summer Pass.",
+		"guide_banner_btn": "Read the Guide",
+		"alerts": {
+			"payment_success": "Payment successful! Your upgrade is now active.",
+			"profile_updated": "Profile updated successfully!",
+			"update_failed": "Update failed",
+			"picture_updated": "Profile picture updated successfully!",
+			"picture_failed": "Failed to upload picture.",
+			"verification_sent": "Verification email sent!",
+			"verification_failed": "Failed to resend verification.",
+			"checkout_failed": "Checkout failed",
+			"instructor_updated": "Instructor profile updated successfully!"
+		}
 	},
 	"contact": {
 		"title": "Contact Us",
@@ -315,7 +328,7 @@
 		"intro_video": "Introductory Video",
 		"intro_video_desc": "Add a video link to introduce yourself to students.",
 		"video_url": "Video URL",
-		"unlock": "Unlock for €{price}",
+		"unlock": "Unlock for {price}",
 		"personal_link": "Personal Booking Link",
 		"personal_link_desc": "Link directly to your own booking software.",
 		"booking_url": "Booking URL",
@@ -324,22 +337,23 @@
 		"enable_badge": "Enable Badge",
 		"save": "Save Enhancements",
 		"saving": "Saving...",
-		"featured_title": "Featured \"Instructor of the Week\"",
+		"featured_title": "Instructor of the week",
+		"public_featured": "Instructor of the week!",
 		"featured_desc": "Get exclusive visibility on our homepage for an entire week.",
-		"homepage_spotlight": "Homepage Spotlight",
+		"homepage_spotlight": "Instructor of the week",
 		"currently_featured": "You are currently the featured instructor!",
 		"expires_on": "Expires on",
 		"taken_until": "Position taken until",
-		"buy_featured": "Buy for €{price}",
+		"buy_featured": "Buy for {price}",
 		"tier_title": "Instructor Tier",
 		"tier_desc": "Upgrade your account to get more visibility in search results.",
 		"current_tier": "Current Tier:",
 		"summer_pass": "Summer Pass",
 		"summer_pass_desc": "One-time payment. Valid until September 30th.",
-		"buy_summer_pass": "Buy for €99",
+		"buy_summer_pass": "Buy for {price}",
 		"premium_monthly": "Premium (Monthly)",
 		"premium_monthly_desc": "Billed monthly. Cancel anytime.",
-		"subscribe": "Subscribe for €15/mo"
+		"subscribe": "Subscribe for {price}/mo"
 	},
 	"admin": {
 		"title": "Admin Dashboard",
@@ -541,5 +555,12 @@
 		"kayak": "Kayak",
 		"snorkel": "Snorkel",
 		"other": "Other"
+	},
+	"my_bookings_page": {
+		"title": "My Bookings",
+		"subtitle": "Track the status of your requested classes.",
+		"loading": "Loading bookings...",
+		"no_bookings": "You haven't booked any classes yet.",
+		"tbd": "TBD"
 	}
 }

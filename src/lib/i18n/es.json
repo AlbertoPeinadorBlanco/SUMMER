@@ -26,7 +26,8 @@
 		"login": "Iniciar sesión",
 		"createAd": "Crear Anuncio",
 		"manageAds": "Mis Anuncios",
-		"network": "Red Surf",
+		"my_bookings": "Mis Reservas",
+		"network": "Conecta",
 		"resources": "Recursos",
 		"instructors": "Instructores",
 		"gear_guide": "Guía de Equipamiento",
@@ -83,7 +84,8 @@
 		"step2_desc": "Elige un horario que te convenga y asegura tu lugar al instante.",
 		"step3_title": "3. Entra al Agua",
 		"step3_desc": "Reúnete con tu instructor en la playa y mejora tus habilidades.",
-		"featured_instructor": "Instructor Destacado de la Semana"
+		"featured_instructor": "Instructores Destacados de la Semana",
+		"default_bio": "Instructor certificado listo para ayudarte en el agua. ¡Reserva una clase hoy para mejorar tus habilidades!"
 	},
 	"marketplace": {
 		"title": "Explora Clases y Cursos",
@@ -186,7 +188,18 @@
 		"close": "Cerrar",
 		"guide_banner_title": "¿Necesitas ayuda para entender las suscripciones?",
 		"guide_banner_desc": "Consulta la nueva Guía para Instructores para aprender sobre Premium y el Pase de Verano.",
-		"guide_banner_btn": "Leer la Guía"
+		"guide_banner_btn": "Leer la Guía",
+		"alerts": {
+			"payment_success": "¡Pago exitoso! Su mejora está ahora activa.",
+			"profile_updated": "¡Perfil actualizado con éxito!",
+			"update_failed": "Error al actualizar",
+			"picture_updated": "¡Foto de perfil actualizada con éxito!",
+			"picture_failed": "Error al subir la foto.",
+			"verification_sent": "¡Correo de verificación enviado!",
+			"verification_failed": "Error al reenviar la verificación.",
+			"checkout_failed": "Error en el pago",
+			"instructor_updated": "¡Perfil de instructor actualizado con éxito!"
+		}
 	},
 	"contact": {
 		"title": "Contáctanos",
@@ -315,7 +328,7 @@
 		"intro_video": "Vídeo de Introducción",
 		"intro_video_desc": "Añade un enlace de vídeo para presentarte a los estudiantes.",
 		"video_url": "URL del Vídeo",
-		"unlock": "Desbloquear por {price}€",
+		"unlock": "Desbloquear por {price}",
 		"personal_link": "Enlace de Reserva Personal",
 		"personal_link_desc": "Enlaza directamente con tu propio software de reservas.",
 		"booking_url": "URL de Reserva",
@@ -325,22 +338,23 @@
 		"unlock_2": "Desbloquear por 2€",
 		"save": "Guardar Mejoras",
 		"saving": "Guardando...",
-		"featured_title": "\"Instructor Destacado\" de la Semana",
+		"featured_title": "Instructor de la semana",
+		"public_featured": "¡Instructor destacado de la semana!",
 		"featured_desc": "Obtén visibilidad exclusiva en nuestra página principal durante toda una semana.",
-		"homepage_spotlight": "Destacado en Página Principal",
+		"homepage_spotlight": "Instructor de la semana",
 		"currently_featured": "¡Actualmente eres el instructor destacado!",
 		"expires_on": "Caduca el",
 		"taken_until": "Posición ocupada hasta",
-		"buy_featured": "Comprar por {price}€",
+		"buy_featured": "Comprar por {price}",
 		"tier_title": "Nivel de Instructor",
 		"tier_desc": "Actualiza tu cuenta para obtener más visibilidad en los resultados de búsqueda.",
 		"current_tier": "Nivel Actual:",
 		"summer_pass": "Pase de Verano",
 		"summer_pass_desc": "Pago único. Válido hasta el 30 de Septiembre.",
-		"buy_summer_pass": "Comprar por 99€",
+		"buy_summer_pass": "Comprar por {price}",
 		"premium_monthly": "Premium (Mensual)",
 		"premium_monthly_desc": "Facturado mensualmente. Cancela cuando quieras.",
-		"subscribe": "Suscribirse por 15€/mes"
+		"subscribe": "Suscribirse por {price}/mes"
 	},
 	"admin": {
 		"title": "Panel de Administración",
@@ -542,5 +556,12 @@
 		"kayak": "Kayak",
 		"snorkel": "Snorkel",
 		"other": "Otro"
+	},
+	"my_bookings_page": {
+		"title": "Mis Reservas",
+		"subtitle": "Haz seguimiento del estado de tus clases solicitadas.",
+		"loading": "Cargando reservas...",
+		"no_bookings": "Todavía no has reservado ninguna clase.",
+		"tbd": "Por determinar"
 	}
 }

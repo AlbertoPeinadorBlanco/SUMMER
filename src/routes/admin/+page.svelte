@@ -4,6 +4,7 @@
 	import { auth } from '$lib/stores/auth';
 	import { fetchApi } from '$lib/api';
 	import { t } from 'svelte-i18n';
+	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
 	import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
@@ -326,6 +327,9 @@
 										<span class="online-indicator" title="Online"></span>
 									{/if}
 									{user.username}
+									{#if user.is_verified}
+										<span class="material-icons" style="color: #2196f3; font-size: 14px;" title="Verified">verified</span>
+									{/if}
 								</div>
 							</Cell>
 							<Cell>{user.email}</Cell>
@@ -358,7 +362,7 @@
 	<Content>
 		<div class="form-container">
 			<Textfield bind:value={formUsername} label={$t('admin.username')} style="width: 100%;" disabled={isEditing} />
-			<Textfield bind:value={formEmail} label={$t('admin.email')} type="email" style="width: 100%;" disabled={isEditing} />
+			<Textfield bind:value={formEmail} label={$t('admin.email')} type="email" input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'} input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%;" disabled={isEditing} />
 			{#if !isEditing}
 				<Textfield bind:value={formPassword} label="Password" type="password" style="width: 100%;" />
 			{/if}
@@ -445,6 +449,17 @@
 						<div class="detail-item">
 							<strong>{$t('admin.tier')}:</strong> 
 							<span class="badge tier-{detailsData.user.tier || 'basic'}">{$t(`admin.${detailsData.user.tier || 'basic'}`) || detailsData.user.tier}</span>
+							{#if detailsData.user.tier_expires_at}
+								<br><small>Until: {new Date(detailsData.user.tier_expires_at).toLocaleDateString('en-GB')}</small>
+							{/if}
+						</div>
+						<div class="detail-item">
+							<strong>Verified:</strong> 
+							{#if detailsData.user.is_verified}
+								<span class="material-icons" style="color: #2196f3; font-size: 16px; vertical-align: middle;">verified</span> Yes
+							{:else}
+								No
+							{/if}
 						</div>
 					</div>
 					
@@ -453,11 +468,19 @@
 						<div class="details-grid">
 							<div class="detail-item" style="grid-column: span 2;"><strong>{$t('admin.bio')}:</strong> {detailsData.user.bio || '-'}</div>
 							<div class="detail-item"><strong>{$t('admin.specialization')}:</strong> {detailsData.user.specialization || '-'}</div>
-							<div class="detail-item"><strong>Upgrades:</strong> 
-								{#if detailsData.user.has_video_upgrade} <span class="badge">Video</span> {/if}
-								{#if detailsData.user.has_link_upgrade} <span class="badge">Link</span> {/if}
-								{#if detailsData.user.has_badge_upgrade} <span class="badge">Badge</span> {/if}
-								{#if !detailsData.user.has_video_upgrade && !detailsData.user.has_link_upgrade && !detailsData.user.has_badge_upgrade} - {/if}
+							<div class="detail-item">
+								<strong>Featured Until:</strong> 
+								{#if detailsData.user.featured_until && new Date(detailsData.user.featured_until) > new Date()}
+									<span style="color: #2e7d32; font-weight: bold;">{new Date(detailsData.user.featured_until).toLocaleDateString('en-GB')}</span>
+								{:else}
+									-
+								{/if}
+							</div>
+							<div class="detail-item" style="grid-column: span 2;"><strong>Upgrades:</strong> 
+								{#if detailsData.user.has_video_upgrade} <span class="badge" style="background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;">Video</span> {/if}
+								{#if detailsData.user.has_link_upgrade} <span class="badge" style="background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;">Link</span> {/if}
+								{#if detailsData.user.has_badge_upgrade} <span class="badge" style="background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;">Badge</span> {/if}
+								{#if !detailsData.user.has_video_upgrade && !detailsData.user.has_link_upgrade && !detailsData.user.has_badge_upgrade} None {/if}
 							</div>
 						</div>
 					{/if}
@@ -487,7 +510,7 @@
 										<Cell>{booking.id}</Cell>
 										<Cell>{booking.title}</Cell>
 										<Cell>{new Date(booking.starts_at).toLocaleDateString()}</Cell>
-										<Cell>€{booking.price}</Cell>
+										<Cell>{$formatPrice(booking.price)}</Cell>
 										<Cell>{booking.status_id === 1 ? 'Pending' : booking.status_id === 2 ? 'Confirmed' : 'Cancelled'}</Cell>
 										<Cell>
 											<IconButton class="material-icons" style="color: #1976d2;" onclick={() => openInnerBooking('edit', booking)} aria-label="Edit Booking">edit</IconButton>
@@ -522,7 +545,7 @@
 									<Row>
 										<Cell>{ad.id}</Cell>
 										<Cell>{ad.title}</Cell>
-										<Cell>€{ad.price}</Cell>
+										<Cell>{$formatPrice(ad.price)}</Cell>
 										<Cell>
 											<span class="badge {ad.is_active ? 'tier-premium' : 'role-user'}">
 												{ad.is_active ? 'Active' : 'Inactive'}

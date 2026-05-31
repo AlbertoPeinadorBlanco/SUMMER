@@ -215,16 +215,21 @@
 
 <div class="teacher-grid" role="list" aria-labelledby="marketplace-title">
 	{#each filteredClasses as ad (ad.id)}
-		<article class="card-container premium-card {ad.instructor_tier === 'premium' ? 'is-premium' : ''}" role="listitem">
-			<Card>
-				<PrimaryAction onclick={() => window.location.href = `/marketplace/class/${ad.id}`} aria-label="Class {ad.title}">
+		<article class="card-container premium-card {ad.instructor_tier === 'premium' ? 'is-premium' : ''} {ad.featured_until && new Date(ad.featured_until) > new Date() ? 'is-featured' : ''}" role="listitem" style="position: relative;">
+			{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
+				<div class="featured-star-badge" title={$t('profile_enhancements.public_featured')}>
+					<span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span>
+				</div>
+			{/if}
+			<Card style="height: 100%; display: flex; flex-direction: column;">
+				<PrimaryAction onclick={() => window.location.href = `/marketplace/class/${ad.id}`} aria-label="Class {ad.title}" style="flex: 1; display: flex; flex-direction: column;">
 					<Media
 						class="card-media"
-						style="background-image: url('{ad.image_url ? `http://127.0.0.1:5000${ad.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f4f8fa;"
+						style="background-image: url('{ad.image_url ? `http://127.0.0.1:5000${ad.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f4f8fa; flex-shrink: 0;"
 						aspectRatio="16x9"
 						aria-label="Photo of {ad.title}"
 					/>
-					<Content class="mdc-typography--body2" style="padding: 1.5rem;">
+					<Content class="mdc-typography--body2" style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column;">
 						<div class="ad-header">
 							<h2 class="mdc-typography--headline6" style="margin: 0; color: var(--text-color);">
 								{getTitle(ad)}
@@ -233,11 +238,6 @@
 								{#if ad.instructor_tier === 'premium'}
 									<span class="badge premium-badge" title="Premium Instructor">
 										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">stars</span> Premium
-									</span>
-								{/if}
-								{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
-									<span class="badge featured-badge" title="Instructor of the Week">
-										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">military_tech</span> Featured
 									</span>
 								{/if}
 								{#if ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)}
@@ -278,7 +278,7 @@
 							</div>
 						</div>
 
-						<div class="teacher-details">
+						<div class="teacher-details" style="margin-top: auto;">
 							<span
 								><span
 									class="material-icons"
@@ -568,6 +568,26 @@
 		border: 2px solid #FFD700;
 		box-shadow: 0 8px 16px rgba(255, 215, 0, 0.2);
 		border-radius: 4px;
+	}
+	.is-featured {
+		border: 2px solid #FFD700;
+		box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
+		border-radius: 4px;
+	}
+	.featured-star-badge {
+		position: absolute;
+		top: -12px;
+		right: -12px;
+		background: linear-gradient(135deg, #FFD700, #FDB931);
+		color: white;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+		z-index: 10;
 	}
 
 	.book-btn-custom {

@@ -28,7 +28,7 @@
 [data-theme="dark"] {
 	--primary-color: #7abdec;       /* Brighter primary for better contrast */
 	--secondary-color: #f6946e;     /* Brighter secondary */
-	--terciary-color: #4b89b4;      /* Brighter tertiary */
+	--terciary-color: #7ec0ee;      /* Brighter, more legible blue for headings */
 	--primary-color-soft: #1f4764;  /* Lighter soft color */
 	--background-color: #121e29;    /* Lighter background */
 	--surface-color: #1c2d3d;       /* Lighter surface */
@@ -39,13 +39,48 @@
 	--mdc-theme-on-surface: #ffffff;
 	--mdc-theme-text-primary-on-background: #ffffff;
 	--mdc-text-field-ink-color: #ffffff;
-	--mdc-text-field-label-ink-color: #b0c4de;
-	--mdc-text-field-outlined-idle-border-color: #3b576e;
-	--mdc-text-field-outlined-hover-border-color: #5ea3d0;
+	--mdc-text-field-label-ink-color: #ffffff;
+	--mdc-text-field-outlined-idle-border-color: rgba(255, 255, 255, 0.4);
+	--mdc-text-field-outlined-hover-border-color: #7ec0ee;
+	--mdc-text-field-fill-color: rgba(255, 255, 255, 0.15);
 	--mdc-select-ink-color: #ffffff;
-	--mdc-select-label-ink-color: #b0c4de;
-	--mdc-select-outlined-idle-border-color: #3b576e;
+	--mdc-select-label-ink-color: #ffffff;
+	--mdc-select-outlined-idle-border-color: rgba(255, 255, 255, 0.4);
+	--mdc-select-fill-color: rgba(255, 255, 255, 0.15);
 	--mdc-select-dropdown-icon-color: #ffffff;
+}
+
+/* Ensure paragraph and list text is pure white in dark mode unless explicitly colored inline */
+[data-theme="dark"] p:not([style*="color"]),
+[data-theme="dark"] li:not([style*="color"]) {
+	color: #ffffff !important;
+}
+
+/* Force text fields and filters to match the weather widget location selector in dark mode */
+[data-theme="dark"] .mdc-text-field--outlined,
+[data-theme="dark"] select,
+[data-theme="dark"] input:not(.mdc-text-field__input):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+[data-theme="dark"] textarea:not(.mdc-text-field__input) {
+	background-color: var(--surface-color) !important;
+	color: white !important;
+	border-radius: 4px !important;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .mdc-text-field__icon {
+	color: #ffffff !important;
+}
+
+[data-theme="dark"] .mdc-text-field__input,
+[data-theme="dark"] .mdc-select__selected-text {
+	color: #ffffff !important;
+}
+
+[data-theme="dark"] ::placeholder,
+[data-theme="dark"] .mdc-text-field__input::placeholder,
+[data-theme="dark"] .mdc-floating-label {
+	color: #ffffff !important;
+	opacity: 0.9 !important;
 }
 
 body {
@@ -58,29 +93,76 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* Premium micro-animations */
-.premium-card {
+/* Premium micro-animations and depth */
+.premium-card,
+.mdc-card {
 	transition:
 		transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
 		box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.premium-card:hover {
+.premium-card:hover,
+.mdc-card:hover {
 	transform: translateY(-4px);
 	box-shadow: 0 10px 20px rgba(226, 109, 63, 0.15);
 }
 
-.premium-button {
+.premium-button,
+.mdc-button--raised {
 	transition:
 		transform 0.2s ease,
+		box-shadow 0.2s ease,
 		opacity 0.2s ease;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.premium-button:hover {
+.premium-button:hover,
+.mdc-button--raised:hover {
 	transform: scale(1.02);
 	opacity: 0.95;
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
-.premium-button:active {
+.premium-button:active,
+.mdc-button--raised:active {
 	transform: scale(0.98);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Global shadow for inputs in light mode */
+.mdc-text-field--outlined,
+select,
+input:not(.mdc-text-field__input):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+textarea:not(.mdc-text-field__input) {
+	background-color: var(--surface-color);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode stronger shadow overrides */
+[data-theme="dark"] .premium-card,
+[data-theme="dark"] .mdc-card {
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+}
+[data-theme="dark"] .premium-card:hover,
+[data-theme="dark"] .mdc-card:hover {
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6) !important;
+}
+[data-theme="dark"] .premium-button,
+[data-theme="dark"] .mdc-button--raised {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+}
+[data-theme="dark"] .premium-button:hover,
+[data-theme="dark"] .mdc-button--raised:hover {
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Disabled buttons — make them visible in dark mode */
+[data-theme="dark"] .mdc-button:disabled,
+[data-theme="dark"] .mdc-button--raised:disabled,
+[data-theme="dark"] .mdc-button--outlined:disabled {
+	background-color: rgba(255, 255, 255, 0.12) !important;
+	color: rgba(255, 255, 255, 0.55) !important;
+	box-shadow: none !important;
+	opacity: 1 !important;
 }

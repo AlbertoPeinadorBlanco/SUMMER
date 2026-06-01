@@ -60,7 +60,19 @@
 		"rain": "Rain",
 		"snow": "Snow",
 		"thunderstorm": "Thunderstorm",
-		"unknown": "Unknown"
+		"unknown": "Unknown",
+		"wind_direction": "Wind Dir",
+		"light_left": "Light Left",
+		"visibility": "Visibility",
+		"uva_index": "UVA Index",
+		"dir_n": "N",
+		"dir_ne": "NE",
+		"dir_e": "E",
+		"dir_se": "SE",
+		"dir_s": "S",
+		"dir_sw": "SW",
+		"dir_w": "W",
+		"dir_nw": "NW"
 	},
 	"about": {
 		"title": "About SurfMarket",
@@ -109,6 +121,9 @@
 		"level_4": "Level 4 (Novice)",
 		"level_5": "Level 5 (Intermediate)",
 		"level_6": "Level 6 (Advanced Int.)",
+		"level_7": "Level 7 (Advanced)",
+		"level_8": "Level 8 (Expert)",
+		"level_9": "Level 9 (Professional/Master)",
 		"booking_success_title": "Successfully Booked!",
 		"booking_success_msg": "Your spot has been reserved for",
 		"exclusive_offer": "Exclusive Offer for You!",
@@ -118,7 +133,10 @@
 		"need_gear": "Need gear in {location}?",
 		"visit_shop_for": "Visit {shop} for the best surf equipment rentals and purchases before your class.",
 		"available_today": "Available Today",
-		"premium": "Premium"
+		"premium": "Premium",
+		"levels_guide": "Difficulty Levels Guide",
+		"login_to_book": "Please log in to book a class.",
+		"boosted": "Boosted"
 	},
 	"advert": {
 		"details_title": "Class Details",
@@ -132,7 +150,10 @@
 		"level": "Level",
 		"book_now": "Book Now",
 		"back_btn": "Back to Marketplace",
-		"online": "Online"
+		"online": "Online",
+		"booking_success_title": "Request Sent!",
+		"booking_pending_approval": "Your request for {title} has been sent to the instructor and is pending approval.",
+		"booking_status_page": "You can check its status on your My Bookings page."
 	},
 	"createAd": {
 		"title": "Create a New Class Ad",
@@ -186,6 +207,32 @@
 		"contact_success_msg": "Success!",
 		"contact_success_desc": "Your message to {name} has been sent.",
 		"close": "Close",
+		"page_title": "My Profile",
+		"page_subtitle": "Update your personal information.",
+		"username_label": "Username",
+		"first_name_label": "First Name",
+		"last_name_label": "Last Name",
+		"email_label": "Email Address",
+		"phone_label": "Phone Number",
+		"letters_only": "Letters only",
+		"email_format": "Please enter a valid email address with a domain (e.g. .com)",
+		"phone_format": "Phone number must start with 6 and be exactly 9 digits long",
+		"save_changes": "Save Changes",
+		"saving": "Saving...",
+		"change_picture": "Change Picture",
+		"settings": "Settings",
+		"allow_messages_title": "Allow Direct Messages",
+		"allow_messages_desc": "If enabled, users can send you messages from your profile.",
+		"allow_messages_label": "Allow messages",
+		"danger_zone": {
+			"title": "Danger Zone",
+			"delete_profile": "Delete Profile",
+			"delete_warning": "Are you sure you want to delete your profile? This action is permanent and cannot be undone.",
+			"delete_success": "Profile deleted successfully.",
+			"delete_error": "Failed to delete profile.",
+			"yes": "Yes, Delete",
+			"no": "Cancel"
+		},
 		"guide_banner_title": "Need help understanding subscriptions?",
 		"guide_banner_desc": "Check out the new Instructor Guide to learn about Premium and the Summer Pass.",
 		"guide_banner_btn": "Read the Guide",
@@ -230,9 +277,9 @@
 		"behavior_title": "4. Behavior Policy",
 		"behavior_desc": "Users are expected to maintain respectful behavior towards instructors and other students. Any form of harassment, discrimination, or abusive behavior may result in immediate suspension or termination of your account.",
 		"communications_title": "5. Communications Policy",
-		"communications_desc": "All communications between students and instructors must be conducted through the platform's messaging system. Sharing personal contact information to circumvent platform bookings is strictly prohibited.",
+		"communications_desc": "All communications on the platform must be respectful, professional, and courteous. We do not tolerate harassment, offensive language, discrimination, or any form of abusive behavior in messages. Violating this policy will result in immediate suspension or termination of your account.",
 		"payments_title": "6. Payments Policy",
-		"payments_desc": "All payments for classes and subscriptions are securely processed through our authorized payment gateways. SurfMarket is not responsible for any direct transactions made outside of the platform."
+		"payments_desc": "Instructors manage their own payments and class fees directly with students outside of the platform. SurfMarket does not process any transactions for class bookings. Instead, SurfMarket operates on an advertising model where we only charge instructors subscription fees or one-time payments to post, promote, and maintain their adverts on our marketplace."
 	},
 	"levels": {
 		"title": "Difficulty Levels",
@@ -256,6 +303,27 @@
 		"level_9_title": "Level 9 (Professional/Master)",
 		"level_9_desc": "Master-level control. Exceptional proficiency, able to handle extreme conditions and execute with perfect precision."
 	},
+	"createAd": {
+		"title": "Create Advert",
+		"subtitle": "Fill in the details for your class or course",
+		"form_update": "Update Advert",
+		"form_type": "Type",
+		"type_class": "Class",
+		"type_course": "Course",
+		"form_difficulty": "Difficulty Level",
+		"form_title_en": "Title (English)",
+		"form_title_es": "Title (Spanish)",
+		"form_desc_en": "Description (English)",
+		"form_desc_es": "Description (Spanish)",
+		"form_price": "Price ({symbol})",
+		"form_capacity": "Capacity (people)",
+		"form_duration": "Duration (minutes)",
+		"form_location": "Location",
+		"success_msg": "Advert saved successfully!",
+		"error_msg": "Failed to save advert.",
+		"delete_confirm": "Are you sure you want to delete this advert?",
+		"select_another_picture": "Select another picture"
+	},
 	"manageAds": {
 		"total_earnings": "Total Earnings",
 		"earnings": "Earnings",
@@ -271,7 +339,20 @@
 		"reject": "Reject",
 		"guide_banner_title": "Need help maximizing your reach?",
 		"guide_banner_desc": "Check out the new Instructor Guide to learn how Bumps and Premium Perks work.",
-		"guide_banner_btn": "Read the Guide"
+		"guide_banner_btn": "Read the Guide",
+		"loading": "Loading...",
+		"table_student": "Student",
+		"table_contact": "Contact",
+		"table_date": "Booking Date",
+		"table_status": "Status",
+		"table_actions": "Actions",
+		"status_pending": "Pending",
+		"status_confirmed": "Confirmed",
+		"status_rejected": "Rejected",
+		"status_cancelled": "Cancelled",
+		"error_update_status": "Failed to update pupil status.",
+		"error_delete": "Failed to delete advert.",
+		"error_checkout": "Failed to initiate checkout"
 	},
 	"instructors": {
 		"title": "Our Instructors",
@@ -297,13 +378,11 @@
 		"wetsuit_summer": "Summer (July - September): A 3/2mm or 4/3mm wetsuit is perfect. The water is around 20°C (68°F).",
 		"wetsuit_spring": "Spring/Autumn: A solid 4/3mm wetsuit is highly recommended.",
 		"wetsuit_winter": "Winter: You will definitely need a 5/4/3mm suit along with booties and a hood!",
-		"wetsuit_footer": "Most of our instructors will provide a wetsuit as part of the class, but if you're renting gear on your own, always ask the shop for the appropriate thickness based on the season.",
+		"wetsuit_footer": "Remember to check with your instructor if they provide the equipment or if you need to bring your own.",
 		"boards_title": "Surfboards: Foam vs. Hard Boards",
 		"boards_desc": "If you are just starting out, the board you choose will make or break your first experience.",
 		"boards_foam": "Foam Boards (Soft-tops): These are the ultimate beginner boards. They are highly buoyant, making it incredibly easy to catch waves and stand up. Plus, their soft material prevents injuries if you happen to wipe out and get hit by the board.",
 		"boards_hard": "Hard Boards (Fiberglass/Epoxy): These are for intermediate to advanced surfers. They are faster and more maneuverable but offer less buoyancy and stability. Wait until you can comfortably stand and turn on a foam board before upgrading!",
-		"essentials_title": "Other Essentials",
-		"essentials_desc": "Don't forget a strong leash to keep your board attached to you, and a fresh coat of surf wax on the top of the board to keep your feet from slipping off!",
 		"accessories_title": "Essential Accessories",
 		"accessories_desc": "Beyond your board and wetsuit, there are a few other items you'll need.",
 		"accessories_leash": "Leash: Your lifeline. Always wear it so you don't lose your board or hit someone else.",
@@ -320,7 +399,11 @@
 		"kayak_title": "Kayaking Essentials",
 		"kayak_desc": "Always wear a well-fitted Personal Flotation Device (PFD). For coastal kayaking, a sit-on-top kayak is highly recommended for beginners as it's unsinkable and easy to re-enter.",
 		"snorkel_title": "Snorkeling Gear",
-		"snorkel_desc": "A good mask that seals properly without leaking is crucial. Pair it with a dry-top snorkel to prevent water from entering, and comfortable fins for efficient swimming."
+		"snorkel_desc": "A good mask that seals properly without leaking is crucial. Pair it with a dry-top snorkel to prevent water from entering, and comfortable fins for efficient swimming.",
+		"windsurf_title": "Windsurfing Essentials",
+		"windsurf_desc": "A wide board with a centerboard is essential for stability when starting out. You will also need a lightweight beginner sail tailored to your weight and the current wind conditions.",
+		"safety_title": "General Water Safety Essentials",
+		"safety_desc": "Regardless of the sport, always prioritize safety. This includes knowing the local weather and tide conditions, never going out alone in rough waters, and always having an emergency whistle or a waterproof communication device if you venture far from shore."
 	},
 	"profile_enhancements": {
 		"title": "Profile Enhancements",
@@ -345,6 +428,9 @@
 		"expires_on": "Expires on",
 		"taken_until": "Position taken until",
 		"buy_featured": "Buy for {price}",
+		"active_until": "Active until {date}",
+		"featured_available": "Available now! Secure your spot on the homepage for 7 days.",
+		"featured_full": "All featured spots are currently taken.",
 		"tier_title": "Instructor Tier",
 		"tier_desc": "Upgrade your account to get more visibility in search results.",
 		"current_tier": "Current Tier:",
@@ -353,7 +439,10 @@
 		"buy_summer_pass": "Buy for {price}",
 		"premium_monthly": "Premium (Monthly)",
 		"premium_monthly_desc": "Billed monthly. Cancel anytime.",
-		"subscribe": "Subscribe for {price}/mo"
+		"subscribe": "Subscribe for {price}/mo",
+		"status_active": "Active",
+		"status_included": "Included in Pass",
+		"status_unavailable": "Currently Unavailable"
 	},
 	"admin": {
 		"title": "Admin Dashboard",
@@ -486,11 +575,11 @@
 		"subscriptions_title": "Subscription Types",
 		"subscriptions_desc": "We offer flexible subscription tiers to suit your needs:",
 		"basic_title": "Basic / Free",
-		"basic_desc": "Start your journey on Surfmarket for free. Create your profile, list your standard surfing classes, and start receiving inquiries directly from students.",
+		"basic_desc": "Create and manage your profile for free. You can also create adverts, but they won't be published until you activate a subscription. Please note that on the free tier, your profile visibility is restricted to yourself, meaning you cannot receive messages from students.",
 		"premium_title": "Premium Instructor",
-		"premium_desc": "Unlock advanced profile features. You get the Premium badge, the ability to add external booking links, and priority placement in standard searches.",
+		"premium_desc": "Unlock full platform access. Publish your adverts to the marketplace, get the Premium badge, add external booking links, toggle the 'Available Today' badge, upload introductory videos, and gain priority placement in searches. This subscription is billed monthly.",
 		"pass_title": "Summer Pass",
-		"pass_desc": "The ultimate package. Get everything in Premium, plus introductory video uploads, advanced 'Available Today' badge toggling, and discounted visibility bumps.",
+		"pass_desc": "Enjoy all the exact same features and benefits as the Premium subscription, but packaged as a four-month pass. Ideal for the high season, offering a significant discount compared to the monthly billing option.",
 		"positioning_title": "Advert Positioning & Visibility",
 		"bump_title": "The 'Bump' Feature (€2)",
 		"bump_desc1": "Want immediate visibility? For just €2, you can 'bump' your advert to the absolute top of the marketplace list for 24 hours.",
@@ -520,6 +609,7 @@
 		"cancel": "Cancel",
 		"logging_in": "Logging in...",
 		"login_btn": "Login",
+		"invalid_credentials": "Invalid username or password.",
 		"no_account": "Don't have an account?",
 		"signup_here": "Sign up here",
 		"signup_title": "Create an Account",
@@ -538,7 +628,13 @@
 		"bio": "Biography",
 		"creating": "Creating...",
 		"signup_btn": "Sign Up",
-		"already_account": "Already have an account? Use the Login button in the menu."
+		"already_account": "Already have an account? Use the Login button in the menu.",
+		"forgot_password": "Forgot Password?",
+		"forgot_password_desc": "Enter your email to receive a password reset link.",
+		"send_reset_email": "Send Reset Link",
+		"back_to_login": "Back to Login",
+		"reset_password": "Reset Password",
+		"reset_password_desc": "Enter your new password below."
 	},
 	"geolocation": {
 		"policy_title": "7. Geolocation Policy",
@@ -559,8 +655,31 @@
 	"my_bookings_page": {
 		"title": "My Bookings",
 		"subtitle": "Track the status of your requested classes.",
-		"loading": "Loading bookings...",
+		"loading": "Loading your bookings...",
 		"no_bookings": "You haven't booked any classes yet.",
-		"tbd": "TBD"
+		"tbd": "TBD",
+		"cancel_booking": "Cancel Booking",
+		"cancel_confirm": "Are you sure you want to cancel this booking?",
+		"cancel_success": "Booking cancelled successfully.",
+		"cancel_error": "Failed to cancel booking.",
+		"yes": "Yes",
+		"no": "No"
+	},
+	"sitemap": {
+		"main_nav": "Main Navigation",
+		"support_policies": "Support & Policies",
+		"account": "Account"
+	},
+	"security": {
+		"title": "Security",
+		"change_password": "Change Password",
+		"current_password": "Current Password",
+		"new_password": "New Password",
+		"confirm_new_password": "Confirm New Password",
+		"password_mismatch": "New passwords do not match",
+		"password_success": "Password updated successfully!",
+		"password_error": "Failed to update password",
+		"send_reset_email": "Send Password Reset Email",
+		"reset_email_sent": "If that email exists, a reset link has been sent."
 	}
 }

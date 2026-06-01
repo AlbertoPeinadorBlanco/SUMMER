@@ -6,7 +6,7 @@
 	import Textfield from '@smui/textfield';
 	import Icon from '@smui/textfield/icon';
 
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 
 	let instructors: any[] = $state([]);
 	let filteredInstructors: any[] = $state([]);
@@ -109,7 +109,7 @@
 					<div class="card-content">
 						<div class="avatar-container">
 							{#if instructor.profile_picture_url}
-								<img src={`http://localhost:5000${instructor.profile_picture_url}`} alt="{instructor.first_name}" class="avatar-img" loading="lazy" decoding="async" width="80" height="80" />
+								<img src={getMediaUrl(instructor.profile_picture_url)} alt="{instructor.first_name}" class="avatar-img" loading="lazy" decoding="async" width="80" height="80" />
 							{:else}
 								<span class="material-icons avatar-placeholder" aria-hidden="true">person</span>
 							{/if}

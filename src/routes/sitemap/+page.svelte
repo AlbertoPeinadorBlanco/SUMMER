@@ -16,33 +16,33 @@
 
 	<div class="sitemap-grid">
 		<section class="sitemap-section">
-			<h2>Main Navigation</h2>
+			<h2>{$t('sitemap.main_nav')}</h2>
 			<ul>
 				<li><a href="/">{$t('nav.home')}</a></li>
 				<li><a href="/marketplace">{$t('nav.marketplace')}</a></li>
 				<li><a href="/instructors">{$t('nav.instructors')}</a></li>
-				<li><a href="/adverts">Adverts</a></li>
+				<li><a href="/adverts">{$t('nav.adverts')}</a></li>
 				<li><a href="/about">{$t('footer.about')}</a></li>
 			</ul>
 		</section>
 
 		<section class="sitemap-section">
-			<h2>Support & Policies</h2>
+			<h2>{$t('sitemap.support_policies')}</h2>
 			<ul>
 				<li><a href="/contact">{$t('nav.contact')}</a></li>
 				<li><a href="/policies">{$t('nav.policies')}</a></li>
 				<li><a href="/levels">{$t('levels.title')}</a></li>
-				<li><a href="/gear-guide">Gear Guide</a></li>
+				<li><a href="/gear-guide">{$t('nav.gear_guide')}</a></li>
 			</ul>
 		</section>
 
 		<section class="sitemap-section">
-			<h2>Account</h2>
+			<h2>{$t('sitemap.account')}</h2>
 			<ul>
 				<li><a href="/profile">{$t('nav.profile')}</a></li>
-				<li><a href="/bookings">My Bookings</a></li>
+				<li><a href="/bookings">{$t('nav.my_bookings')}</a></li>
 				<li><a href="/instructor/manage-ads">{$t('nav.manageAds')}</a></li>
-				<li><a href="/signup">Sign Up</a></li>
+				<li><a href="/signup">{$t('auth.signup_btn')}</a></li>
 			</ul>
 		</section>
 	</div>
@@ -93,6 +93,9 @@
 		margin-bottom: 1.5rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 2px solid var(--primary-color-soft);
+		min-height: 4rem;
+		display: flex;
+		align-items: flex-end;
 	}
 
 	.sitemap-section ul {

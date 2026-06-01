@@ -1,4 +1,11 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_URL || API_BASE_URL.replace('/api', '');
+
+export function getMediaUrl(path: string | undefined | null): string {
+	if (!path) return '';
+	if (path.startsWith('http')) return path;
+	return `${MEDIA_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+}
 
 // Attempt a silent token refresh using the refresh cookie
 async function refreshAccessToken(): Promise<boolean> {

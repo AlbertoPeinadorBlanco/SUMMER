@@ -8,13 +8,16 @@
 	import { t, isLoading, locale } from 'svelte-i18n';
 	import { currency, type CurrencyCode } from '$lib/stores/currency';
 	import { auth } from '$lib/stores/auth';
-	import { notifications } from '$lib/stores/notifications';
+	import { notifications } from '$lib/stores/notifications.svelte';
 	import LoginPopup from '$lib/components/LoginPopup.svelte';
 	import CookieConsent from '$lib/components/CookieConsent.svelte';
 	import GeolocationNotice from '$lib/components/GeolocationNotice.svelte';
 	import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import { theme, toggleTheme } from '$lib/stores/theme';
 	import { selectedBeach, userLocationName, isGeolocationEnabled } from '$lib/stores/location';
+	import { getMediaUrl } from '$lib/api';
+	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
 	let shareUrl = '';
@@ -42,14 +45,19 @@
 	let resourcesMenuOpen = $state(false);
 	let adminMenuOpen = $state(false);
 
-	let unreadCount = $derived($notifications.filter(n => !n.is_read).length);
+	let unreadCount = $derived(notifications.items.filter(n => !n.is_read).length);
 
 	$effect(() => {
 		if ($auth.isAuthenticated) {
+			$page.url.pathname; // refetch when navigating
 			notifications.fetch();
 		} else {
 			notifications.clear();
 		}
+	});
+
+	$effect(() => {
+		console.log("Layout notifications.items updated, count:", notifications.items.length);
 	});
 
 	async function markNotifRead(id: any) {
@@ -224,18 +232,19 @@
 				>
 					{#if $auth.isAuthenticated && $auth.user}
 						<div class="user-menu-container" style="position: relative;" onmouseleave={() => (notifMenuOpen = false)} role="group">
-							<Button onclick={() => (notifMenuOpen = !notifMenuOpen)} class="nav-btn desktop-nav" style="min-width: 48px; padding: 0;" aria-label="Toggle notifications">
+							<Button onclick={() => { notifMenuOpen = !notifMenuOpen; if (notifMenuOpen) notifications.fetch(); }} class="nav-btn hide-on-mobile" style="min-width: 48px; padding: 0;" aria-label="Toggle notifications">
 								<span class="material-icons" aria-hidden="true">notifications</span>
 								{#if unreadCount > 0}
 									<span style="position: absolute; top: 0px; right: 4px; background: #e63946; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold;">{unreadCount}</span>
 								{/if}
 							</Button>
 							{#if notifMenuOpen}
-								<div class="user-dropdown desktop-nav" style="width: 320px; max-height: 400px; overflow-y: auto; right: 0;">
-									{#if $notifications.length === 0}
+								<div class="user-dropdown" style="width: 320px; max-width: 90vw; max-height: 400px; overflow-y: auto; right: 0;">
+									<div style="background: red; color: white; padding: 4px; font-size: 10px;">DEBUG: {notifications.items.length} items</div>
+									{#if notifications.items.length === 0}
 										<div style="padding: 1rem; text-align: center; color: #666;">No notifications</div>
 									{:else}
-										{#each $notifications as notif}
+										{#each notifications.items as notif}
 											<div class="dropdown-item" style="flex-direction: column; align-items: flex-start; padding: 1rem; border-bottom: 1px solid var(--border-color); {notif.is_read ? 'opacity: 0.6;' : 'font-weight: 600;'}" onclick={() => markNotifRead(notif.id)} role="button" tabindex="0" onkeydown={(e) => { if(e.key === 'Enter') markNotifRead(notif.id); }}>
 												<div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 0.25rem; text-transform: uppercase;">{notif.type.replace('_', ' ')}</div>
 												<div style="font-size: 0.9rem; white-space: normal; line-height: 1.4;">{notif.message}</div>
@@ -250,7 +259,7 @@
 						<div class="user-menu-container" style="position: relative; margin-left: 0.5rem;" onmouseleave={() => (userMenuOpen = false)} role="group">
 							<Button onclick={() => (userMenuOpen = !userMenuOpen)} class="nav-btn user-btn desktop-nav" aria-label="Toggle user menu">
 								{#if $auth.user.profile_picture_url}
-									<img src={`http://localhost:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
+									<img src={getMediaUrl($auth.user.profile_picture_url)} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
 								{:else}
 									<div class="nav-avatar-placeholder">
 										{$auth.user.username ? $auth.user.username.charAt(0).toUpperCase() : 'U'}
@@ -324,7 +333,7 @@
 				>
 					<Button
 						onclick={toggleCurrency}
-						class="lang-btn-mobile"
+						class="lang-btn-mobile hide-on-mobile"
 						style="min-width: 48px; padding: 0;"
 						aria-label="Toggle currency"
 					>
@@ -332,7 +341,7 @@
 					</Button>
 					<Button
 						onclick={toggleLanguage}
-						class="lang-btn-mobile"
+						class="lang-btn-mobile hide-on-mobile"
 						style="min-width: 48px; padding: 0;"
 						aria-label="Toggle language"
 					>
@@ -340,7 +349,7 @@
 					</Button>
 					<Button
 						onclick={toggleTheme}
-						class="lang-btn-mobile theme-toggle-btn"
+						class="lang-btn-mobile theme-toggle-btn hide-on-mobile"
 						style="min-width: 48px; padding: 0;"
 						aria-label="Toggle theme"
 					>
@@ -353,6 +362,7 @@
 						onclick={toggleMobileMenu}
 						aria-expanded={mobileMenuOpen}
 						aria-label="Toggle mobile menu"
+						style="margin-right: 8px;"
 					>
 						<span aria-hidden="true">menu</span>
 					</IconButton>
@@ -377,6 +387,29 @@
 						{$userLocationName}
 					</div>
 				{/if}
+
+				<!-- Mobile Extra Controls -->
+				<div class="show-on-mobile" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+					{#if $auth.isAuthenticated && $auth.user}
+						<Button onclick={() => { notifMenuOpen = !notifMenuOpen; if (notifMenuOpen) notifications.fetch(); }} class="mobile-menu-btn" style="flex: 1; justify-content: center; background: rgba(226, 109, 63, 0.1); color: var(--primary-color);">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">notifications</span>
+							{#if unreadCount > 0}
+								<span style="background: #e63946; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; font-weight: bold; margin-left: 4px;">{unreadCount}</span>
+							{/if}
+						</Button>
+					{/if}
+					<Button onclick={toggleCurrency} class="mobile-menu-btn" style="flex: 1; justify-content: center; background: var(--surface-color); border: 1px solid var(--border-color);">
+						<Label>{$currency}</Label>
+					</Button>
+					<Button onclick={toggleLanguage} class="mobile-menu-btn" style="flex: 1; justify-content: center; background: var(--surface-color); border: 1px solid var(--border-color);">
+						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
+					</Button>
+					<Button onclick={toggleTheme} class="mobile-menu-btn" style="flex: 1; justify-content: center; background: var(--surface-color); border: 1px solid var(--border-color);">
+						<span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">
+							{$theme === 'dark' ? 'dark_mode' : 'light_mode'}
+						</span>
+					</Button>
+				</div>
 				<Button href="/" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">home</span>
 					<Label>{$t('nav.home')}</Label>
@@ -441,7 +474,7 @@
 					{/if}
 					<Button href="/profile" onclick={toggleMobileMenu} class="mobile-menu-btn">
 						{#if $auth.user.profile_picture_url}
-							<img src={`http://127.0.0.1:5000${$auth.user.profile_picture_url}`} alt="Profile" class="nav-avatar-mobile" width="24" height="24" loading="lazy" decoding="async" />
+							<img src={getMediaUrl($auth.user.profile_picture_url)} alt="Profile" class="nav-avatar-mobile" width="24" height="24" loading="lazy" decoding="async" />
 						{:else}
 							<div class="nav-avatar-placeholder-mobile">
 								{$auth.user.username ? $auth.user.username.charAt(0).toUpperCase() : 'U'}
@@ -497,7 +530,6 @@
 						<p>&copy; {new Date().getFullYear()} <a href="/" class="copyright-link">{$t('app.title')}</a>. {$t('footer.rights')}</p>
 					</div>
 					<div class="footer-share-section">
-						<span>Share Surfmarket</span>
 						<div class="footer-share-buttons">
 							<a href={`whatsapp://send?text=${shareText}%20${shareUrl}`} target="_blank" class="share-icon" title="Share on WhatsApp">
 								<svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -522,6 +554,7 @@
 		
 		<CookieConsent />
 		<GeolocationNotice />
+		<Toast />
 	</div>
 
 	<LoginPopup bind:open={showLogin} />
@@ -796,12 +829,30 @@
 		}
 		
 		.footer-bottom {
-			flex-direction: column;
+			flex-direction: column-reverse;
 			gap: 1.5rem;
+			margin-top: 1.5rem;
 		}
 		.footer-share-section {
 			position: static !important;
 			justify-content: center !important;
+		}
+		.footer-share-section span {
+			display: none;
+		}
+	}
+
+	@media (max-width: 600px) {
+		:global(.hide-on-mobile) {
+			display: none !important;
+		}
+		.show-on-mobile {
+			display: flex !important;
+		}
+	}
+	@media (min-width: 601px) {
+		.show-on-mobile {
+			display: none !important;
 		}
 	}
 

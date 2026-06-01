@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { API_BASE_URL, getMediaUrl } from '$lib/api';
 
 	let { placement } = $props();
 
@@ -8,7 +9,7 @@
 
 	onMount(async () => {
 		try {
-			const res = await fetch(`http://127.0.0.1:5000/api/banners/public?placement=${placement}`);
+			const res = await fetch(`${API_BASE_URL}/banners/public?placement=${placement}`);
 			if (res.ok) {
 				const banners = await res.json();
 				if (banners.length > 0) {
@@ -27,7 +28,7 @@
 {#if banner}
 	<div class="banner-ad-container">
 		<a href={banner.link_url} target="_blank" rel="noopener noreferrer" class="banner-link">
-			<img src={`http://127.0.0.1:5000${banner.image_url}`} alt={banner.title} class="banner-img" loading="lazy" />
+			<img src={getMediaUrl(banner.image_url)} alt={banner.title} class="banner-img" loading="lazy" />
 			<div class="ad-label">Advertisement</div>
 		</a>
 	</div>

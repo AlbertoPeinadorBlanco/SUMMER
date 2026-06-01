@@ -50,10 +50,7 @@
 				</ul>
 			</section>
 
-			<section>
-				<h2>{$t('gear_guide.essentials_title')}</h2>
-				<p>{$t('gear_guide.essentials_desc')}</p>
-			</section>
+
 
 			<section>
 				<h2>{$t('gear_guide.accessories_title')}</h2>
@@ -86,6 +83,16 @@
 			<section>
 				<h2>{$t('gear_guide.snorkel_title')}</h2>
 				<p>{$t('gear_guide.snorkel_desc')}</p>
+			</section>
+
+			<section>
+				<h2>{$t('gear_guide.windsurf_title')}</h2>
+				<p>{$t('gear_guide.windsurf_desc')}</p>
+			</section>
+
+			<section>
+				<h2>{$t('gear_guide.safety_title')}</h2>
+				<p>{$t('gear_guide.safety_desc')}</p>
 			</section>
 		</main>
 

@@ -7,8 +7,9 @@
 	import { t, locale } from 'svelte-i18n';
 	import { formatPrice } from '$lib/stores/currency';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import SEO from '$lib/components/SEO.svelte';
+	import { showToast } from '$lib/stores/toast';
 	import { onMount } from 'svelte';
 	import BannerAd from '$lib/components/BannerAd.svelte';
 
@@ -69,7 +70,7 @@
 		event.stopPropagation();
 		
 		if (!$auth.isAuthenticated) {
-			alert('Please log in to book a class.');
+			showToast($t('marketplace.login_to_book'), 'error');
 			return;
 		}
 
@@ -113,7 +114,7 @@
 	let filteredClasses = $derived(
 		(data.classes || []).filter((c: any) => {
 			const instructorName = `${c.first_name || ''} ${c.last_name || ''}`.trim() || c.instructor_username || '';
-			const displayTitle = (($locale === 'es' && c.title_es) ? c.title_es : c.title) || '';
+			const displayTitle = c.title || '';
 			
 			// Text search
 			const matchesSearch = displayTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -135,7 +136,7 @@
 	);
 	
 	function getTitle(ad: any) {
-		const t = ($locale === 'es' && ad.title_es) ? ad.title_es : ad.title;
+		const t = ad.title || '';
 		return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
 	}
 </script>
@@ -150,7 +151,7 @@
 		<p class="subtitle">{$t('marketplace.subtitle')}</p>
 		<a href="/levels" class="levels-link">
 			<span class="material-icons" aria-hidden="true">info</span>
-			{$t('levels.title')} Guide
+			{$t('marketplace.levels_guide')}
 		</a>
 	</div>
 
@@ -193,6 +194,9 @@
 			<option value="4">{$t('marketplace.level_4')}</option>
 			<option value="5">{$t('marketplace.level_5')}</option>
 			<option value="6">{$t('marketplace.level_6')}</option>
+			<option value="7">{$t('marketplace.level_7')}</option>
+			<option value="8">{$t('marketplace.level_8')}</option>
+			<option value="9">{$t('marketplace.level_9')}</option>
 		</select>
 	</div>
 </div>
@@ -225,40 +229,51 @@
 				<PrimaryAction onclick={() => window.location.href = `/marketplace/class/${ad.id}`} aria-label="Class {ad.title}" style="flex: 1; display: flex; flex-direction: column;">
 					<Media
 						class="card-media"
-						style="background-image: url('{ad.image_url ? `http://127.0.0.1:5000${ad.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f4f8fa; flex-shrink: 0;"
+						style="background-image: url('{ad.image_url ? getMediaUrl(ad.image_url) : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f4f8fa; flex-shrink: 0;"
 						aspectRatio="16x9"
 						aria-label="Photo of {ad.title}"
 					/>
 					<Content class="mdc-typography--body2" style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column;">
 						<div class="ad-header">
-							<h2 class="mdc-typography--headline6" style="margin: 0; color: var(--text-color);">
+							<h2 class="mdc-typography--headline6" style="margin: 0 0 0.5rem 0; color: var(--text-color); font-weight: bold; line-height: 1.2;">
 								{getTitle(ad)}
 							</h2>
+							
+							{#if ad.instructor_tier === 'premium' || (ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)) || ad.available_today || (ad.featured_until && new Date(ad.featured_until) > new Date())}
+								<div class="ad-perks">
+									{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
+										<span class="badge featured-badge" title={$t('profile_enhancements.public_featured')}>
+											<span class="material-icons">workspace_premium</span> {$t('profile_enhancements.featured_title')}
+										</span>
+									{/if}
+									{#if ad.instructor_tier === 'premium'}
+										<span class="badge premium-badge" title="Premium Instructor">
+											<span class="material-icons">stars</span> {$t('marketplace.premium')}
+										</span>
+									{/if}
+									{#if ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)}
+										<span class="badge bumped-badge" title="Boosted Advert">
+											<span class="material-icons">bolt</span> {$t('marketplace.boosted')}
+										</span>
+									{/if}
+									{#if ad.available_today}
+										<span class="badge available-today-badge" title={$t('marketplace.available_today')}>
+											<span class="material-icons">event_available</span> {$t('marketplace.available_today')}
+										</span>
+									{/if}
+								</div>
+							{/if}
+
 							<div class="ad-meta">
-								{#if ad.instructor_tier === 'premium'}
-									<span class="badge premium-badge" title="Premium Instructor">
-										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">stars</span> Premium
-									</span>
-								{/if}
-								{#if ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)}
-									<span class="badge bumped-badge" title="Boosted Advert">
-										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">bolt</span> Boosted
-									</span>
-								{/if}
-								{#if ad.available_today}
-									<span class="badge available-today-badge" title={$t('marketplace.available_today')}>
-										<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">event_available</span> {$t('marketplace.available_today')}
-									</span>
-								{/if}
-								<span class="badge {ad.class_type}">{ad.class_type}</span>
+								<span class="badge {ad.class_type}">{ad.class_type === 'course' || ad.class_type === 'curso' ? $t('createAd.type_course') : $t('createAd.type_class')}</span>
 								<span class="badge sport">{ad.sport_type ? $t(`sports.${ad.sport_type}`) : $t('sports.surf')}</span>
-								<span class="badge level">Level {ad.difficulty_level || 1}</span>
+								<span class="badge level">{$t('advert.level')} {ad.difficulty_level || 1}</span>
 							</div>
 						</div>
 
 						<div class="instructor-info">
 							<div style="position: relative; display: inline-block; flex-shrink: 0; line-height: 0;">
-								<img src={ad.profile_picture_url ? `http://127.0.0.1:5000${ad.profile_picture_url}` : 'https://ui-avatars.com/api/?name=' + (ad.first_name || ad.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="48" height="48" />
+								<img src={ad.profile_picture_url ? getMediaUrl(ad.profile_picture_url) : 'https://ui-avatars.com/api/?name=' + (ad.first_name || ad.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="48" height="48" />
 								{#if ad.is_verified === 1 || ad.is_verified === true}
 									<div class="verified-badge-small" title="Verified Instructor" style="position: absolute; bottom: -2px; right: -2px; background: var(--surface-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2196f3; padding: 1px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
 										<span class="material-icons" aria-hidden="true" style="font-size: 14px;">verified</span>
@@ -329,8 +344,9 @@
 		{#if bookingSuccess}
 			<div class="success-msg" style="text-align: center; padding: 1rem 0;">
 				<span class="material-icons" style="font-size: 3rem; color: #2e7d32; margin-bottom: 1rem;">check_circle</span>
-				<h3>{$t('marketplace.booking_success_title')}</h3>
-				<p>{$t('marketplace.booking_success_msg')} {getTitle(selectedClassForBooking)}.</p>
+				<h3>{$t('advert.booking_success_title')}</h3>
+				<p>{$t('advert.booking_pending_approval', { values: { title: getTitle(selectedClassForBooking) } })}</p>
+				<p style="margin-top: 0.5rem; color: #555;">{$t('advert.booking_status_page')}</p>
 				
 				{#if activeCoupon}
 					<div class="coupon-box">
@@ -469,8 +485,15 @@
 
 	.ad-header {
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
 		align-items: flex-start;
+		margin-bottom: 1rem;
+	}
+
+	.ad-perks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 		margin-bottom: 0.5rem;
 	}
 
@@ -524,10 +547,16 @@
 
 	.badge {
 		font-size: 0.75rem;
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
+		padding: 0.35rem 0.6rem;
+		border-radius: 6px;
 		text-transform: uppercase;
-		font-weight: bold;
+		font-weight: 700;
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+	}
+	.badge .material-icons {
+		font-size: 14px;
 	}
 	.badge.course, .badge.curso {
 		background: #e3f2fd;

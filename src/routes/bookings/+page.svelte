@@ -5,6 +5,9 @@
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
+	import Button, { Label } from '@smui/button';
+	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
+	import { showToast } from '$lib/stores/toast';
 
 	let user = $derived($auth.user);
 	let isAuthenticated = $derived($auth.isAuthenticated);
@@ -23,6 +26,35 @@
 			console.error("Error loading bookings:", err);
 		} finally {
 			loadingBookings = false;
+		}
+	}
+
+	let isCancelDialogOpen = $state(false);
+	let bookingToCancel = $state<number | null>(null);
+	let isCanceling = $state(false);
+
+	function promptCancelBooking(id: number) {
+		bookingToCancel = id;
+		isCancelDialogOpen = true;
+	}
+
+	async function confirmCancelBooking() {
+		if (bookingToCancel === null) return;
+		isCanceling = true;
+		try {
+			const res = await fetchApi(`/bookings/${bookingToCancel}/status`, {
+				method: 'PUT',
+				body: JSON.stringify({ status_id: 3 })
+			});
+			if (res.error) throw new Error(res.error);
+			showToast($t('my_bookings_page.cancel_success'), 'success');
+			await loadMyBookings();
+		} catch (err: any) {
+			showToast($t('my_bookings_page.cancel_error') + ': ' + err.message, 'error');
+		} finally {
+			isCanceling = false;
+			isCancelDialogOpen = false;
+			bookingToCancel = null;
 		}
 	}
 
@@ -66,6 +98,13 @@
 								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">payments</span> {$formatPrice(booking.price)}</p>
 								<p><span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">calendar_today</span> {booking.starts_at ? new Date(booking.starts_at).toLocaleString() : $t('my_bookings_page.tbd')}</p>
 							</div>
+							{#if booking.status === 'pending' || booking.status === 'confirmed'}
+								<div class="booking-actions" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+									<Button variant="outlined" onclick={() => promptCancelBooking(booking.id)} disabled={isCanceling && bookingToCancel === booking.id} style="color: var(--mdc-theme-error); border-color: var(--mdc-theme-error); width: 100%;">
+										<Label>{isCanceling && bookingToCancel === booking.id ? $t('my_bookings_page.loading') : $t('my_bookings_page.cancel_booking')}</Label>
+									</Button>
+								</div>
+							{/if}
 						</div>
 					{/each}
 				</div>
@@ -75,6 +114,24 @@
 		<div class="loading">{$t('my_bookings_page.loading')}</div>
 	{/if}
 </div>
+
+<Dialog bind:open={isCancelDialogOpen} aria-labelledby="cancel-dialog-title" aria-describedby="cancel-dialog-content">
+	<DialogTitle id="cancel-dialog-title" style="color: var(--mdc-theme-error); display: flex; align-items: center; gap: 8px;">
+		<span class="material-icons">warning</span>
+		{$t('my_bookings_page.cancel_booking')}
+	</DialogTitle>
+	<DialogContent id="cancel-dialog-content">
+		<p>{$t('my_bookings_page.cancel_confirm')}</p>
+	</DialogContent>
+	<DialogActions>
+		<Button variant="outlined" onclick={() => isCancelDialogOpen = false} disabled={isCanceling}>
+			<Label>{$t('my_bookings_page.no')}</Label>
+		</Button>
+		<Button variant="raised" style="background-color: var(--mdc-theme-error); color: white;" onclick={confirmCancelBooking} disabled={isCanceling}>
+			<Label>{isCanceling ? $t('my_bookings_page.loading') : $t('my_bookings_page.yes')}</Label>
+		</Button>
+	</DialogActions>
+</Dialog>
 
 <style>
 	.bookings-dashboard {

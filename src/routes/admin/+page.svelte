@@ -10,6 +10,7 @@
 	import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
 	import Dialog, { Title, Content, Actions } from '@smui/dialog';
 	import Textfield from '@smui/textfield';
+	import Icon from '@smui/textfield/icon';
 	import Select, { Option } from '@smui/select';
 	import IconButton from '@smui/icon-button';
 
@@ -52,6 +53,7 @@
 	let formUsername = $state('');
 	let formEmail = $state('');
 	let formPassword = $state('');
+	let showPassword = $state(false);
 	let formFirstName = $state('');
 	let formLastName = $state('');
 	let formRole = $state('user');
@@ -364,7 +366,13 @@
 			<Textfield bind:value={formUsername} label={$t('admin.username')} style="width: 100%;" disabled={isEditing} />
 			<Textfield bind:value={formEmail} label={$t('admin.email')} type="email" input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'} input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%;" disabled={isEditing} />
 			{#if !isEditing}
-				<Textfield bind:value={formPassword} label="Password" type="password" style="width: 100%;" />
+				<Textfield bind:value={formPassword} label="Password" type={showPassword ? "text" : "password"} style="width: 100%;">
+					{#snippet trailingIcon()}
+						<Icon class="material-icons" role="button" tabindex="0" onclick={() => showPassword = !showPassword} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showPassword = !showPassword)}>
+							{showPassword ? 'visibility_off' : 'visibility'}
+						</Icon>
+					{/snippet}
+				</Textfield>
 			{/if}
 			<Textfield bind:value={formFirstName} label="First Name" style="width: 100%;" />
 			<Textfield bind:value={formLastName} label="Last Name" style="width: 100%;" />

@@ -1,8 +1,9 @@
 import type { PageLoad } from './$types';
+import { API_BASE_URL } from '$lib/api';
 
 export const load: PageLoad = async ({ fetch }) => {
 	try {
-		const res = await fetch('http://127.0.0.1:5000/api/users/featured');
+		const res = await fetch(`${API_BASE_URL}/users/featured`);
 		if (res.ok) {
 			const data = await res.json();
 			return { featured_instructors: data.featured || [] };

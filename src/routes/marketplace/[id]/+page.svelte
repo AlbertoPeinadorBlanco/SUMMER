@@ -8,10 +8,12 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
 	import { fetchApi } from '$lib/api';
+	import { auth } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
 	let teacher = $derived(data.teacher);
+	let currentUser = $derived($auth.user);
 
 	// Contact form state
 	let contactName = $state('');
@@ -22,7 +24,15 @@
 	let contactSuccessDialogOpen = $state(false);
 	let activeCoupon: any = $state(null);
 
+	$effect(() => {
+		if (currentUser && !contactName && !contactEmail) {
+			contactName = currentUser.first_name + ' ' + currentUser.last_name;
+			contactEmail = currentUser.email;
+		}
+	});
+
 	onMount(async () => {
+
 		try {
 			const resCoupons = await fetchApi('/coupons');
 			if (Array.isArray(resCoupons) && resCoupons.length > 0) {
@@ -55,7 +65,7 @@
 	}
 
 	function getTitle(surfClass: any) {
-		const titleStr = ($locale === 'es' && surfClass.title_es) ? surfClass.title_es : surfClass.title;
+		const titleStr = surfClass.title;
 		return titleStr ? titleStr.charAt(0).toUpperCase() + titleStr.slice(1) : '';
 	}
 </script>

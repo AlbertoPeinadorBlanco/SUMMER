@@ -1,9 +1,11 @@
+import { API_BASE_URL } from '$lib/api';
+
 export async function GET({ fetch, url }) {
 	const site = url.origin;
 
 	try {
 		// Fetch dynamic routes from backend API
-		const res = await fetch('http://127.0.0.1:5000/api/sitemap-data');
+		const res = await fetch(`${API_BASE_URL}/sitemap-data`);
 		let dynamicRoutes = { classes: [], instructors: [] };
 		if (res.ok) {
 			dynamicRoutes = await res.json();

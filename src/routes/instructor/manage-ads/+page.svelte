@@ -8,9 +8,10 @@
 	import { t, locale } from 'svelte-i18n';
 	import { auth } from '$lib/stores/auth';
 	import { currencySymbol, formatPrice } from '$lib/stores/currency';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
+	import { showToast } from '$lib/stores/toast';
 
 	let user = $derived($auth.user);
 	let isAuthenticated = $derived($auth.isAuthenticated);
@@ -24,9 +25,7 @@
 	let class_type_id = $state('1');
 	let sport_type = $state('surf');
 	let title = $state('');
-	let title_es = $state('');
 	let description = $state('');
-	let description_es = $state('');
 	let price = $state('');
 	let capacity = $state('');
 	let duration_minutes = $state('');
@@ -53,36 +52,7 @@
 		classes.reduce((sum, ad) => sum + (parseFloat(ad.price) * (ad.bookings_count || 0)), 0)
 	);
 	
-	let lastTranslatedTitleEs = '';
-	let lastTranslatedDescEs = '';
 
-	async function translateText(text: string): Promise<string> {
-		if (!text) return '';
-		try {
-			const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=es|en`);
-			const data = await res.json();
-			return data.responseData?.translatedText || '';
-		} catch (e) {
-			console.error('Translation error', e);
-			return '';
-		}
-	}
-
-	$effect(() => {
-		const handler = setTimeout(async () => {
-			if (title_es && title_es !== lastTranslatedTitleEs) {
-				lastTranslatedTitleEs = title_es;
-				const res = await translateText(title_es);
-				if (res) title = res;
-			}
-			if (description_es && description_es !== lastTranslatedDescEs) {
-				lastTranslatedDescEs = description_es;
-				const res = await translateText(description_es);
-				if (res) description = res;
-			}
-		}, 1500);
-		return () => clearTimeout(handler);
-	});
 
 	$effect(() => {
 		if (isAuthenticated === false) {
@@ -95,7 +65,7 @@
 	async function loadClasses() {
 		loadingClasses = true;
 		try {
-			const data = await fetchApi(`/classes?instructor_id=${user?.id}`);
+			const data = await fetchApi(`/classes?instructor_id=${user?.id}&_t=${Date.now()}`);
 			classes = Array.isArray(data) ? data : [];
 		} catch (err: any) {
 			console.error('Error loading classes:', err);
@@ -118,7 +88,7 @@
 			}
 		} catch (err: any) {
 			console.error("Failed to update status:", err);
-			alert("Failed to update status");
+			showToast($t('manageAds.error_update_status'), 'error');
 		}
 	}
 
@@ -127,11 +97,7 @@
 		class_type_id = (c.class_type === 'course' || c.class_type === 'curso') ? '2' : '1';
 		sport_type = c.sport_type || 'surf';
 		title = c.title || '';
-		title_es = c.title_es || '';
-		lastTranslatedTitleEs = title_es;
 		description = c.description || '';
-		description_es = c.description_es || '';
-		lastTranslatedDescEs = description_es;
 		price = c.price.toString();
 		capacity = c.capacity ? c.capacity.toString() : '';
 		duration_minutes = c.duration_minutes ? c.duration_minutes.toString() : '';
@@ -140,7 +106,7 @@
 		location = c.location || '';
 		is_online = !!c.is_online;
 		difficulty_level = c.difficulty_level ? c.difficulty_level.toString() : '1';
-		currentImageUrl = c.image_url ? `http://127.0.0.1:5000${c.image_url}` : '';
+		currentImageUrl = getMediaUrl(c.image_url);
 		imageFile = null;
 		imagePreview = '';
 		window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,9 +117,7 @@
 		class_type_id = '1';
 		sport_type = 'surf';
 		title = '';
-		title_es = '';
 		description = '';
-		description_es = '';
 		price = '';
 		capacity = '';
 		duration_minutes = '';
@@ -182,7 +146,7 @@
 			await fetchApi(`/classes/${id}`, { method: 'DELETE' });
 			await loadClasses();
 		} catch (err: any) {
-			alert(err.message || 'Failed to delete');
+			showToast(err.message || $t('manageAds.error_delete'), 'error');
 		}
 	}
 
@@ -196,7 +160,7 @@
 				window.location.href = res.url;
 			}
 		} catch (err: any) {
-			alert('Failed to initiate checkout: ' + err.message);
+			showToast($t('manageAds.error_checkout') + ': ' + err.message, 'error');
 		}
 	}
 
@@ -225,10 +189,8 @@
 				instructor_id: user?.id,
 				class_type_id: parseInt(class_type_id),
 				sport_type,
-				title: title || title_es,
-				title_es,
-				description: description || description_es,
-				description_es,
+				title: title,
+				description: description,
 				price: parseFloat(price) || 0,
 				capacity: parseInt(capacity) || 1,
 				duration_minutes: parseInt(duration_minutes) || 10,
@@ -329,17 +291,14 @@
 						<Option value="1">{$t('createAd.type_class')}</Option>
 						<Option value="2">{$t('createAd.type_course')}</Option>
 					</Select>
-					<div class="native-select-wrapper">
-						<label class="native-select-label">{labelSportType}</label>
-						<select bind:value={sport_type} class="native-select">
-							<option value="surf">{$t('sports.surf')}</option>
-							<option value="windsurf">{$t('sports.windsurf')}</option>
-							<option value="paddle">{$t('sports.paddle')}</option>
-							<option value="kayak">{$t('sports.kayak')}</option>
-							<option value="snorkel">{$t('sports.snorkel')}</option>
-							<option value="other">{$t('sports.other')}</option>
-						</select>
-					</div>
+					<Select variant="outlined" bind:value={sport_type} label={labelSportType}>
+						<Option value="surf">{$t('sports.surf')}</Option>
+						<Option value="windsurf">{$t('sports.windsurf')}</Option>
+						<Option value="paddle">{$t('sports.paddle')}</Option>
+						<Option value="kayak">{$t('sports.kayak')}</Option>
+						<Option value="snorkel">{$t('sports.snorkel')}</Option>
+						<Option value="other">{$t('sports.other')}</Option>
+					</Select>
 				</div>
 				<div class="form-row">
 					<Select
@@ -353,25 +312,13 @@
 						{/each}
 					</Select>
 				</div>
+				
 				<div class="form-row">
-					<Textfield
-						variant="outlined"
-						bind:value={title_es}
-						label={$t('createAd.form_title_es')}
-						required
-						style="width: 100%;"
-					/>
+					<Textfield variant="outlined" bind:value={title} label={$t('createAd.title')} required style="width: 100%;" />
 				</div>
 
 				<div class="form-row">
-					<Textfield
-						variant="outlined"
-						textarea
-						bind:value={description_es}
-						label={$t('createAd.form_desc_es')}
-						style="width: 100%;"
-						input$rows={4}
-					/>
+					<Textfield variant="outlined" textarea bind:value={description} label={$t('createAd.subtitle')} required style="width: 100%;" input$rows={4} />
 				</div>
 
 				<div class="form-row">
@@ -444,7 +391,7 @@
 							<Label>{$t('createAd.choose_file')}</Label>
 						</Button>
 						<span class="file-name">
-							{imageFile ? imageFile.name : $t('createAd.no_file_chosen')}
+							{imageFile ? imageFile.name : (currentImageUrl ? $t('createAd.select_another_picture') : $t('createAd.no_file_chosen'))}
 						</span>
 					</div>
 				</div>
@@ -494,17 +441,17 @@
 						<div class="ad-card" class:editing={editingId === ad.id}>
 							<div class="ad-card-top">
 								{#if ad.image_url}
-									<img src={`http://127.0.0.1:5000${ad.image_url}`} alt="Class" class="ad-thumbnail" />
+									<img src={getMediaUrl(ad.image_url)} alt="Class" class="ad-thumbnail" />
 								{/if}
 								<div class="ad-info">
-									<h3>{($locale === 'es' && ad.title_es) ? ad.title_es.charAt(0).toUpperCase() + ad.title_es.slice(1) : ad.title ? ad.title.charAt(0).toUpperCase() + ad.title.slice(1) : ''}</h3>
+									<h3>{ad.title ? ad.title.charAt(0).toUpperCase() + ad.title.slice(1) : ''}</h3>
 									<p class="ad-price">{$formatPrice(ad.price)}</p>
 									<div class="ad-meta">
-										<span class="badge {ad.class_type}">{ad.class_type}</span>
+										<span class="badge {ad.class_type}">{ad.class_type === 'course' || ad.class_type === 'curso' ? $t('createAd.type_course') : $t('createAd.type_class')}</span>
 										<span class="badge sport">{ad.sport_type ? $t(`sports.${ad.sport_type}`) : $t('sports.surf')}</span>
-										<span class="badge level">Level {ad.difficulty_level || 1}</span>
+										<span class="badge level">{$t('advert.level')} {ad.difficulty_level || 1}</span>
 										{#if ad.is_online}
-											<span class="badge online">Online</span>
+											<span class="badge online">{$t('advert.online')}</span>
 										{/if}
 									</div>
 								</div>
@@ -518,7 +465,7 @@
 								<div class="ad-actions">
 									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00; margin-right: 8px;">
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">rocket_launch</span>
-										<Label>Boost (2€)</Label>
+										<Label>{$t('marketplace.boosted')} (2€)</Label>
 									</Button>
 									<Button variant="outlined" onclick={() => editClass(ad)}>
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">edit</span>
@@ -541,52 +488,67 @@
 	</div>
 </div>
 
-<Dialog bind:open={pupilsDialog} aria-labelledby="pupils-title" aria-describedby="pupils-desc">
+<Dialog bind:open={pupilsDialog} aria-labelledby="pupils-title" aria-describedby="pupils-desc" surface$style="width: 100%; max-width: 900px;">
 	<Title id="pupils-title">{$t('manageAds.pupils_for')} {selectedAdForPupils?.title}</Title>
 	<DialogContent id="pupils-desc">
 		{#if loadingPupils}
-			<p>Loading...</p>
+			<p>{$t('manageAds.loading')}</p>
 		{:else if currentPupils.length === 0}
 			<p>{$t('manageAds.no_pupils')}</p>
 		{:else}
-			<ul class="pupils-list">
-				{#each currentPupils as pupil}
-					<li class="pupil-item">
-						<div class="pupil-avatar">
-							{#if pupil.profile_picture_url}
-								<img src={`http://127.0.0.1:5000${pupil.profile_picture_url}`} alt={pupil.first_name} />
-							{:else}
-								<span class="material-icons" aria-hidden="true">person</span>
-							{/if}
-						</div>
-						<div class="pupil-info">
-							<strong>{pupil.first_name} {pupil.last_name}</strong>
-							<div class="pupil-contact">
-								<span class="material-icons" aria-hidden="true">email</span> {pupil.email}
-							</div>
-							{#if pupil.phone}
-								<div class="pupil-contact">
-									<span class="material-icons" aria-hidden="true">phone</span> {pupil.phone}
-								</div>
-							{/if}
-							<div class="pupil-date">
-								{$t('manageAds.booked_on')}: {new Date(pupil.booked_at).toLocaleDateString()}
-								<span class="status-badge status-{pupil.status}" style="margin-left: 8px;">{pupil.status}</span>
-							</div>
-							{#if pupil.status === 'pending'}
-								<div class="pupil-actions" style="margin-top: 8px;">
-									<Button variant="outlined" onclick={() => updatePupilStatus(pupil.id, 2)} style="margin-right: 8px; border-color: #2e7d32; color: #2e7d32;">
-										<Label>{$t('manageAds.approve')}</Label>
-									</Button>
-									<Button variant="outlined" onclick={() => updatePupilStatus(pupil.id, 3)} style="border-color: #c62828; color: #c62828;">
-										<Label>{$t('manageAds.reject')}</Label>
-									</Button>
-								</div>
-							{/if}
-						</div>
-					</li>
-				{/each}
-			</ul>
+			<div class="table-responsive">
+				<table class="pupils-table">
+					<thead>
+						<tr>
+							<th>{$t('manageAds.table_student')}</th>
+							<th>{$t('manageAds.table_contact')}</th>
+							<th>{$t('manageAds.table_date')}</th>
+							<th>{$t('manageAds.table_status')}</th>
+							<th>{$t('manageAds.table_actions')}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each currentPupils as pupil}
+							<tr>
+								<td>
+									<div class="pupil-avatar-name">
+										{#if pupil.profile_picture_url}
+											<img src={getMediaUrl(pupil.profile_picture_url)} alt={pupil.first_name} class="table-avatar" />
+										{:else}
+											<div class="table-avatar placeholder"><span class="material-icons">person</span></div>
+										{/if}
+										<strong>{pupil.first_name} {pupil.last_name}</strong>
+									</div>
+								</td>
+								<td>
+									<div class="table-contact">
+										<div><span class="material-icons" aria-hidden="true">email</span> {pupil.email}</div>
+										{#if pupil.phone}
+											<div><span class="material-icons" aria-hidden="true">phone</span> {pupil.phone}</div>
+										{/if}
+									</div>
+								</td>
+								<td>{new Date(pupil.booked_at).toLocaleDateString()}</td>
+								<td>
+									<span class="status-badge status-{pupil.status}">{$t(`manageAds.status_${pupil.status}`) || pupil.status}</span>
+								</td>
+								<td>
+									{#if pupil.status === 'pending'}
+										<div class="table-actions">
+											<Button variant="outlined" onclick={() => updatePupilStatus(pupil.id, 2)} style="border-color: #2e7d32; color: #2e7d32;">
+												<Label>{$t('manageAds.approve')}</Label>
+											</Button>
+											<Button variant="outlined" onclick={() => updatePupilStatus(pupil.id, 3)} style="border-color: #c62828; color: #c62828;">
+												<Label>{$t('manageAds.reject')}</Label>
+											</Button>
+										</div>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 		{/if}
 	</DialogContent>
 	<Actions>
@@ -934,6 +896,68 @@
 	}
 	.status-pending { background: #fff3e0; color: #e65100; }
 	.status-confirmed { background: #e8f5e9; color: #2e7d32; }
+	.status-rejected { background: #ffebee; color: #c62828; }
 	.status-cancelled { background: #ffebee; color: #c62828; }
 	.status-completed { background: #e3f2fd; color: #1565c0; }
+
+	.table-responsive {
+		width: 100%;
+		overflow-x: auto;
+	}
+	.pupils-table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-top: 1rem;
+		min-width: 600px;
+	}
+	.pupils-table th {
+		text-align: left;
+		padding: 1rem;
+		background: #f5f5f5;
+		color: var(--terciary-color);
+		font-weight: 600;
+		border-bottom: 2px solid #e0e0e0;
+	}
+	.pupils-table td {
+		padding: 1rem;
+		border-bottom: 1px solid #e0e0e0;
+		vertical-align: middle;
+	}
+	.pupil-avatar-name {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.table-avatar {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+	.table-avatar.placeholder {
+		background: #e0e0e0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #757575;
+	}
+	.table-contact {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		font-size: 0.9rem;
+	}
+	.table-contact div {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+	.table-contact .material-icons {
+		font-size: 1rem;
+		color: #757575;
+	}
+	.table-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
 </style>

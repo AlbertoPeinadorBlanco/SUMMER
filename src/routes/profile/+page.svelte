@@ -5,11 +5,14 @@
 	import Card, { Content } from '@smui/card';
 	import { pricings } from '$lib/stores/pricings';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import { isGeolocationEnabled } from '$lib/stores/location';
 	import { formatPrice } from '$lib/stores/currency';
+	import { showToast } from '$lib/stores/toast';
+	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
+	import Icon from '@smui/textfield/icon';
 	import { onMount } from 'svelte';
 
 	let user = $derived($auth.user);
@@ -189,8 +192,7 @@
 		}
 	}
 
-	async function handleInstructorUpdate(e: Event) {
-		e.preventDefault();
+	async function saveInstructorProfile() {
 		if (!user) return;
 		loading = true;
 		error = '';
@@ -209,6 +211,11 @@
 		} finally {
 			loading = false;
 		}
+	}
+
+	async function handleInstructorUpdate(e: Event) {
+		e.preventDefault();
+		await saveInstructorProfile();
 	}
 
 	async function handleBuyFeatured() {
@@ -231,14 +238,84 @@
 			loading = false;
 		}
 	}
+
+	let isDeleteDialogOpen = $state(false);
+	let isDeleting = $state(false);
+
+	async function handleDeleteProfile() {
+		isDeleting = true;
+		try {
+			const res = await fetchApi('/users/me', { method: 'DELETE' });
+			if (res.error) throw new Error(res.error);
+			showToast($t('profile.danger_zone.delete_success'), 'success');
+			isDeleteDialogOpen = false;
+			await auth.logout();
+			goto('/');
+		} catch (err: any) {
+			showToast($t('profile.danger_zone.delete_error') + ': ' + err.message, 'error');
+		} finally {
+			isDeleting = false;
+		}
+	}
+
+	// --- Security: Change Password ---
+	let currentPassword = $state('');
+	let newPassword = $state('');
+	let confirmNewPassword = $state('');
+	let showCurrentPwd = $state(false);
+	let showNewPwd = $state(false);
+	let showConfirmPwd = $state(false);
+	let passwordLoading = $state(false);
+	let passwordError = $state('');
+	let resetEmailLoading = $state(false);
+
+	async function handleChangePassword(e: Event) {
+		e.preventDefault();
+		passwordError = '';
+		if (newPassword !== confirmNewPassword) {
+			passwordError = $t('security.password_mismatch');
+			return;
+		}
+		passwordLoading = true;
+		try {
+			await fetchApi('/users/me/password', {
+				method: 'PUT',
+				body: JSON.stringify({ currentPassword, newPassword })
+			});
+			showToast($t('security.password_success'), 'success');
+			currentPassword = '';
+			newPassword = '';
+			confirmNewPassword = '';
+		} catch (err: any) {
+			passwordError = err.message || $t('security.password_error');
+		} finally {
+			passwordLoading = false;
+		}
+	}
+
+	async function handleSendResetEmail() {
+		if (!user?.email) return;
+		resetEmailLoading = true;
+		try {
+			await fetchApi('/users/forgot-password', {
+				method: 'POST',
+				body: JSON.stringify({ email: user.email })
+			});
+			showToast($t('security.reset_email_sent'), 'success');
+		} catch (err: any) {
+			showToast(err.message || $t('security.password_error'), 'error');
+		} finally {
+			resetEmailLoading = false;
+		}
+	}
 </script>
 
 <SEO title="My Profile" />
 
 <div class="profile-dashboard">
 	{#if user}
-		<h1>My Profile</h1>
-		<p class="subtitle">Update your personal information.</p>
+		<h1>{$t('profile.page_title')}</h1>
+		<p class="subtitle">{$t('profile.page_subtitle')}</p>
 
 		{#if user.role === 'instructor'}
 			<div class="guide-banner">
@@ -285,7 +362,7 @@
 		<div class="avatar-section">
 			<div class="avatar-preview">
 				{#if profile_picture_url}
-					<img src={`http://127.0.0.1:5000${profile_picture_url}`} alt="Profile Avatar" loading="lazy" decoding="async" width="100" height="100" />
+					<img src={getMediaUrl(profile_picture_url)} alt="Profile Avatar" loading="lazy" decoding="async" width="100" height="100" />
 				{:else}
 					<div class="avatar-placeholder">
 						{username ? username.charAt(0).toUpperCase() : 'U'}
@@ -299,7 +376,7 @@
 			</div>
 			<div class="avatar-upload">
 				<label for="picture-upload" class="upload-btn">
-					Change Picture
+					{$t('profile.change_picture')}
 					<input 
 						id="picture-upload" 
 						type="file" 
@@ -326,26 +403,26 @@
 					<!-- Summer Pass -->
 					<div class="tier-card {user.tier === 'summer_pass' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.summer_pass')}</h4>
-						<p class="price">{$formatPrice($pricings.summer_pass)}</p>
+						<p class="price">{$formatPrice($pricings.summer_pass, true)}</p>
 						<p class="desc">{$t('profile_enhancements.summer_pass_desc')}</p>
 						<Button variant="raised" onclick={() => handleBuyTier('summer_pass')} disabled={loading || user.tier === 'summer_pass'} class="premium-button">
-							<Label>{user.tier === 'summer_pass' ? 'Active' : $t('profile_enhancements.buy_summer_pass', { values: { price: $formatPrice($pricings.summer_pass) } })}</Label>
+							<Label>{user.tier === 'summer_pass' ? $t('profile_enhancements.status_active') : $t('profile_enhancements.buy_summer_pass', { values: { price: $formatPrice($pricings.summer_pass, true) } })}</Label>
 						</Button>
 					</div>
 
 					<!-- Monthly Premium -->
 					<div class="tier-card {user.tier === 'premium' ? 'active-tier' : ''}">
 						<h4>{$t('profile_enhancements.premium_monthly')}</h4>
-						<p class="price">{$formatPrice($pricings.premium_subscription)}<span style="font-size: 1rem;">/mo</span></p>
+						<p class="price">{$formatPrice($pricings.premium_subscription, true)}<span style="font-size: 1rem;">/mo</span></p>
 						<p class="desc">{$t('profile_enhancements.premium_monthly_desc')}</p>
 						<Button variant="raised" onclick={() => handleBuyTier('premium')} disabled={loading || user.tier === 'premium' || user.tier === 'summer_pass'} class="premium-button">
 							<Label>
 								{#if user.tier === 'premium'}
-									Active
+									{$t('profile_enhancements.status_active')}
 								{:else if user.tier === 'summer_pass'}
-									Included in Pass
+									{$t('profile_enhancements.status_included')}
 								{:else}
-									{$t('profile_enhancements.subscribe', { values: { price: $formatPrice($pricings.premium_subscription) } })}
+									{$t('profile_enhancements.subscribe', { values: { price: $formatPrice($pricings.premium_subscription, true) } })}
 								{/if}
 							</Label>
 						</Button>
@@ -368,7 +445,7 @@
 							<Textfield variant="outlined" bind:value={video_url} label={$t('profile_enhancements.video_url')} style="flex: 1;" />
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.video_upgrade) } })}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.video_upgrade, true) } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -383,7 +460,7 @@
 							<Textfield variant="outlined" bind:value={booking_link} label={$t('profile_enhancements.booking_url')} style="flex: 1;" />
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.link_upgrade) } })}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.link_upgrade, true) } })}</Label>
 							</Button>
 						{/if}
 					</div>
@@ -400,21 +477,12 @@
 							</label>
 						{:else}
 							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.badge_upgrade) } })}</Label>
+								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.badge_upgrade, true) } })}</Label>
 							</Button>
 						{/if}
 					</div>
 
-					<!-- Allow Communications Toggle -->
-					<div class="upgrade-row">
-						<div class="upgrade-info">
-							<h4>Allow Direct Messages</h4>
-							<p class="desc">Enable users to send you messages through your public profile.</p>
-						</div>
-						<label style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
-							<input type="checkbox" bind:checked={allow_communications} /> Allow Messages
-						</label>
-					</div>
+
 
 					<Button type="submit" variant="raised" disabled={loading} class="premium-button save-btn">
 						<Label>{loading ? $t('profile_enhancements.saving') : $t('profile_enhancements.save')}</Label>
@@ -432,19 +500,19 @@
 							<p class="desc" style="color: #2e7d32; font-weight: bold;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">check_circle</span> {$t('profile_enhancements.currently_featured')}</p>
 							<p class="desc">{$t('profile_enhancements.expires_on')}: {new Date(featured_instructor.featured_until).toLocaleDateString('en-GB')}</p>
 						{:else if featured_instructor === 'full'}
-							<p class="desc" style="color: #d32f2f;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">lock</span> All featured spots are currently taken.</p>
+							<p class="desc" style="color: #d32f2f;"><span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">lock</span> {$t('profile_enhancements.featured_full')}</p>
 						{:else}
-							<p class="desc">Available now! Secure your spot on the homepage for 7 days.</p>
+							<p class="desc">{$t('profile_enhancements.featured_available')}</p>
 						{/if}
 					</div>
 					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || !!featured_instructor} class="premium-button" style="background-color: {featured_instructor ? '#ccc' : '#FFD700'}; color: {featured_instructor ? '#666' : '#000'};">
 						<Label>
 							{#if featured_instructor && featured_instructor !== 'full'}
-								Active until {new Date(featured_instructor.featured_until).toLocaleDateString('en-GB')}
+								{$t('profile_enhancements.active_until', { values: { date: new Date(featured_instructor.featured_until).toLocaleDateString('en-GB') } })}
 							{:else if featured_instructor === 'full'}
-								Currently Unavailable
+								{$t('profile_enhancements.status_unavailable')}
 							{:else}
-								{$t('profile_enhancements.buy_featured', { values: { price: $formatPrice($pricings.featured_instructor) } })}
+								{$t('profile_enhancements.buy_featured', { values: { price: $formatPrice($pricings.featured_instructor, true) } })}
 							{/if}
 						</Label>
 					</Button>
@@ -459,24 +527,24 @@
 			<Textfield
 				variant="outlined"
 				bind:value={username}
-				label="Username"
+				label={$t('profile.username_label')}
 				disabled
 				style="width: 100%;"
 			/>
 
 			<div class="form-row">
-				<Textfield variant="outlined" bind:value={first_name} label="First Name" required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
-				<Textfield variant="outlined" bind:value={last_name} label="Last Name" required input$pattern="[A-Za-z\s]+" input$title="Letters only" />
+				<Textfield variant="outlined" bind:value={first_name} label={$t('profile.first_name_label')} required input$pattern="[A-Za-z\s]+" input$title={$t('profile.letters_only')} />
+				<Textfield variant="outlined" bind:value={last_name} label={$t('profile.last_name_label')} required input$pattern="[A-Za-z\s]+" input$title={$t('profile.letters_only')} />
 			</div>
 
 			<Textfield
 				variant="outlined"
 				type="email"
 				bind:value={email}
-				label="Email Address"
+				label={$t('profile.email_label')}
 				required
 				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
-				input$title="Please enter a valid email address with a domain (e.g. .com)"
+				input$title={$t('profile.email_format')}
 				disabled
 				style="width: 100%;"
 			/>
@@ -484,19 +552,19 @@
 				variant="outlined"
 				type="tel"
 				bind:value={phone}
-				label="Phone Number"
+				label={$t('profile.phone_label')}
 				input$pattern={'^6[0-9]{8}$'}
-				input$title="Phone number must start with 6 and be exactly 9 digits long"
+				input$title={$t('profile.phone_format')}
 				style="width: 100%;"
 			/>
 
 			<Button type="submit" variant="raised" disabled={loading} class="premium-button save-btn">
-				<Label>{loading ? 'Saving...' : 'Save Changes'}</Label>
+				<Label>{loading ? $t('profile.saving') : $t('profile.save_changes')}</Label>
 			</Button>
 		</form>
 
 		<div class="tier-section" style="margin-top: 2rem;">
-			<h3>Settings</h3>
+			<h3>{$t('profile.settings')}</h3>
 			<div class="upgrade-row">
 				<div class="upgrade-info">
 					<h4>{$t('geolocation.toggle_label')}</h4>
@@ -506,11 +574,125 @@
 					<input type="checkbox" bind:checked={$isGeolocationEnabled} aria-label={$t('geolocation.toggle_label')} />
 				</label>
 			</div>
+			{#if user.role === 'instructor'}
+				<div class="upgrade-row">
+					<div class="upgrade-info">
+						<h4>{$t('profile.allow_messages_title')}</h4>
+						<p class="desc">{$t('profile.allow_messages_desc')}</p>
+					</div>
+					<label style="display: flex; align-items: center; gap: 0.5rem;">
+						<input type="checkbox" bind:checked={allow_communications} onchange={saveInstructorProfile} aria-label={$t('profile.allow_messages_label')} />
+					</label>
+				</div>
+			{/if}
+		</div>
+
+		<div class="tier-section" style="margin-top: 2rem;">
+			<h3><span class="material-icons" style="vertical-align: bottom; margin-right: 8px; color: var(--secondary-color);">lock</span>{$t('security.title')}</h3>
+
+			<form onsubmit={handleChangePassword}>
+				{#if passwordError}
+					<div class="pw-error">{passwordError}</div>
+				{/if}
+				<div class="pw-grid">
+					<Textfield
+						variant="outlined"
+						type={showCurrentPwd ? 'text' : 'password'}
+						bind:value={currentPassword}
+						label={$t('security.current_password')}
+						required
+						input$minlength={9}
+						style="width: 100%;"
+					>
+						{#snippet trailingIcon()}
+							<Icon class="material-icons" role="button" tabindex="0" onclick={() => showCurrentPwd = !showCurrentPwd} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showCurrentPwd = !showCurrentPwd)}>
+								{showCurrentPwd ? 'visibility_off' : 'visibility'}
+							</Icon>
+						{/snippet}
+					</Textfield>
+					<Textfield
+						variant="outlined"
+						type={showNewPwd ? 'text' : 'password'}
+						bind:value={newPassword}
+						label={$t('security.new_password')}
+						required
+						input$minlength={9}
+						style="width: 100%;"
+					>
+						{#snippet trailingIcon()}
+							<Icon class="material-icons" role="button" tabindex="0" onclick={() => showNewPwd = !showNewPwd} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showNewPwd = !showNewPwd)}>
+								{showNewPwd ? 'visibility_off' : 'visibility'}
+							</Icon>
+						{/snippet}
+					</Textfield>
+					<Textfield
+						variant="outlined"
+						type={showConfirmPwd ? 'text' : 'password'}
+						bind:value={confirmNewPassword}
+						label={$t('security.confirm_new_password')}
+						required
+						input$minlength={9}
+						style="width: 100%;"
+					>
+						{#snippet trailingIcon()}
+							<Icon class="material-icons" role="button" tabindex="0" onclick={() => showConfirmPwd = !showConfirmPwd} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showConfirmPwd = !showConfirmPwd)}>
+								{showConfirmPwd ? 'visibility_off' : 'visibility'}
+							</Icon>
+						{/snippet}
+					</Textfield>
+				</div>
+				<div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+					<Button variant="raised" type="submit" disabled={passwordLoading}>
+						<Label>{passwordLoading ? $t('profile.saving') : $t('security.change_password')}</Label>
+					</Button>
+				</div>
+			</form>
+
+			<div class="upgrade-row" style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+				<div class="upgrade-info">
+					<h4>{$t('security.send_reset_email')}</h4>
+					<p class="desc">{$t('auth.forgot_password_desc')}</p>
+				</div>
+				<Button variant="outlined" onclick={handleSendResetEmail} disabled={resetEmailLoading}>
+					<Label>{resetEmailLoading ? '...' : $t('auth.send_reset_email')}</Label>
+				</Button>
+			</div>
+		</div>
+
+		<div class="tier-section" style="margin-top: 2rem; border-color: #ffcdd2; background: #fff5f5;">
+			<h3 style="color: #c62828;"><span class="material-icons" style="vertical-align: bottom; margin-right: 8px;">warning</span>{$t('profile.danger_zone.title')}</h3>
+			<div class="upgrade-row">
+				<div class="upgrade-info">
+					<h4>{$t('profile.danger_zone.delete_profile')}</h4>
+					<p class="desc">{$t('profile.danger_zone.delete_warning')}</p>
+				</div>
+				<Button variant="raised" onclick={(e: any) => { e.preventDefault(); isDeleteDialogOpen = true; }} style="background-color: var(--mdc-theme-error); color: white;">
+					<Label>{$t('profile.danger_zone.delete_profile')}</Label>
+				</Button>
+			</div>
 		</div>
 	{:else}
 		<div class="loading">Loading profile...</div>
 	{/if}
 </div>
+
+<Dialog bind:open={isDeleteDialogOpen} aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-content">
+	<DialogTitle id="delete-dialog-title" style="color: var(--mdc-theme-error); display: flex; align-items: center; gap: 8px;">
+		<span class="material-icons">warning</span>
+		{$t('profile.danger_zone.delete_profile')}
+	</DialogTitle>
+	<DialogContent id="delete-dialog-content">
+		<p>{$t('profile.danger_zone.delete_warning')}</p>
+	</DialogContent>
+	<DialogActions>
+		<Button variant="outlined" onclick={() => isDeleteDialogOpen = false} disabled={isDeleting}>
+			<Label>{$t('profile.danger_zone.no')}</Label>
+		</Button>
+		<Button variant="raised" style="background-color: var(--mdc-theme-error); color: white;" onclick={handleDeleteProfile} disabled={isDeleting}>
+			<Label>{isDeleting ? $t('profile.saving') : $t('profile.danger_zone.yes')}</Label>
+		</Button>
+	</DialogActions>
+</Dialog>
 
 <style>
 	.profile-dashboard {
@@ -739,17 +921,21 @@
 	.tier-card {
 		flex: 1;
 		border: 1px solid var(--border-color);
-		border-radius: 8px;
+		border-radius: 12px;
 		padding: 2rem;
 		text-align: center;
 		background: var(--surface-color);
 		display: flex;
 		flex-direction: column;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
 	}
 	.tier-card.active-tier {
 		border: 2px solid var(--primary-color);
-		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.2);
+		box-shadow: 0 0 0 4px rgba(226, 109, 63, 0.15), 0 8px 24px rgba(226, 109, 63, 0.25);
 		position: relative;
+		transform: scale(1.02);
+		z-index: 1;
+		background: linear-gradient(180deg, rgba(226, 109, 63, 0.05) 0%, var(--surface-color) 100%);
 	}
 	.tier-card h4 {
 		margin-top: 0;
@@ -795,6 +981,30 @@
 		.pricing-options {
 			flex-direction: column;
 		}
+		.tiers-grid {
+			flex-direction: column;
+		}
+		.guide-banner, .guide-banner-content {
+			flex-direction: column;
+			text-align: center;
+			gap: 1rem;
+		}
+		.upgrade-row {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 1rem;
+		}
+		.upgrade-info {
+			text-align: center;
+		}
+		.avatar-section {
+			flex-direction: column;
+			text-align: center;
+		}
+		.verification-alert {
+			flex-direction: column;
+			text-align: center;
+		}
 	}
 
 	/* Dark mode overrides */
@@ -828,5 +1038,19 @@
 	}
 	:global([data-theme="dark"]) .subtitle {
 		color: #ccc;
+	}
+	.pw-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+	.pw-error {
+		color: var(--mdc-theme-error);
+		background: #ffebee;
+		padding: 0.6rem 1rem;
+		border-radius: 6px;
+		font-size: 0.9rem;
+		margin-bottom: 0.5rem;
 	}
 </style>

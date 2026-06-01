@@ -4,7 +4,7 @@
 	import Card, { Content } from '@smui/card';
 	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
 
@@ -76,19 +76,19 @@
 	}
 
 	function getTitle(ad: any) {
-		const titleStr = ($locale === 'es' && ad.title_es) ? ad.title_es : ad.title;
+		const titleStr = ad.title;
 		return titleStr ? titleStr.charAt(0).toUpperCase() + titleStr.slice(1) : '';
 	}
 
 	function getDescription(ad: any) {
-		const descStr = ($locale === 'es' && ad.description_es) ? ad.description_es : ad.description;
+		const descStr = ad.description;
 		return descStr || '';
 	}
 </script>
 
 <svelte:head>
 	{#if advert}
-		<link rel="preload" as="image" href={advert.image_url ? `http://localhost:5000${advert.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'} fetchpriority="high" />
+		<link rel="preload" as="image" href={advert.image_url ? getMediaUrl(advert.image_url) : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'} fetchpriority="high" />
 	{/if}
 </svelte:head>
 
@@ -96,7 +96,7 @@
 	<SEO
 		title="{getTitle(advert)} - SurfMarket"
 		description={getDescription(advert).substring(0, 160)}
-		image={advert.image_url ? `http://localhost:5000${advert.image_url}` : undefined}
+		image={advert.image_url ? getMediaUrl(advert.image_url) : undefined}
 		type="article"
 	/>
 
@@ -114,7 +114,7 @@
 		<div class="advert-header">
 			<div
 				class="advert-image"
-				style="background-image: url({advert.image_url ? `http://localhost:5000${advert.image_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'});"
+				style="background-image: url({advert.image_url ? getMediaUrl(advert.image_url) : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'});"
 				role="img"
 				aria-label="Cover photo for {advert.title}"
 			>
@@ -177,7 +177,7 @@
 					<Content>
 						<h3 class="instructor-heading">{$t('advert.instructor')}</h3>
 						<div class="instructor-profile">
-							<img src={advert.profile_picture_url ? `http://localhost:5000${advert.profile_picture_url}` : 'https://ui-avatars.com/api/?name=' + (advert.first_name || advert.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="64" height="64" />
+							<img src={advert.profile_picture_url ? getMediaUrl(advert.profile_picture_url) : 'https://ui-avatars.com/api/?name=' + (advert.first_name || advert.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="64" height="64" />
 							<div class="instructor-info">
 								<h4>{advert.first_name || advert.instructor_username} {advert.last_name || ''}</h4>
 								<a href="/marketplace/{advert.instructor_id}" class="profile-link">
@@ -210,8 +210,9 @@
 		{#if bookingSuccess}
 			<div class="success-msg" style="text-align: center; padding: 1rem 0;">
 				<span class="material-icons" style="font-size: 3rem; color: #2e7d32; margin-bottom: 1rem;">check_circle</span>
-				<h3>Successfully Booked!</h3>
-				<p>Your spot has been reserved for {getTitle(advert)}.</p>
+				<h3>{$t('advert.booking_success_title')}</h3>
+				<p>{$t('advert.booking_pending_approval', { values: { title: getTitle(advert) } })}</p>
+				<p style="margin-top: 0.5rem; color: #555;">{$t('advert.booking_status_page')}</p>
 			</div>
 		{:else}
 			{#if bookingError}

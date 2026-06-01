@@ -11,6 +11,7 @@
 	import Textfield from '@smui/textfield';
 	import Select, { Option } from '@smui/select';
 	import IconButton from '@smui/icon-button';
+	import { notifications as personalNotifications } from '$lib/stores/notifications.svelte';
 
 	let notifications: any[] = $state([]);
 	let loading = $state(true);
@@ -105,6 +106,7 @@
 
 			isModalOpen = false;
 			await fetchNotifications();
+			personalNotifications.fetch(); // Update personal bell icon instantly
 		} catch (err: any) {
 			alert(err.message);
 		}
@@ -199,11 +201,11 @@
 				<div class="select-field">
 					<!-- svelte-ignore a11y_label_has_associated_control -->
 					<label>{$t('admin.notif_target_user')}</label>
-					<Select bind:value={formUserId} style="width: 100%;">
+					<select bind:value={formUserId} class="standard-select" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;">
 						{#each users as user}
-							<Option value={user.id}>{user.username} ({user.email})</Option>
+							<option value={user.id}>{user.username} ({user.email})</option>
 						{/each}
-					</Select>
+					</select>
 				</div>
 			{:else}
 				<Textfield value={formUserId} label={$t('admin.notif_user')} disabled style="width: 100%;" />
@@ -212,13 +214,13 @@
 			<div class="select-field">
 				<!-- svelte-ignore a11y_label_has_associated_control -->
 				<label>{$t('admin.notif_type_label')}</label>
-				<Select bind:value={formType} style="width: 100%;">
-					<Option value="admin_message">{$t('admin.notif_type_admin_message')}</Option>
-					<Option value="system_alert">{$t('admin.notif_type_system_alert')}</Option>
-					<Option value="booking_created">{$t('admin.notif_type_booking_created')}</Option>
-					<Option value="booking_updated">{$t('admin.notif_type_booking_updated')}</Option>
-					<Option value="subscription_updated">{$t('admin.notif_type_subscription_updated')}</Option>
-				</Select>
+				<select bind:value={formType} class="standard-select" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;">
+					<option value="admin_message">{$t('admin.notif_type_admin_message')}</option>
+					<option value="system_alert">{$t('admin.notif_type_system_alert')}</option>
+					<option value="booking_created">{$t('admin.notif_type_booking_created')}</option>
+					<option value="booking_updated">{$t('admin.notif_type_booking_updated')}</option>
+					<option value="subscription_updated">{$t('admin.notif_type_subscription_updated')}</option>
+				</select>
 			</div>
 
 			<Textfield textarea bind:value={formMessage} label={$t('admin.notif_message_label')} style="width: 100%; height: 100px;" />

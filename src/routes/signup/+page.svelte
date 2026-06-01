@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 	import Textfield from '@smui/textfield';
+	import Icon from '@smui/textfield/icon';
 	import Button, { Label } from '@smui/button';
 	import Checkbox from '@smui/checkbox';
 	import FormField from '@smui/form-field';
@@ -17,6 +18,7 @@
 	let last_name = $state('');
 	let phone = $state('');
 	let consent = $state(false);
+	let showPassword = $state(false);
 
 	let role = $state('user');
 	let bio = $state('');
@@ -118,12 +120,19 @@
 			/>
 			<Textfield
 				variant="outlined"
-				type="password"
+				type={showPassword ? "text" : "password"}
 				bind:value={password}
 				label={$t('auth.password_min')}
 				required
 				input$minlength={9}
-			/>
+				style="width: 100%;"
+			>
+				{#snippet trailingIcon()}
+					<Icon class="material-icons" role="button" tabindex="0" onclick={() => showPassword = !showPassword} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showPassword = !showPassword)}>
+						{showPassword ? 'visibility_off' : 'visibility'}
+					</Icon>
+				{/snippet}
+			</Textfield>
 
 			{#if role === 'instructor'}
 				<div class="instructor-fields">

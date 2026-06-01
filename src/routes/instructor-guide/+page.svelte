@@ -21,7 +21,7 @@
 		<p>{$t('instructor_guide.subscriptions_desc')}</p>
 		<div class="card-grid">
 			<Card class="tier-card premium-card">
-				<Content>
+				<Content style="padding: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 					<div class="tier-header">
 						<span class="material-icons tier-icon">person</span>
 						<h3>{$t('instructor_guide.basic_title')}</h3>
@@ -30,7 +30,7 @@
 				</Content>
 			</Card>
 			<Card class="tier-card premium-card">
-				<Content>
+				<Content style="padding: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 					<div class="tier-header">
 						<span class="material-icons tier-icon premium-icon">stars</span>
 						<h3>{$t('instructor_guide.premium_title')}</h3>
@@ -40,7 +40,7 @@
 				</Content>
 			</Card>
 			<Card class="tier-card premium-card summer-pass">
-				<Content>
+				<Content style="padding: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 					<div class="tier-header">
 						<span class="material-icons tier-icon pass-icon">workspace_premium</span>
 						<h3>{$t('instructor_guide.pass_title')}</h3>
@@ -215,7 +215,7 @@
 		font-weight: bold;
 		font-size: 1.2rem;
 		color: var(--primary-color);
-		margin-top: 1rem;
+		margin-top: auto;
 		padding-top: 1rem;
 		border-top: 1px solid var(--border-color);
 	}

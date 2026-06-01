@@ -1,14 +1,15 @@
 import type { PageLoad } from './$types';
+import { API_BASE_URL, getMediaUrl } from '$lib/api';
 
 export const load: PageLoad = async ({ fetch, params }) => {
 	const teacherId = params.id;
 
 	try {
-		const userRes = await fetch(`http://127.0.0.1:5000/api/users/${teacherId}`);
+		const userRes = await fetch(`${API_BASE_URL}/users/${teacherId}`);
 		if (!userRes.ok) throw new Error('Teacher not found');
 		const u = await userRes.json();
 
-		const classesRes = await fetch(`http://127.0.0.1:5000/api/classes`);
+		const classesRes = await fetch(`${API_BASE_URL}/classes`);
 		let allClasses = [];
 		if (classesRes.ok) {
 			allClasses = await classesRes.json();
@@ -43,7 +44,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			specialty: u.specialization || 'Surfing Instructor',
 			location: teacherClasses.length > 0 ? teacherClasses[0].location || 'Beach' : 'Beach',
 			price: teacherClasses.length > 0 ? teacherClasses[0].price : 50,
-			image: u.profile_picture_url ? `http://localhost:5000${u.profile_picture_url}` : images[u.id % images.length],
+			image: u.profile_picture_url ? getMediaUrl(u.profile_picture_url) : images[u.id % images.length],
 			bio: u.bio || 'Passionate surfing instructor ready to hit the waves!',
 			tier: u.tier || 'basic',
 			// Perks — only expose values if the upgrade was purchased

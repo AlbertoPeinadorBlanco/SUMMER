@@ -2,6 +2,7 @@
     import { t } from 'svelte-i18n';
     import { onMount, onDestroy } from 'svelte';
     import { regions, selectedBeach, initGeolocation } from '$lib/stores/location';
+    import { API_BASE_URL } from '$lib/api';
 
     let weatherData = $state<any>(null);
     let marineData = $state<any>(null);
@@ -9,9 +10,9 @@
     let error = $state(false);
     let refreshInterval;
 
-    function getWindDirection(degree: number) {
-        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-        return directions[Math.round(degree / 45) % 8];
+    function getWindDirectionKey(degree: number) {
+        const directions = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
+        return 'weather.dir_' + directions[Math.round(degree / 45) % 8];
     }
 
     function getLightHours(sunset: string | null) {
@@ -29,8 +30,7 @@
         loading = true;
         error = false;
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            const res = await fetch(`${API_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`, {
+            const res = await fetch(`${API_BASE_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`, {
                 cache: 'no-store'
             });
             
@@ -146,8 +146,8 @@
             <div class="metric-card">
                 <span class="material-icons" style="color: #7986cb; transform: rotate({weatherData.current.wind_direction_10m}deg);">navigation</span>
                 <div class="metric-info">
-                    <span class="value">{getWindDirection(weatherData.current.wind_direction_10m)}</span>
-                    <span class="label">Wind Dir</span>
+                    <span class="value">{$t(getWindDirectionKey(weatherData.current.wind_direction_10m))}</span>
+                    <span class="label">{$t('weather.wind_direction')}</span>
                 </div>
             </div>
 
@@ -156,7 +156,7 @@
                 <span class="material-icons" style="color: #ff9800;">light_mode</span>
                 <div class="metric-info">
                     <span class="value">{weatherData.daily?.uv_index_max?.[0] ?? '--'}</span>
-                    <span class="label">UVA Index</span>
+                    <span class="label">{$t('weather.uva_index')}</span>
                 </div>
             </div>
 
@@ -165,7 +165,7 @@
                 <span class="material-icons" style="color: #ffb74d;">wb_twilight</span>
                 <div class="metric-info">
                     <span class="value">{getLightHours(weatherData.daily?.sunset?.[0])} h</span>
-                    <span class="label">Light Left</span>
+                    <span class="label">{$t('weather.light_left')}</span>
                 </div>
             </div>
 
@@ -174,7 +174,7 @@
                 <span class="material-icons" style="color: #9e9e9e;">visibility</span>
                 <div class="metric-info">
                     <span class="value">{weatherData.current.visibility ? (weatherData.current.visibility / 1000).toFixed(1) : '--'} km</span>
-                    <span class="label">Visibility</span>
+                    <span class="label">{$t('weather.visibility')}</span>
                 </div>
             </div>
         </div>

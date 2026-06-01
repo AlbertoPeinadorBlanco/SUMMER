@@ -13,11 +13,9 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check .",
-		"format": "prettier --write .",
-		"lhci": "lhci autorun"
+		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@lhci/cli": "^0.15.1",
 		"@playwright/test": "^1.60.0",
 		"@smui/button": "^9.0.0",
 		"@smui/card": "^9.0.0",

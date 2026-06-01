@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button, { Label } from '@smui/button';
@@ -169,7 +169,7 @@
 							<Cell>{banner.id}</Cell>
 							<Cell>
 								{#if banner.image_url}
-									<img src={`http://127.0.0.1:5000${banner.image_url}`} alt={banner.title} style="width: auto; height: 50px; max-width: 150px; object-fit: contain; border-radius: 4px;" />
+									<img src={getMediaUrl(banner.image_url)} alt={banner.title} style="width: auto; height: 50px; max-width: 150px; object-fit: contain; border-radius: 4px;" />
 								{:else}
 									<div style="width: 50px; height: 50px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
 										<span class="material-icons" style="color: #999;">image</span>

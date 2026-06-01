@@ -4,6 +4,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import LiveConditionsWidget from '$lib/components/LiveConditionsWidget.svelte';
 	import BannerAd from '$lib/components/BannerAd.svelte';
+	import { getMediaUrl } from '$lib/api';
 
 	let { data } = $props();
 	let featured_instructors = $derived(data?.featured_instructors || []);
@@ -49,7 +50,7 @@
 			<div class="featured-badge"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span></div>
 			<div class="featured-content">
 				<div class="featured-image-container" style="position: relative; display: inline-block;">
-					<div class="featured-image" style="background-image: url({featured.profile_picture_url ? `http://127.0.0.1:5000${featured.profile_picture_url}` : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80'});"></div>
+					<div class="featured-image" style="background-image: url({featured.profile_picture_url ? getMediaUrl(featured.profile_picture_url) : 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80'});"></div>
 					{#if featured.is_verified === 1 || featured.is_verified === true}
 						<div class="verified-badge-profile" title="Verified User" style="position: absolute; bottom: 15px; right: 0; background: var(--surface-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2196f3; padding: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 							<span class="material-icons" aria-hidden="true" style="font-size: 24px;">verified</span>

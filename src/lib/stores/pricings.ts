@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import { API_BASE_URL } from '$lib/api';
 
 export type PricingItem = {
     id: number;
@@ -22,8 +23,7 @@ export const pricings = writable<Record<string, number>>({
 });
 
 if (browser) {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    fetch(`${API_URL}/pricings`)
+    fetch(`${API_BASE_URL}/pricings`)
         .then(res => res.json())
         .then((data: PricingItem[]) => {
             const priceMap: Record<string, number> = {};

@@ -186,8 +186,8 @@
 		display: flex;
 		flex-direction: column;
 		margin-top: 0.5rem;
-		min-width: 300px;
-		padding-top: 8px; /* room for floating labels */
+		min-width: 250px;
+		padding-top: 16px; /* room for floating labels */
 		overflow: visible;
 	}
 	/* Prevent the Dialog Content from clipping SMUI floating labels */

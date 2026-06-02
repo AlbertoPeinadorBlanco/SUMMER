@@ -48,6 +48,9 @@
 
 				<h3>{$t('policies.payments_title')}</h3>
 				<p>{$t('policies.payments_desc')}</p>
+
+				<h3>{$t('policies.contact_title')}</h3>
+				<p>{$t('policies.contact_desc')}</p>
 			</div>
 		</section>
 

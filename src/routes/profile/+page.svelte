@@ -28,6 +28,7 @@
 	let booking_link = $state('');
 	let available_today = $state(false);
 	let allow_communications = $state(true);
+	let bio = $state('');
 
 	let loading = $state(false);
 	let error = $state('');
@@ -70,6 +71,7 @@
 			booking_link = user.booking_link || '';
 			available_today = user.available_today || false;
 			allow_communications = user.allow_communications !== undefined ? !!user.allow_communications : true;
+			bio = user.bio || '';
 		} else if (isAuthenticated === false) {
 			// Redirect if not logged in
 			goto('/');
@@ -201,9 +203,9 @@
 		try {
 			await fetchApi(`/users/${user.id}/instructor-profile`, {
 				method: 'PUT',
-				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications })
+				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications, bio })
 			});
-			auth.updateUser({ video_url, booking_link, available_today, allow_communications });
+			auth.updateUser({ video_url, booking_link, available_today, allow_communications, bio });
 			successMsg = $t('profile.alerts.instructor_updated');
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
@@ -435,6 +437,15 @@
 				<p class="tier-desc">{$t('profile_enhancements.desc')}</p>
 				
 				<form class="enhancements-form" onsubmit={handleInstructorUpdate}>
+					<!-- Bio Upgrade (Available to all instructors by default) -->
+					<div class="upgrade-row">
+						<div class="upgrade-info">
+							<h4>{$t('profile_enhancements.biography', { default: 'Biography' })}</h4>
+							<p class="desc">{$t('profile_enhancements.biography_desc', { default: 'Write a short bio about yourself and your surfing experience.' })}</p>
+						</div>
+						<Textfield variant="outlined" textarea bind:value={bio} label={$t('profile_enhancements.biography_label', { default: 'Your Bio' })} style="flex: 1;" input$rows={4} />
+					</div>
+
 					<!-- Intro Video Upgrade -->
 					<div class="upgrade-row">
 						<div class="upgrade-info">

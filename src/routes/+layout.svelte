@@ -240,7 +240,6 @@
 							</Button>
 							{#if notifMenuOpen}
 								<div class="user-dropdown" style="width: 320px; max-width: 90vw; max-height: 400px; overflow-y: auto; right: 0;">
-									<div style="background: red; color: white; padding: 4px; font-size: 10px;">DEBUG: {notifications.items.length} items</div>
 									{#if notifications.items.length === 0}
 										<div style="padding: 1rem; text-align: center; color: #666;">No notifications</div>
 									{:else}

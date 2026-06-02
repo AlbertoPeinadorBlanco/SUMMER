@@ -279,7 +279,9 @@
 		"communications_title": "5. Política de Comunicaciones",
 		"communications_desc": "Todas las comunicaciones en la plataforma deben ser respetuosas, profesionales y corteses. No toleramos el acoso, el lenguaje ofensivo, la discriminación ni ninguna forma de comportamiento abusivo en los mensajes. Violar esta política resultará en la suspensión o cancelación inmediata de su cuenta.",
 		"payments_title": "6. Política de Pagos",
-		"payments_desc": "Los instructores gestionan sus propios pagos y tarifas de clases directamente con los estudiantes fuera de la plataforma. SurfMarket no procesa ninguna transacción por la reserva de clases. En su lugar, SurfMarket opera bajo un modelo de publicidad donde únicamente cobramos a los instructores cuotas de suscripción o pagos únicos para publicar, promocionar y mantener sus anuncios en nuestro mercado."
+		"payments_desc": "Los instructores gestionan sus propios pagos y tarifas de clases directamente con los estudiantes fuera de la plataforma. SurfMarket no procesa ninguna transacción por la reserva de clases. En su lugar, SurfMarket opera bajo un modelo de publicidad donde únicamente cobramos a los instructores cuotas de suscripción o pagos únicos para publicar, promocionar y mantener sus anuncios en nuestro mercado.",
+		"contact_title": "7. Contáctanos",
+		"contact_desc": "Si tienes alguna pregunta sobre estas políticas, necesitas ayuda con tu cuenta o deseas reportar un problema, comunícate con nosotros en cualquier momento a surfmarket.contact@gmail.com."
 	},
 	"levels": {
 		"title": "Niveles de Dificultad",

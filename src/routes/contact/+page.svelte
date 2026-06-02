@@ -10,13 +10,36 @@
 	let subject = $state('');
 	let message = $state('');
 
-	function handleSubmit(e: Event) {
+	let isSubmitting = $state(false);
+
+	async function handleSubmit(e: Event) {
 		e.preventDefault();
-		alert('Message sent successfully! (Demo)');
-		name = '';
-		email = '';
-		subject = '';
-		message = '';
+		isSubmitting = true;
+
+		try {
+			const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/contact`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ name, email, subject, message })
+			});
+
+			if (!res.ok) {
+				throw new Error('Failed to send message');
+			}
+
+			alert('Message sent successfully!');
+			name = '';
+			email = '';
+			subject = '';
+			message = '';
+		} catch (error) {
+			console.error('Error sending message:', error);
+			alert('There was an error sending your message. Please try again later.');
+		} finally {
+			isSubmitting = false;
+		}
 	}
 </script>
 
@@ -46,8 +69,6 @@
 				bind:value={email}
 				label={$t('contact.form_email')}
 				required
-				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
-				input$title="Please enter a valid email address with a domain (e.g. .com)"
 				style="width: 100%;"
 			></Textfield>
 		</div>
@@ -76,8 +97,8 @@
 		</div>
 
 		<div class="form-actions">
-			<Button type="submit" variant="raised" class="premium-button submit-btn">
-				<Label>{$t('contact.form_submit')}</Label>
+			<Button type="submit" variant="raised" class="premium-button submit-btn" disabled={isSubmitting}>
+				<Label>{isSubmitting ? $t('contact.form_sending', { default: 'Sending...' }) : $t('contact.form_submit')}</Label>
 			</Button>
 		</div>
 	</form>

@@ -53,9 +53,38 @@
 		if (window.location.search.includes('success=true')) {
 			successMsg = $t('profile.alerts.payment_success');
 			setTimeout(() => (successMsg = ''), 5000);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const purchasedItem = urlParams.get('item');
+            if (purchasedItem && user) {
+				if (purchasedItem === 'premium_subscription') {
+					auth.updateUser({ tier: 'premium' });
+				} else if (purchasedItem === 'summer_pass') {
+					auth.updateUser({ tier: 'summer_pass' });
+				} else if (purchasedItem === 'video_upgrade') {
+					auth.updateUser({ has_video_upgrade: true });
+				} else if (purchasedItem === 'link_upgrade') {
+					auth.updateUser({ has_link_upgrade: true });
+				} else if (purchasedItem === 'badge_upgrade') {
+					auth.updateUser({ has_badge_upgrade: true });
+				}
+            }
+
 			// Clean up URL
 			window.history.replaceState({}, document.title, window.location.pathname);
 			await auth.restoreSession();
+
+            // Poll the backend after 3 seconds in case the Stripe webhook was slightly delayed
+            setTimeout(() => {
+                auth.restoreSession();
+                if (purchasedItem === 'featured_instructor') {
+                    fetchApi('/users/featured').then(data => {
+                        if (data && Array.isArray(data.featured)) {
+                            featured_instructor = data.featured.find((f: any) => f.id === user?.id) || null;
+                        }
+                    }).catch(()=>{});
+                }
+            }, 3000);
 		}
 	});
 

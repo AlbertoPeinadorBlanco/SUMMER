@@ -629,6 +629,8 @@
 						label={$t('security.new_password')}
 						required
 						input$minlength={9}
+						input$pattern={"(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{9,}"}
+						input$title="Password must contain at least 9 characters, including an uppercase letter, a lowercase letter, and a number"
 						style="width: 100%;"
 					>
 						{#snippet trailingIcon()}

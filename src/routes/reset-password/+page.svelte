@@ -84,15 +84,17 @@
 				</div>
 			{/if}
 			<form onsubmit={handleReset} class="reset-form">
-				<Textfield
-					variant="outlined"
-					type={showNew ? 'text' : 'password'}
-					bind:value={newPassword}
-					label={$t('security.new_password')}
-					required
-					input$minlength={9}
-					style="width: 100%;"
-				>
+					<Textfield
+						variant="outlined"
+						type={showNew ? 'text' : 'password'}
+						bind:value={newPassword}
+						label={$t('security.new_password')}
+						required
+						input$minlength={9}
+						input$pattern={"(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{9,}"}
+						input$title="Password must contain at least 9 characters, including an uppercase letter, a lowercase letter, and a number"
+						style="width: 100%;"
+					>
 					{#snippet trailingIcon()}
 						<Icon class="material-icons" role="button" tabindex="0" onclick={() => showNew = !showNew} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showNew = !showNew)}>
 							{showNew ? 'visibility_off' : 'visibility'}

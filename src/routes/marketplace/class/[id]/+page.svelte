@@ -446,6 +446,7 @@
 		margin: 0 0 0.5rem 0;
 		font-size: 1.2rem;
 		color: var(--terciary-color);
+		text-transform: capitalize;
 	}
 
 	.profile-link {

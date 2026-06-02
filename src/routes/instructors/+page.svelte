@@ -269,6 +269,7 @@
 		color: var(--terciary-color);
 		margin: 0 0 0.5rem 0;
 		font-weight: 700;
+		text-transform: capitalize;
 	}
 
 	.specialization-badge {

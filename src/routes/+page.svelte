@@ -234,6 +234,7 @@
 		margin: 0 0 0.5rem 0;
 		color: var(--terciary-color);
 		font-size: 1.5rem;
+		text-transform: capitalize;
 	}
 	.featured-info .specialty {
 		color: var(--secondary-color);

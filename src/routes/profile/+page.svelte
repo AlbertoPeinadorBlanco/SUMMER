@@ -55,6 +55,7 @@
 			setTimeout(() => (successMsg = ''), 5000);
 			// Clean up URL
 			window.history.replaceState({}, document.title, window.location.pathname);
+			await auth.restoreSession();
 		}
 	});
 

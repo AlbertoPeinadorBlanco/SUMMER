@@ -23,6 +23,9 @@
 				
 				<h3>{$t('policies.privacy_3_title')}</h3>
 				<p>{$t('policies.privacy_3_desc')}</p>
+				
+				<h3>{$t('policies.privacy_4_title')}</h3>
+				<p>{$t('policies.privacy_4_desc')}</p>
 			</div>
 		</section>
 

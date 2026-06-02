@@ -267,6 +267,8 @@
 		"privacy_2_desc": "We use the information we collect to facilitate bookings between users and surf instructors, process payments, and communicate with you about your account and upcoming classes.",
 		"privacy_3_title": "3. Data Security",
 		"privacy_3_desc": "We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.",
+		"privacy_4_title": "4. Analytics & Tracking",
+		"privacy_4_desc": "We use Google Analytics to measure traffic and usage trends on our platform. This helps us understand how users interact with SurfMarket so we can improve the user experience. Google Analytics uses cookies to collect anonymous data about your visits. You can opt-out of Google Analytics by using browser extensions or adjusting your cookie preferences.",
 		"terms_title": "Terms and Conditions",
 		"terms_1_title": "1. Acceptance of Terms",
 		"terms_1_desc": "By accessing and using SurfMarket, you accept and agree to be bound by the terms and provision of this agreement.",

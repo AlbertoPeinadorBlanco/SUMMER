@@ -13,6 +13,7 @@ export interface User {
 	profile_picture_url?: string;
 	role?: string;
 	tier?: string;
+	is_verified?: boolean | number;
 	has_video_upgrade?: boolean;
 	has_link_upgrade?: boolean;
 	has_badge_upgrade?: boolean;

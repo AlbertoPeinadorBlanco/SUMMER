@@ -446,7 +446,8 @@
 		"subscribe": "Subscribe for {price}/mo",
 		"status_active": "Active",
 		"status_included": "Included in Pass",
-		"status_unavailable": "Currently Unavailable"
+		"status_unavailable": "Currently Unavailable",
+		"requires_subscription": "Requires Active Subscription"
 	},
 	"admin": {
 		"title": "Admin Dashboard",

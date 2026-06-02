@@ -456,8 +456,14 @@
 						{#if user.has_video_upgrade}
 							<Textfield variant="outlined" bind:value={video_url} label={$t('profile_enhancements.video_url')} style="flex: 1;" />
 						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.video_upgrade, true) } })}</Label>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading || (user.tier !== 'premium' && user.tier !== 'summer_pass')}>
+								<Label>
+									{#if user.tier !== 'premium' && user.tier !== 'summer_pass'}
+										{$t('profile_enhancements.requires_subscription')}
+									{:else}
+										{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.video_upgrade, true) } })}
+									{/if}
+								</Label>
 							</Button>
 						{/if}
 					</div>
@@ -471,8 +477,14 @@
 						{#if user.has_link_upgrade}
 							<Textfield variant="outlined" bind:value={booking_link} label={$t('profile_enhancements.booking_url')} style="flex: 1;" />
 						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.link_upgrade, true) } })}</Label>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading || (user.tier !== 'premium' && user.tier !== 'summer_pass')}>
+								<Label>
+									{#if user.tier !== 'premium' && user.tier !== 'summer_pass'}
+										{$t('profile_enhancements.requires_subscription')}
+									{:else}
+										{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.link_upgrade, true) } })}
+									{/if}
+								</Label>
 							</Button>
 						{/if}
 					</div>
@@ -488,8 +500,14 @@
 								<input type="checkbox" bind:checked={available_today} /> {$t('profile_enhancements.enable_badge')}
 							</label>
 						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
-								<Label>{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.badge_upgrade, true) } })}</Label>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading || (user.tier !== 'premium' && user.tier !== 'summer_pass')}>
+								<Label>
+									{#if user.tier !== 'premium' && user.tier !== 'summer_pass'}
+										{$t('profile_enhancements.requires_subscription')}
+									{:else}
+										{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.badge_upgrade, true) } })}
+									{/if}
+								</Label>
 							</Button>
 						{/if}
 					</div>
@@ -517,12 +535,14 @@
 							<p class="desc">{$t('profile_enhancements.featured_available')}</p>
 						{/if}
 					</div>
-					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || !!featured_instructor} class="premium-button" style="background-color: {featured_instructor ? '#ccc' : '#FFD700'}; color: {featured_instructor ? '#666' : '#000'};">
+					<Button variant="raised" onclick={handleBuyFeatured} disabled={loading || !!featured_instructor || (user.tier !== 'premium' && user.tier !== 'summer_pass')} class="premium-button" style="background-color: {featured_instructor || (user.tier !== 'premium' && user.tier !== 'summer_pass') ? '#ccc' : '#FFD700'}; color: {featured_instructor || (user.tier !== 'premium' && user.tier !== 'summer_pass') ? '#666' : '#000'};">
 						<Label>
 							{#if featured_instructor && featured_instructor !== 'full'}
 								{$t('profile_enhancements.active_until', { values: { date: new Date(featured_instructor.featured_until).toLocaleDateString('en-GB') } })}
 							{:else if featured_instructor === 'full'}
 								{$t('profile_enhancements.status_unavailable')}
+							{:else if user.tier !== 'premium' && user.tier !== 'summer_pass'}
+								{$t('profile_enhancements.requires_subscription')}
 							{:else}
 								{$t('profile_enhancements.buy_featured', { values: { price: $formatPrice($pricings.featured_instructor, true) } })}
 							{/if}

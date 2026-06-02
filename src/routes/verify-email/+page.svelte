@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { fetchApi } from '$lib/api';
     import { goto } from '$app/navigation';
+    import { auth } from '$lib/stores/auth';
     import Button, { Label } from '@smui/button';
     import CircularProgress from '@smui/circular-progress';
     import SEO from '$lib/components/SEO.svelte';
@@ -25,6 +26,7 @@
                 method: 'POST',
                 body: JSON.stringify({ token })
             });
+            await auth.restoreSession();
             success = true;
             message = response.message || 'Email successfully verified!';
         } catch (err: any) {

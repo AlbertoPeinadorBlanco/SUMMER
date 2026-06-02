@@ -447,7 +447,8 @@
 		"subscribe": "Suscribirse por {price}/mes",
 		"status_active": "Activo",
 		"status_included": "Incluido en el Pase",
-		"status_unavailable": "No Disponible"
+		"status_unavailable": "No Disponible",
+		"requires_subscription": "Requiere Suscripción Activa"
 	},
 	"admin": {
 		"title": "Panel de Administración",

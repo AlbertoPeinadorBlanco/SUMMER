@@ -17,10 +17,10 @@ describe('currency store', () => {
 		
 		// 100 EUR = 109 USD
 		const price = formatter(100);
-		expect(price).toBe('$109/hr');
+		expect(price).toBe('$109 (+VAT: $132)/hr');
 		
 		// as course (no /hr)
 		const coursePrice = formatter(100, true);
-		expect(coursePrice).toBe('$109');
+		expect(coursePrice).toBe('$109 (+VAT: $132)');
 	});
 });

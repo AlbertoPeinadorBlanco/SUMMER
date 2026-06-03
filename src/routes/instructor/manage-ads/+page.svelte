@@ -25,7 +25,9 @@
 	let class_type_id = $state('1');
 	let sport_type = $state('surf');
 	let title = $state('');
+	let title_es = $state('');
 	let description = $state('');
+	let description_es = $state('');
 	let price = $state('');
 	let capacity = $state('');
 	let duration_minutes = $state('');
@@ -97,7 +99,9 @@
 		class_type_id = (c.class_type === 'course' || c.class_type === 'curso') ? '2' : '1';
 		sport_type = c.sport_type || 'surf';
 		title = c.title || '';
+		title_es = c.title_es || '';
 		description = c.description || '';
+		description_es = c.description_es || '';
 		price = c.price.toString();
 		capacity = c.capacity ? c.capacity.toString() : '';
 		duration_minutes = c.duration_minutes ? c.duration_minutes.toString() : '';
@@ -117,7 +121,9 @@
 		class_type_id = '1';
 		sport_type = 'surf';
 		title = '';
+		title_es = '';
 		description = '';
+		description_es = '';
 		price = '';
 		capacity = '';
 		duration_minutes = '';
@@ -190,7 +196,9 @@
 				class_type_id: parseInt(class_type_id),
 				sport_type,
 				title: title,
+				title_es: title_es,
 				description: description,
+				description_es: description_es,
 				price: parseFloat(price) || 0,
 				capacity: parseInt(capacity) || 1,
 				duration_minutes: parseInt(duration_minutes) || 10,
@@ -314,11 +322,13 @@
 				</div>
 				
 				<div class="form-row">
-					<Textfield variant="outlined" bind:value={title} label={$t('createAd.title')} required style="width: 100%;" />
+					<Textfield variant="outlined" bind:value={title} label={$t('createAd.form_title_en')} required style="width: 100%;" />
+					<Textfield variant="outlined" bind:value={title_es} label={$t('createAd.form_title_es')} style="width: 100%;" />
 				</div>
 
 				<div class="form-row">
-					<Textfield variant="outlined" textarea bind:value={description} label={$t('createAd.subtitle')} required style="width: 100%;" input$rows={4} />
+					<Textfield variant="outlined" textarea bind:value={description} label={$t('createAd.form_desc_en')} required style="width: 100%;" input$rows={4} />
+					<Textfield variant="outlined" textarea bind:value={description_es} label={$t('createAd.form_desc_es')} style="width: 100%;" input$rows={4} />
 				</div>
 
 				<div class="form-row">
@@ -463,7 +473,7 @@
 									<span class="bookings-count">({ad.bookings_count || 0} {$t('manageAds.bookings')})</span>
 								</div>
 								<div class="ad-actions">
-									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00; margin-right: 8px;">
+									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00;">
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">rocket_launch</span>
 										<Label>{$t('marketplace.boosted')} (2€)</Label>
 									</Button>
@@ -471,11 +481,11 @@
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">edit</span>
 										<Label>{$t('manageAds.edit')}</Label>
 									</Button>
-									<Button variant="outlined" onclick={() => openPupilsDialog(ad)} style="margin-left: 8px;">
+									<Button variant="outlined" onclick={() => openPupilsDialog(ad)}>
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">group</span>
 										<Label>{$t('manageAds.view_pupils')}</Label>
 									</Button>
-									<Button onclick={() => deleteClass(ad.id)} class="delete-btn" style="margin-left: 8px;">
+									<Button onclick={() => deleteClass(ad.id)} class="delete-btn">
 										<span class="material-icons">delete</span>
 									</Button>
 								</div>
@@ -837,6 +847,7 @@
 	}
 	.ad-actions {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 	}
 	.ad-thumbnail {
@@ -884,6 +895,17 @@
 		}
 		.form-row {
 			grid-template-columns: 1fr;
+		}
+		.manage-ads-container {
+			padding: 1rem;
+		}
+		.guide-banner {
+			flex-direction: column;
+			gap: 1rem;
+			text-align: center;
+		}
+		.guide-banner-content {
+			flex-direction: column;
 		}
 	}
 

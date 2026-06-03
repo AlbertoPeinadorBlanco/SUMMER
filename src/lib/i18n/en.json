@@ -672,5 +672,16 @@
 		"password_error": "Failed to update password",
 		"send_reset_email": "Send Password Reset Email",
 		"reset_email_sent": "If that email exists, a reset link has been sent."
+	},
+	"ratings": {
+		"rate_instructor": "Rate Instructor",
+		"submit_review": "Submit Review",
+		"no_ratings": "No ratings yet.",
+		"average_rating": "Average Rating",
+		"leave_comment": "Leave a comment (optional)",
+		"rating_submitted": "Thank you! Your rating has been submitted.",
+		"rating_error": "Failed to submit rating. You may have already rated this class.",
+		"invalid_booking": "Invalid booking or you cannot rate this class yet.",
+		"select_rating": "Please select a star rating."
 	}
 }

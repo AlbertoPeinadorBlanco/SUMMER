@@ -38,6 +38,16 @@ export const load: PageLoad = async ({ fetch, params }) => {
 
 		const isFeatured = u.featured_until && new Date(u.featured_until) > new Date();
 
+		let ratings = { average: 0, total: 0, reviews: [] };
+		try {
+			const ratingsRes = await fetch(`${API_BASE_URL}/ratings/instructor/${teacherId}`);
+			if (ratingsRes.ok) {
+				ratings = await ratingsRes.json();
+			}
+		} catch (e) {
+			console.error('Failed to load ratings', e);
+		}
+
 		const teacher = {
 			id: u.id,
 			name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.username,
@@ -57,7 +67,8 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			has_link_upgrade: !!u.has_link_upgrade,
 			has_badge_upgrade: !!u.has_badge_upgrade,
 			is_verified: !!u.is_verified,
-			classes: teacherClasses
+			classes: teacherClasses,
+			ratings
 		};
 
 		return { teacher };

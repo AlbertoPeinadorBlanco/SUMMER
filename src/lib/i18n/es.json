@@ -673,5 +673,16 @@
 		"password_error": "Error al actualizar la contraseña",
 		"send_reset_email": "Enviar correo de recuperación de contraseña",
 		"reset_email_sent": "Si ese correo existe, se ha enviado un enlace de recuperación."
+	},
+	"ratings": {
+		"rate_instructor": "Valorar Instructor",
+		"submit_review": "Enviar Valoración",
+		"no_ratings": "Aún no hay valoraciones.",
+		"average_rating": "Valoración Media",
+		"leave_comment": "Deja un comentario (opcional)",
+		"rating_submitted": "¡Gracias! Tu valoración ha sido enviada.",
+		"rating_error": "Error al enviar la valoración. Puede que ya hayas valorado esta clase.",
+		"invalid_booking": "Reserva no válida o aún no puedes valorar esta clase.",
+		"select_rating": "Por favor selecciona una valoración en estrellas."
 	}
 }

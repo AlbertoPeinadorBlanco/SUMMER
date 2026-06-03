@@ -171,6 +171,45 @@
 					<p>{teacher.bio}</p>
 				</section>
 
+				<section class="ratings-section" aria-labelledby="ratings-title">
+					<h3 id="ratings-title">{$t('ratings.average_rating')}</h3>
+					{#if teacher.ratings.total > 0}
+						<div class="rating-overview">
+							<div class="rating-big-number">{teacher.ratings.average}</div>
+							<div class="rating-stars">
+								{#each [1, 2, 3, 4, 5] as star}
+									<span class="material-icons" style="color: {star <= Math.round(teacher.ratings.average) ? '#fbbf24' : '#d1d5db'};">
+										{star <= Math.round(teacher.ratings.average) ? 'star' : 'star_border'}
+									</span>
+								{/each}
+								<span class="rating-count">({teacher.ratings.total})</span>
+							</div>
+						</div>
+						<div class="reviews-list">
+							{#each teacher.ratings.reviews as review}
+								<div class="review-item">
+									<div class="review-header">
+										<strong>{review.student_name}</strong>
+										<span class="review-date">{new Date(review.created_at).toLocaleDateString()}</span>
+									</div>
+									<div class="review-stars">
+										{#each [1, 2, 3, 4, 5] as star}
+											<span class="material-icons" style="font-size: 14px; color: {star <= review.rating ? '#fbbf24' : '#d1d5db'};">
+												{star <= review.rating ? 'star' : 'star_border'}
+											</span>
+										{/each}
+									</div>
+									{#if review.comment}
+										<p class="review-comment">{review.comment}</p>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<p>{$t('ratings.no_ratings')}</p>
+					{/if}
+				</section>
+
 				<section class="classes-section" aria-labelledby="classes-title">
 					<h3 id="classes-title">{$t('profile.classes_title')}</h3>
 					<div class="classes-list" role="list">
@@ -385,12 +424,70 @@
 
 	.about-section,
 	.classes-section,
-	.video-section {
+	.video-section,
+	.ratings-section {
 		background: var(--surface-color);
 		padding: 2rem;
 		border-radius: 12px;
 		box-shadow: 0 4px 12px rgba(226, 109, 63, 0.08);
 		margin-bottom: 2rem;
+	}
+
+	.rating-overview {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	.rating-big-number {
+		font-size: 3.5rem;
+		font-weight: 700;
+		color: var(--terciary-color);
+		line-height: 1;
+	}
+
+	.rating-stars {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.rating-count {
+		margin-left: 0.5rem;
+		color: var(--text-secondary);
+		font-size: 0.95rem;
+	}
+
+	.review-item {
+		margin-bottom: 1.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	.review-item:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+
+	.review-header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 0.25rem;
+	}
+
+	.review-date {
+		color: var(--text-secondary);
+		font-size: 0.85rem;
+	}
+
+	.review-comment {
+		margin-top: 0.75rem;
+		color: var(--text-primary);
+		line-height: 1.5;
 	}
 
 	.video-container {

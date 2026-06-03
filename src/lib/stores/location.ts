@@ -14,9 +14,9 @@ export const regions = [
     {
         name: 'Costa Central',
         beaches: [
-            { name: 'Salinas', lat: 43.57, lon: -5.96 },
+            { name: 'Salinas', lat: 43.57, lon: -5.96, aemet_id: '3301601' },
             { name: 'Xagó', lat: 43.60, lon: -5.91 },
-            { name: 'San Lorenzo (Gijón)', lat: 43.54, lon: -5.65 },
+            { name: 'San Lorenzo (Gijón)', lat: 43.54, lon: -5.65, aemet_id: '3302401' },
             { name: 'El Arbeyal (Gijón)', lat: 43.54, lon: -5.69 },
             { name: 'Playa de Verdicio', lat: 43.59, lon: -5.87 }
         ]
@@ -24,7 +24,7 @@ export const regions = [
     {
         name: 'Costa Oriental',
         beaches: [
-            { name: 'Rodiles', lat: 43.53, lon: -5.38 },
+            { name: 'Rodiles', lat: 43.53, lon: -5.38, aemet_id: '3307606' },
             { name: 'Playa de Poo', lat: 43.43, lon: -4.80 },
             { name: 'San Antolín', lat: 43.44, lon: -4.87 },
             { name: 'Playa de Toró (Llanes)', lat: 43.42, lon: -4.76 },

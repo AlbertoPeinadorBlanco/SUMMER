@@ -30,8 +30,17 @@
         loading = true;
         error = false;
         try {
-            const res = await fetch(`${API_BASE_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`, {
-                cache: 'no-store'
+            let url = `${API_BASE_URL}/weather/live-conditions?lat=${beach.lat}&lon=${beach.lon}`;
+            if (beach.aemet_id) {
+                url += `&aemet_id=${beach.aemet_id}`;
+            }
+
+            const res = await fetch(url, {
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
             });
             
             if (!res.ok) throw new Error('API fetch failed');

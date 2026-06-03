@@ -69,7 +69,7 @@
 	}
 
 	function toggleLanguage() {
-		$locale = $locale === 'en' ? 'es' : 'en';
+		$locale = $locale?.startsWith('en') ? 'es' : 'en';
 	}
 
 	function toggleCurrency() {
@@ -309,9 +309,9 @@
 						onclick={toggleLanguage}
 						variant="outlined"
 						class="lang-btn desktop-nav"
-						aria-label="Toggle language. Current: {$locale === 'en' ? 'English' : 'Spanish'}"
+						aria-label="Toggle language. Current: {$locale?.startsWith('en') ? 'English' : 'Spanish'}"
 					>
-						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
+						<Label>{$locale?.startsWith('en') ? 'EN' : 'ES'}</Label>
 					</Button>
 					<Button
 						onclick={toggleTheme}
@@ -344,7 +344,7 @@
 						style="min-width: 48px; padding: 0;"
 						aria-label="Toggle language"
 					>
-						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
+						<Label>{$locale?.startsWith('en') ? 'EN' : 'ES'}</Label>
 					</Button>
 					<Button
 						onclick={toggleTheme}
@@ -401,7 +401,7 @@
 						<Label>{$currency}</Label>
 					</Button>
 					<Button onclick={toggleLanguage} class="mobile-menu-btn" style="flex: 1; justify-content: center; background: var(--surface-color); border: 1px solid var(--border-color);">
-						<Label>{$locale === 'en' ? 'EN' : 'ES'}</Label>
+						<Label>{$locale?.startsWith('en') ? 'EN' : 'ES'}</Label>
 					</Button>
 					<Button onclick={toggleTheme} class="mobile-menu-btn" style="flex: 1; justify-content: center; background: var(--surface-color); border: 1px solid var(--border-color);">
 						<span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">

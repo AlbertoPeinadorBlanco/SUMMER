@@ -326,7 +326,7 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
-		z-index: 10;
+		z-index: 1;
 	}
 
 	.premium-badge {

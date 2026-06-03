@@ -48,6 +48,13 @@
 	--mdc-select-outlined-idle-border-color: rgba(255, 255, 255, 0.4);
 	--mdc-select-fill-color: rgba(255, 255, 255, 0.15);
 	--mdc-select-dropdown-icon-color: #ffffff;
+
+	/* Fix Dialog surface color in dark mode */
+	--mdc-dialog-box-shadow: 0 11px 15px -7px rgba(0,0,0,0.2), 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12);
+}
+
+[data-theme="dark"] .mdc-dialog__surface {
+	background-color: var(--surface-color) !important;
 }
 
 /* Ensure paragraph and list text is pure white in dark mode unless explicitly colored inline */

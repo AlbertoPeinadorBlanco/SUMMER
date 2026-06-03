@@ -324,12 +324,10 @@
 				
 				<div class="form-row">
 					<Textfield variant="outlined" bind:value={title} label={$t('createAd.form_title_en')} required style="width: 100%;" />
-					<Textfield variant="outlined" bind:value={title_es} label={$t('createAd.form_title_es')} style="width: 100%;" />
 				</div>
 
 				<div class="form-row">
 					<Textfield variant="outlined" textarea bind:value={description} label={$t('createAd.form_desc_en')} required style="width: 100%;" input$rows={4} />
-					<Textfield variant="outlined" textarea bind:value={description_es} label={$t('createAd.form_desc_es')} style="width: 100%;" input$rows={4} />
 				</div>
 
 				<div class="form-row">

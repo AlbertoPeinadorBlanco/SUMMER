@@ -54,7 +54,11 @@
 }
 
 [data-theme="dark"] .mdc-dialog__surface {
-	background-color: var(--surface-color) !important;
+	background-color: var(--background-color) !important;
+}
+
+[data-theme="dark"] .mdc-dialog__title {
+	color: #ffffff !important;
 }
 
 /* Ensure paragraph and list text is pure white in dark mode unless explicitly colored inline */

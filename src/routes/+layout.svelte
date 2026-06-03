@@ -949,4 +949,16 @@
 		margin-right: 8px;
 		flex-shrink: 0;
 	}
+
+	:global([data-theme="dark"]) .user-dropdown {
+		background-color: var(--background-color) !important;
+	}
+
+	:global([data-theme="dark"]) .admin-item {
+		background-color: rgba(255, 255, 255, 0.03) !important;
+	}
+
+	:global([data-theme="dark"]) .dropdown-divider {
+		background-color: var(--border-color) !important;
+	}
 </style>

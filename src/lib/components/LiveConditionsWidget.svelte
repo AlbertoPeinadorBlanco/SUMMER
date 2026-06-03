@@ -133,12 +133,12 @@
                 </div>
             </div>
 
-            <!-- Period Metric -->
+            <!-- Tide Metric -->
             <div class="metric-card">
-                <span class="material-icons" style="color: #00bcd4;">av_timer</span>
+                <span class="material-icons" style="color: #00bcd4;">water</span>
                 <div class="metric-info">
-                    <span class="value">{marineData?.wave_period || '--'} s</span>
-                    <span class="label">{$t('weather.period')}</span>
+                    <span class="value">{marineData?.tide || '--'} m</span>
+                    <span class="label">{$t('weather.tide')}</span>
                 </div>
             </div>
 
@@ -151,12 +151,12 @@
                 </div>
             </div>
 
-            <!-- UVA Metric -->
+            <!-- Water Temp Metric -->
             <div class="metric-card">
-                <span class="material-icons" style="color: #ff9800;">light_mode</span>
+                <span class="material-icons" style="color: #009688;">pool</span>
                 <div class="metric-info">
-                    <span class="value">{weatherData.daily?.uv_index_max?.[0] ?? '--'}</span>
-                    <span class="label">{$t('weather.uva_index')}</span>
+                    <span class="value">{marineData?.water_temperature || '--'}°C</span>
+                    <span class="label">{$t('weather.water_temp')}</span>
                 </div>
             </div>
 

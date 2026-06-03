@@ -52,8 +52,9 @@ if (browser) {
 export const formatPrice = derived([currency, exchangeRates], ([$currency, $rates]) => {
 	return (basePriceEur: number, isCourse: boolean = false) => {
 		const converted = basePriceEur * $rates[$currency];
+		const withVat = converted * 1.21;
 		const symbol = symbols[$currency];
-		// Return formatted string, e.g., "€50/hr" or "€150"
-		return `${symbol}${Math.round(converted)}${isCourse ? '' : '/hr'}`;
+		// Return formatted string, e.g., "€50 (inc. VAT €61)/hr"
+		return `${symbol}${Math.round(converted)} (+VAT: ${symbol}${Math.round(withVat)})${isCourse ? '' : '/hr'}`;
 	};
 });

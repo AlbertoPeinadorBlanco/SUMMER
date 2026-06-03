@@ -197,13 +197,26 @@
 	async function deleteInnerItem(type: string, id: any) {
 		if (!confirm('Are you sure you want to delete this?')) return;
 		try {
-			const endpoint = type === 'booking' ? `/bookings/${id}` : `/classes/${id}`;
+			let endpoint = '';
+			if (type === 'booking') endpoint = `/bookings/${id}`;
+			else if (type === 'advert') endpoint = `/classes/${id}`;
+			else if (type === 'rating') endpoint = `/admin/ratings/${id}`;
+
 			await fetchApi(endpoint, {
 				method: 'DELETE'
 			});
 			await reloadDetails();
 		} catch (err: any) {
 			alert(err.message);
+		}
+	}
+
+	async function sendVerificationEmail(userId: number) {
+		try {
+			await fetchApi(`/admin/users/${userId}/send-verification`, { method: 'POST' });
+			alert('Verification email sent successfully!');
+		} catch (err: any) {
+			alert(err.message || 'Failed to send email');
 		}
 	}
 
@@ -363,10 +376,10 @@
 	<Title id="create-edit-title">{isEditing ? $t('admin.edit_user') : $t('admin.create_user')}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formUsername} label={$t('admin.username')} style="width: 100%;" disabled={isEditing} />
-			<Textfield bind:value={formEmail} label={$t('admin.email')} type="email" input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'} input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%;" disabled={isEditing} />
+			<Textfield variant="outlined" bind:value={formUsername} label={$t('admin.username')} style="width: 100%;" disabled={isEditing} />
+			<Textfield variant="outlined" bind:value={formEmail} label={$t('admin.email')} type="email" input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'} input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%;" disabled={isEditing} />
 			{#if !isEditing}
-				<Textfield bind:value={formPassword} label="Password" type={showPassword ? "text" : "password"} style="width: 100%;">
+				<Textfield variant="outlined" bind:value={formPassword} label="Password" type={showPassword ? "text" : "password"} style="width: 100%;">
 					{#snippet trailingIcon()}
 						<Icon class="material-icons" role="button" tabindex="0" onclick={() => showPassword = !showPassword} style="cursor: pointer;" onkeydown={(e: any) => e.key === 'Enter' && (showPassword = !showPassword)}>
 							{showPassword ? 'visibility_off' : 'visibility'}
@@ -374,12 +387,12 @@
 					{/snippet}
 				</Textfield>
 			{/if}
-			<Textfield bind:value={formFirstName} label="First Name" style="width: 100%;" />
-			<Textfield bind:value={formLastName} label="Last Name" style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formFirstName} label="First Name" style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formLastName} label="Last Name" style="width: 100%;" />
 			
 			<div class="select-field">
 				<label>{$t('admin.role')}</label>
-				<Select bind:value={formRole} style="width: 100%;">
+				<Select variant="outlined" bind:value={formRole} style="width: 100%;">
 					<Option value="user">{$t('admin.user')}</Option>
 					<Option value="instructor">{$t('admin.instructor')}</Option>
 					<Option value="admin">{$t('admin.admin')}</Option>
@@ -388,7 +401,7 @@
 			
 			<div class="select-field">
 				<label>{$t('admin.tier')}</label>
-				<Select bind:value={formTier} style="width: 100%;">
+				<Select variant="outlined" bind:value={formTier} style="width: 100%;">
 					<Option value="basic">{$t('admin.basic')}</Option>
 					<Option value="premium">{$t('admin.premium')}</Option>
 				</Select>
@@ -439,6 +452,9 @@
 					<button class="tab-btn {activeTab === 'adverts' ? 'active' : ''}" onclick={() => activeTab = 'adverts'}>
 						{$t('admin.adverts_tab')} ({detailsData.adverts.length})
 					</button>
+					<button class="tab-btn {activeTab === 'ratings' ? 'active' : ''}" onclick={() => activeTab = 'ratings'}>
+						{$t('admin.ratings_tab', { default: 'Ratings' })} ({detailsData.ratings?.length || 0})
+					</button>
 				{/if}
 			</div>
 
@@ -467,6 +483,9 @@
 								<span class="material-icons" style="color: #2196f3; font-size: 16px; vertical-align: middle;">verified</span> Yes
 							{:else}
 								No
+								<Button variant="outlined" style="margin-left: 8px; padding: 0 8px; height: 24px; min-width: auto; font-size: 0.75rem;" onclick={() => sendVerificationEmail(detailsData.user.id)}>
+									<Label>Send Email</Label>
+								</Button>
 							{/if}
 						</div>
 					</div>
@@ -568,6 +587,44 @@
 							</Body>
 						</DataTable>
 					{/if}
+				{:else if activeTab === 'ratings'}
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+						<h3 style="margin: 0;">{$t('admin.ratings_tab', { default: 'Ratings' })}</h3>
+					</div>
+					{#if !detailsData.ratings || detailsData.ratings.length === 0}
+						<p>No ratings found.</p>
+					{:else}
+						<DataTable style="width: 100%;">
+							<Head>
+								<Row>
+									<Cell>ID</Cell>
+									<Cell>Student</Cell>
+									<Cell>Rating</Cell>
+									<Cell>Comment</Cell>
+									<Cell>Date</Cell>
+									<Cell>Actions</Cell>
+								</Row>
+							</Head>
+							<Body>
+								{#each detailsData.ratings as rating}
+									<Row>
+										<Cell>{rating.id}</Cell>
+										<Cell>{rating.student_name}</Cell>
+										<Cell>
+											<div style="display: flex; align-items: center; gap: 4px;">
+												{rating.rating} <span class="material-icons" style="font-size: 14px; color: #fbbf24;">star</span>
+											</div>
+										</Cell>
+										<Cell><div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title={rating.comment}>{rating.comment || '-'}</div></Cell>
+										<Cell>{new Date(rating.created_at).toLocaleDateString()}</Cell>
+										<Cell>
+											<IconButton class="material-icons" style="color: #d32f2f;" onclick={() => deleteInnerItem('rating', rating.id)} aria-label="Delete Rating">delete</IconButton>
+										</Cell>
+									</Row>
+								{/each}
+							</Body>
+						</DataTable>
+					{/if}
 				{/if}
 			</div>
 		{/if}
@@ -586,11 +643,11 @@
 		<div class="form-container">
 			{#if innerModalType === 'booking'}
 				{#if innerModalMode === 'create'}
-					<Textfield bind:value={bookingClassId} label="Class ID" type="number" style="width: 100%;" />
+					<Textfield variant="outlined" bind:value={bookingClassId} label="Class ID" type="number" style="width: 100%;" />
 				{/if}
 				<div class="select-field">
 					<label>Status</label>
-					<Select bind:value={bookingStatusId} style="width: 100%;">
+					<Select variant="outlined" bind:value={bookingStatusId} style="width: 100%;">
 						<Option value={1}>Pending</Option>
 						<Option value={2}>Confirmed</Option>
 						<Option value={3}>Cancelled</Option>
@@ -600,14 +657,14 @@
 				{#if innerModalMode === 'create'}
 					<div class="select-field">
 						<label>Class Type ID</label>
-						<Select bind:value={advertClassTypeId} style="width: 100%;">
+						<Select variant="outlined" bind:value={advertClassTypeId} style="width: 100%;">
 							<Option value={1}>Surf</Option>
 							<Option value={2}>Skate</Option>
 						</Select>
 					</div>
 				{/if}
-				<Textfield bind:value={advertTitle} label="Title" style="width: 100%;" />
-				<Textfield bind:value={advertPrice} label="Price (€)" type="number" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={advertTitle} label="Title" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={advertPrice} label="Price (€)" type="number" style="width: 100%;" />
 				<div class="select-field" style="margin-top: 1rem;">
 					<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 						<input type="checkbox" bind:checked={advertIsActive} style="width: 18px; height: 18px;" />

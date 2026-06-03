@@ -4,7 +4,7 @@
 
 	let { placement } = $props();
 
-	let banner = $state(null);
+	let banner: any = $state(null);
 	let loading = $state(true);
 
 	onMount(async () => {
@@ -41,12 +41,14 @@
 		justify-content: center;
 		margin: 3rem 0;
 		position: relative;
-		z-index: 10;
+		z-index: 1;
 	}
 	.banner-link {
 		display: block;
 		width: 100%;
 		max-width: 1200px;
+		min-height: 120px;
+		background-color: var(--surface-color, #f0f0f0);
 		position: relative;
 		border-radius: 8px;
 		overflow: hidden;
@@ -59,6 +61,7 @@
 	}
 	.banner-img {
 		width: 100%;
+		min-height: 120px;
 		height: auto;
 		display: block;
 		object-fit: cover;

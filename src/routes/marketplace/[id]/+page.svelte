@@ -102,6 +102,11 @@
 						<span class="material-icons" aria-hidden="true" style="font-size: 32px;">verified</span>
 					</div>
 				{/if}
+				{#if teacher.ratings && teacher.ratings.total > 0}
+					<div class="header-rating-badge" title="{teacher.ratings.average} out of 5 stars ({teacher.ratings.total} reviews)" style="position: absolute; bottom: 5px; left: 5px; background: var(--surface-color); border-radius: 16px; display: flex; align-items: center; gap: 4px; padding: 4px 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); font-weight: bold; color: #fbbf24; font-size: 14px;">
+						{teacher.ratings.average} <span class="material-icons" style="font-size: 16px;">star</span>
+					</div>
+				{/if}
 			</div>
 			<div class="profile-info">
 				<h1 id="profile-name">{teacher.name}</h1>

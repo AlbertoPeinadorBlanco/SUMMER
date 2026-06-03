@@ -29,6 +29,7 @@
 	let available_today = $state(false);
 	let allow_communications = $state(true);
 	let bio = $state('');
+	let specialization = $state('');
 
 	let loading = $state(false);
 	let error = $state('');
@@ -102,6 +103,7 @@
 			available_today = user.available_today || false;
 			allow_communications = user.allow_communications !== undefined ? !!user.allow_communications : true;
 			bio = user.bio || '';
+			specialization = user.specialization || '';
 		} else if (isAuthenticated === false) {
 			// Redirect if not logged in
 			goto('/');
@@ -128,6 +130,12 @@
 
 			// Update local auth store so layout / other components reflect new name
 			auth.updateUser({ first_name, last_name, phone });
+			
+			if (user.role === 'instructor') {
+				// Bio is saved in the instructor profile
+				await saveInstructorProfile();
+			}
+
 			successMsg = $t('profile.alerts.profile_updated');
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
@@ -233,11 +241,14 @@
 		try {
 			await fetchApi(`/users/${user.id}/instructor-profile`, {
 				method: 'PUT',
-				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications, bio })
+				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications, bio, specialization })
 			});
-			auth.updateUser({ video_url, booking_link, available_today, allow_communications, bio });
-			successMsg = $t('profile.alerts.instructor_updated');
-			setTimeout(() => (successMsg = ''), 3000);
+			auth.updateUser({ video_url, booking_link, available_today, allow_communications, bio, specialization });
+			// Don't show success msg here if it's called from handleUpdate to avoid overriding
+			if (!loading) {
+				successMsg = $t('profile.alerts.instructor_updated');
+				setTimeout(() => (successMsg = ''), 3000);
+			}
 		} catch (err: any) {
 			error = err.message || $t('profile.alerts.update_failed');
 		} finally {
@@ -467,15 +478,6 @@
 				<p class="tier-desc">{$t('profile_enhancements.desc')}</p>
 				
 				<form class="enhancements-form" onsubmit={handleInstructorUpdate}>
-					<!-- Bio Upgrade (Available to all instructors by default) -->
-					<div class="upgrade-row">
-						<div class="upgrade-info">
-							<h4>{$t('profile_enhancements.biography', { default: 'Biography' })}</h4>
-							<p class="desc">{$t('profile_enhancements.biography_desc', { default: 'Write a short bio about yourself and your surfing experience.' })}</p>
-						</div>
-						<Textfield variant="outlined" textarea bind:value={bio} label={$t('profile_enhancements.biography_label', { default: 'Your Bio' })} style="flex: 1;" input$rows={4} />
-					</div>
-
 					<!-- Intro Video Upgrade -->
 					<div class="upgrade-row">
 						<div class="upgrade-info">
@@ -597,6 +599,28 @@
 				<Textfield variant="outlined" bind:value={first_name} label={$t('profile.first_name_label')} required input$pattern="[A-Za-z\s]+" input$title={$t('profile.letters_only')} />
 				<Textfield variant="outlined" bind:value={last_name} label={$t('profile.last_name_label')} required input$pattern="[A-Za-z\s]+" input$title={$t('profile.letters_only')} />
 			</div>
+
+			{#if user.role === 'instructor'}
+				<div class="upgrade-row" style="margin: 1rem 0; align-items: flex-start; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; flex-direction: column; gap: 1rem;">
+					
+					<div style="display: flex; width: 100%; gap: 1rem; align-items: flex-start;">
+						<div class="upgrade-info" style="flex: 1; max-width: 300px;">
+							<h4>{$t('profile_enhancements.biography', { default: 'Biography' })}</h4>
+							<p class="desc" style="font-size: 0.85rem; color: #666; margin: 4px 0;">{$t('profile_enhancements.biography_desc', { default: 'Write a short bio about yourself and your surfing experience.' })}</p>
+						</div>
+						<Textfield variant="outlined" textarea bind:value={bio} label={$t('profile_enhancements.biography_label', { default: 'Your Bio' })} style="flex: 2;" input$rows={4} />
+					</div>
+
+					<div style="display: flex; width: 100%; gap: 1rem; align-items: flex-start; border-top: 1px solid #eee; padding-top: 1rem;">
+						<div class="upgrade-info" style="flex: 1; max-width: 300px;">
+							<h4>Specializations</h4>
+							<p class="desc" style="font-size: 0.85rem; color: #666; margin: 4px 0;">Separate multiple specializations with commas (e.g., Surfing, Stand-up Paddle, Yoga).</p>
+						</div>
+						<Textfield variant="outlined" bind:value={specialization} label="Specializations" style="flex: 2;" />
+					</div>
+
+				</div>
+			{/if}
 
 			<Textfield
 				variant="outlined"

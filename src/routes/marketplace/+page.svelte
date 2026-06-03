@@ -219,7 +219,7 @@
 
 <div class="teacher-grid" role="list" aria-labelledby="marketplace-title">
 	{#each filteredClasses as ad (ad.id)}
-		<article class="card-container premium-card {ad.instructor_tier === 'premium' ? 'is-premium' : ''} {ad.featured_until && new Date(ad.featured_until) > new Date() ? 'is-featured' : ''}" role="listitem" style="position: relative;">
+		<article class="card-container premium-card {ad.featured_until && new Date(ad.featured_until) > new Date() ? 'is-featured' : ''}" role="listitem" style="position: relative;">
 			{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
 				<div class="featured-star-badge" title={$t('profile_enhancements.public_featured')}>
 					<span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span>
@@ -239,21 +239,16 @@
 								{getTitle(ad)}
 							</h2>
 							
-							{#if ad.instructor_tier === 'premium' || (ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)) || ad.available_today || (ad.featured_until && new Date(ad.featured_until) > new Date())}
+							{#if (ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)) || ad.available_today || (ad.featured_until && new Date(ad.featured_until) > new Date())}
 								<div class="ad-perks">
 									{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
-										<span class="badge featured-badge" title={$t('profile_enhancements.public_featured')}>
+										<span class="badge featured-badge" title="Featured Spot">
 											<span class="material-icons">workspace_premium</span> {$t('profile_enhancements.featured_title')}
 										</span>
 									{/if}
-									{#if ad.instructor_tier === 'premium'}
-										<span class="badge premium-badge" title="Premium Instructor">
-											<span class="material-icons">stars</span> {$t('marketplace.premium')}
-										</span>
-									{/if}
 									{#if ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)}
-										<span class="badge bumped-badge" title="Boosted Advert">
-											<span class="material-icons">bolt</span> {$t('marketplace.boosted')}
+										<span class="badge bumped-badge" title="Recently Boosted">
+											<span class="material-icons">rocket_launch</span> {$t('marketplace.boosted')}
 										</span>
 									{/if}
 									{#if ad.available_today}

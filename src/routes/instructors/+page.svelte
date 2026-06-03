@@ -27,14 +27,11 @@
 		try {
 			const data = await fetchApi('/users?role=instructor');
 			if (data && !data.error) {
-				// Sort: featured first, then premium, then the rest
+				// Sort: featured first
 				instructors = data.sort((a: any, b: any) => {
-					const aFeatured = a.featured_until && new Date(a.featured_until) > new Date() ? 1 : 0;
-					const bFeatured = b.featured_until && new Date(b.featured_until) > new Date() ? 1 : 0;
-					if (bFeatured !== aFeatured) return bFeatured - aFeatured;
-					const aPremium = (a.tier === 'premium' || a.tier === 'summer_pass') ? 1 : 0;
-					const bPremium = (b.tier === 'premium' || b.tier === 'summer_pass') ? 1 : 0;
-					return bPremium - aPremium;
+					const aFeatured = isFeatured(a) ? 1 : 0;
+					const bFeatured = isFeatured(b) ? 1 : 0;
+					return bFeatured - aFeatured;
 				});
 				filteredInstructors = instructors;
 			}
@@ -134,12 +131,6 @@
 
 						<!-- Perk badges -->
 						<div class="perk-badges">
-							{#if instructor.tier === 'premium' || instructor.tier === 'summer_pass'}
-								<span class="perk-badge premium-badge">
-									<span class="material-icons">workspace_premium</span>
-									Premium
-								</span>
-							{/if}
 							{#if instructor.available_today && instructor.has_badge_upgrade}
 								<span class="perk-badge available-badge">
 									<span class="material-icons">event_available</span>

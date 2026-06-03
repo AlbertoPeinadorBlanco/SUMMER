@@ -123,12 +123,7 @@
 							{$t('profile_enhancements.public_featured')}
 						</span>
 					{/if}
-					{#if teacher.tier === 'premium' || teacher.tier === 'summer_pass'}
-						<span class="perk-badge premium-badge">
-							<span class="material-icons" aria-hidden="true">workspace_premium</span>
-							Premium
-						</span>
-					{/if}
+
 					{#if teacher.available_today}
 						<span class="perk-badge available-badge">
 							<span class="material-icons" aria-hidden="true">event_available</span>

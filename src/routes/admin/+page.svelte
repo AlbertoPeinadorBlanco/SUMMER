@@ -105,7 +105,6 @@
 		formFirstName = user.first_name || '';
 		formLastName = user.last_name || '';
 		formRole = user.role || 'user';
-		formTier = user.tier || 'basic';
 		isCreateEditModalOpen = true;
 	}
 
@@ -288,7 +287,7 @@
 				first_name: formFirstName,
 				last_name: formLastName,
 				role: formRole,
-				tier: formTier
+				is_verified: formVerified
 			};
 			
 			if (!isEditing && formPassword) {
@@ -367,7 +366,6 @@
 						<Cell>{$t('admin.username')}</Cell>
 						<Cell>{$t('admin.email')}</Cell>
 						<Cell>{$t('admin.role')}</Cell>
-						<Cell>{$t('admin.tier')}</Cell>
 						<Cell>{$t('admin.actions')}</Cell>
 					</Row>
 				</Head>
@@ -390,11 +388,6 @@
 							<Cell>
 								<span class="badge role-{user.role || 'user'}">
 									{$t(`admin.${user.role || 'user'}`) || user.role}
-								</span>
-							</Cell>
-							<Cell>
-								<span class="badge tier-{user.tier || 'basic'}">
-									{$t(`admin.${user.tier || 'basic'}`) || user.tier}
 								</span>
 							</Cell>
 							<Cell>
@@ -438,13 +431,6 @@
 				</Select>
 			</div>
 			
-			<div class="select-field">
-				<label>{$t('admin.tier')}</label>
-				<Select variant="outlined" bind:value={formTier} style="width: 100%;">
-					<Option value="basic">{$t('admin.basic')}</Option>
-					<Option value="premium">{$t('admin.premium')}</Option>
-				</Select>
-			</div>
 		</div>
 	</Content>
 	<Actions>
@@ -509,13 +495,7 @@
 							<strong>{$t('admin.role')}:</strong> 
 							<span class="badge role-{detailsData.user.role || 'user'}">{$t(`admin.${detailsData.user.role || 'user'}`) || detailsData.user.role}</span>
 						</div>
-						<div class="detail-item">
-							<strong>{$t('admin.tier')}:</strong> 
-							<span class="badge tier-{detailsData.user.tier || 'basic'}">{$t(`admin.${detailsData.user.tier || 'basic'}`) || detailsData.user.tier}</span>
-							{#if detailsData.user.tier_expires_at}
-								<br><small>Until: {new Date(detailsData.user.tier_expires_at).toLocaleDateString('en-GB')}</small>
-							{/if}
-						</div>
+
 						<div class="detail-item">
 							<strong>Verified:</strong> 
 							{#if detailsData.user.is_verified}
@@ -613,8 +593,8 @@
 										<Cell>{ad.title}</Cell>
 										<Cell>{$formatPrice(ad.price)}</Cell>
 										<Cell>
-											<span class="badge {ad.is_active ? 'tier-premium' : 'role-user'}">
-												{ad.is_active ? 'Active' : 'Inactive'}
+											<span class="badge {ad.is_active ? 'role-instructor' : 'role-user'}">
+												{ad.is_active ? $t('admin.active') : $t('admin.inactive')}
 											</span>
 										</Cell>
 										<Cell>

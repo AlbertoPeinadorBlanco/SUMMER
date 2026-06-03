@@ -55,8 +55,27 @@
 		classes.reduce((sum, ad) => sum + (parseFloat(ad.price) * (ad.bookings_count || 0)), 0)
 	);
 	
+	let extraSlots = $derived(user?.extra_advert_slots || 0);
+	let allowedAdverts = $derived(1 + extraSlots);
+	let canCreateMore = $derived(classes.length < allowedAdverts || editingId !== null);
 
-
+	async function handleBuySlot() {
+		try {
+			loading = true;
+			const res = await fetchApi('/stripe/create-checkout-session', {
+				method: 'POST',
+				body: JSON.stringify({ item_key: 'buy_advert_slot' })
+			});
+			if (res && res.url) {
+				window.location.href = res.url;
+			}
+		} catch (err: any) {
+			console.error('Error starting checkout:', err);
+			showToast('Failed to start checkout', 'error');
+		} finally {
+			loading = false;
+		}
+	}
 	$effect(() => {
 		if (isAuthenticated === false) {
 			goto('/');
@@ -289,7 +308,21 @@
 				</div>
 			{/if}
 
-			<form onsubmit={handleSubmit} class="create-form">
+			{#if !canCreateMore}
+				<div class="limit-reached-banner" style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+					<h3 style="margin-top: 0; color: #e65100; display: flex; align-items: center; gap: 0.5rem;">
+						<span class="material-icons">lock</span> Limit Reached
+					</h3>
+					<p style="color: #666; margin-bottom: 1.5rem;">
+						{@html $t('manage_ads.limit_reached', { values: { allowedAdverts: `<strong>${allowedAdverts}</strong>` } })} 
+						You can purchase an additional advert slot to create more classes.
+					</p>
+					<Button variant="raised" onclick={handleBuySlot} disabled={loading} class="premium-button">
+						<Label>{loading ? $t('manage_ads.loading') : $t('manage_ads.buy_slot', { values: { price: '€10.00' } })}</Label>
+					</Button>
+				</div>
+			{:else}
+				<form onsubmit={handleSubmit} class="create-form">
 				<div class="form-row">
 					<Select
 						variant="outlined"
@@ -427,6 +460,7 @@
 					</Button>
 				</div>
 			</form>
+			{/if}
 		</div>
 
 		<!-- Right Side: Ads List -->

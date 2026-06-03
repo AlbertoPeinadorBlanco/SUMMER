@@ -17,43 +17,33 @@
 	</div>
 
 	<section class="guide-section">
-		<h2>{$t('instructor_guide.subscriptions_title')}</h2>
-		<p>{$t('instructor_guide.subscriptions_desc')}</p>
+		<h2>{$t('instructor_guide.pay_per_advert_title')}</h2>
+		<p>{$t('instructor_guide.pay_per_advert_desc')}</p>
 		<div class="card-grid">
 			<Card class="tier-card premium-card">
 				<Content style="padding: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 					<div class="tier-header">
 						<span class="material-icons tier-icon">person</span>
-						<h3>{$t('instructor_guide.basic_title')}</h3>
+						<h3>{$t('instructor_guide.free_tier_title')}</h3>
 					</div>
-					<p>{$t('instructor_guide.basic_desc')}</p>
+					<p>{$t('instructor_guide.free_tier_desc')}</p>
 				</Content>
 			</Card>
 			<Card class="tier-card premium-card">
 				<Content style="padding: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 					<div class="tier-header">
-						<span class="material-icons tier-icon premium-icon">stars</span>
-						<h3>{$t('instructor_guide.premium_title')}</h3>
+						<span class="material-icons tier-icon premium-icon">add_circle</span>
+						<h3>{$t('instructor_guide.extra_slots_title')}</h3>
 					</div>
-					<p>{$t('instructor_guide.premium_desc')}</p>
-					<div class="price">{$formatPrice($pricings.premium_subscription)} / month</div>
-				</Content>
-			</Card>
-			<Card class="tier-card premium-card summer-pass">
-				<Content style="padding: 1.5rem; height: 100%; display: flex; flex-direction: column;">
-					<div class="tier-header">
-						<span class="material-icons tier-icon pass-icon">workspace_premium</span>
-						<h3>{$t('instructor_guide.pass_title')}</h3>
-					</div>
-					<p>{$t('instructor_guide.pass_desc')}</p>
-					<div class="price">{$formatPrice($pricings.summer_pass)} / year</div>
+					<p>{$t('instructor_guide.extra_slots_desc')}</p>
+					<div class="price">{$formatPrice(10.00)} {$t('instructor_guide.per_slot')}</div>
 				</Content>
 			</Card>
 		</div>
 		<div class="action-container">
-			<Button variant="raised" href="/profile" class="action-btn">
-				<span class="material-icons" style="margin-right: 8px;">shopping_cart</span>
-				<Label>{$t('instructor_guide.btn_upgrade')}</Label>
+			<Button variant="raised" href="/instructor/manage-ads" class="action-btn">
+				<span class="material-icons" style="margin-right: 8px;">campaign</span>
+				<Label>{$t('instructor_guide.btn_manage_ads')}</Label>
 			</Button>
 		</div>
 	</section>
@@ -78,13 +68,7 @@
 				<p>{$t('instructor_guide.iotw_desc2')}</p>
 			</div>
 		</div>
-		<div class="action-container">
-			<Button variant="raised" href="/instructor/manage-ads" class="action-btn">
-				<span class="material-icons" style="margin-right: 8px;">campaign</span>
-				<Label>{$t('instructor_guide.btn_manage_ads')}</Label>
-			</Button>
-		</div>
-	</section>
+
 
 	<section class="guide-section">
 		<h2>{$t('instructor_guide.enhancements_title')}</h2>

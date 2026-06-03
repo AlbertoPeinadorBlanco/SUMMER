@@ -101,15 +101,9 @@
 			</div>
 
 			<Textfield variant="outlined" bind:value={username} label={$t('auth.username')} required />
-			<Textfield
-				variant="outlined"
-				type="email"
-				bind:value={email}
-				label={$t('auth.email')}
-				required
-				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
-				input$title="Please enter a valid email address with a domain (e.g. .com)"
-			/>
+			<Textfield variant="outlined" bind:value={email} label={$t('auth.email')} type="email" required 
+				input$pattern={'[^@\\s]+@[^@\\s]+\\.[^@\\s]+'}
+				input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%; margin-bottom: 1rem;" />
 			<Textfield 
 				variant="outlined" 
 				type="tel" 

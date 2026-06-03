@@ -416,7 +416,7 @@
 	<Content>
 		<div class="form-container">
 			<Textfield variant="outlined" bind:value={formUsername} label={$t('admin.username')} style="width: 100%;" disabled={isEditing} />
-			<Textfield variant="outlined" bind:value={formEmail} label={$t('admin.email')} type="email" input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'} input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%;" disabled={isEditing} />
+			<Textfield variant="outlined" bind:value={formEmail} label={$t('admin.email')} type="email" input$pattern={'[^@\\s]+@[^@\\s]+\\.[^@\\s]+'} input$title="Please enter a valid email address with a domain (e.g. .com)" style="width: 100%;" disabled={isEditing} />
 			{#if !isEditing}
 				<Textfield variant="outlined" bind:value={formPassword} label="Password" type={showPassword ? "text" : "password"} style="width: 100%;">
 					{#snippet trailingIcon()}

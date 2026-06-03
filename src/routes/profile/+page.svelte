@@ -628,7 +628,7 @@
 				bind:value={email}
 				label={$t('profile.email_label')}
 				required
-				input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
+				input$pattern={'[^@\\s]+@[^@\\s]+\\.[^@\\s]+'}
 				input$title={$t('profile.email_format')}
 				disabled
 				style="width: 100%;"

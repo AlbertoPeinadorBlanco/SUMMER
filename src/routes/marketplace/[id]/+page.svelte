@@ -286,7 +286,7 @@
 								label={$t('profile.form_email')}
 								required
 								disabled={contactLoading}
-								input$pattern={'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'}
+								input$pattern={'[^@\\s]+@[^@\\s]+\\.[^@\\s]+'}
 								input$title="Please enter a valid email address with a domain (e.g. .com)"
 								style="width: 100%; margin-bottom: 1rem;"
 							/>

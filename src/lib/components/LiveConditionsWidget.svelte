@@ -146,7 +146,16 @@
             <div class="metric-card">
                 <span class="material-icons" style="color: #00bcd4;">water</span>
                 <div class="metric-info">
-                    <span class="value">{marineData?.tide || '--'} m</span>
+                    <span class="value tide-value">
+                        {#if marineData?.tide}
+                            {$t(marineData.tide.isRising ? 'weather.tide_rising' : 'weather.tide_falling')}
+                            <span class="tide-sub">
+                                ({marineData.tide.hours}h {marineData.tide.minutes}m {$t('weather.tide_until')} {$t(marineData.tide.nextState === 'high' ? 'weather.tide_high' : 'weather.tide_low')})
+                            </span>
+                        {:else}
+                            --
+                        {/if}
+                    </span>
                     <span class="label">{$t('weather.tide')}</span>
                 </div>
             </div>
@@ -296,6 +305,23 @@
     .metric-info {
         display: flex;
         flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .tide-value {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .tide-sub {
+        font-size: 0.75rem;
+        color: #666;
+        font-weight: normal;
+    }
+
+    [data-theme="dark"] .tide-sub {
+        color: #aaa;
     }
 
     .metric-info .value {

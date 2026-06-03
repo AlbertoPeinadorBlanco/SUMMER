@@ -1,11 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { t } from '$lib/i18n';
+    import { t } from 'svelte-i18n';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
-    import { authStore } from '$lib/stores/auth';
-
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    import { auth } from '$lib/stores/auth';
+    import { fetchApi } from '$lib/api';
 
     let bookingId = $page.params.booking_id;
     let rating = 0;
@@ -16,7 +15,7 @@
     let hoverRating = 0;
 
     onMount(() => {
-        if (!$authStore.isAuthenticated) {
+        if (!$auth.isAuthenticated) {
             goto('/login?redirect=/rate/' + bookingId);
         }
     });
@@ -31,24 +30,14 @@
         errorMessage = '';
 
         try {
-            const res = await fetch(`${API_BASE_URL}/ratings`, {
+            await fetchApi('/ratings', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${$authStore.token}`
-                },
                 body: JSON.stringify({
                     booking_id: bookingId,
                     rating,
                     comment
                 })
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || $t('ratings.rating_error'));
-            }
 
             successMessage = $t('ratings.rating_submitted');
             setTimeout(() => {

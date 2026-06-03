@@ -164,6 +164,8 @@
 	{/if}
 </div>
 
+<BannerAd placement="instructors_bottom" />
+
 <style>
 	.instructors-header {
 		background-color: var(--surface-color);

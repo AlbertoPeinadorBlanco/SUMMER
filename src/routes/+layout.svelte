@@ -44,6 +44,9 @@
 	let surfMenuOpen = $state(false);
 	let resourcesMenuOpen = $state(false);
 	let adminMenuOpen = $state(false);
+	let mobileSurfMenuOpen = $state(false);
+	let mobileResourcesMenuOpen = $state(false);
+	let mobileAdminMenuOpen = $state(false);
 
 	let unreadCount = $derived(notifications.items.filter(n => !n.is_read).length);
 
@@ -413,28 +416,57 @@
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">home</span>
 					<Label>{$t('nav.home')}</Label>
 				</Button>
-				<Button href="/marketplace" onclick={toggleMobileMenu} class="mobile-menu-btn">
-					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;"
-						>storefront</span
-					>
-					<Label>{$t('nav.marketplace')}</Label>
+
+				<!-- Mobile Surf Network Group -->
+				<Button onclick={() => mobileSurfMenuOpen = !mobileSurfMenuOpen} class="mobile-menu-btn" style="justify-content: space-between;">
+					<div style="display: flex; align-items: center;">
+						<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">explore</span>
+						<Label>{$t('nav.network')}</Label>
+					</div>
+					<span class="material-icons" aria-hidden="true">{mobileSurfMenuOpen ? 'expand_less' : 'expand_more'}</span>
 				</Button>
-				<Button href="/instructors" onclick={toggleMobileMenu} class="mobile-menu-btn">
-					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">groups</span>
-					<Label>{$t('nav.instructors')}</Label>
+				{#if mobileSurfMenuOpen}
+					<div class="mobile-submenu">
+						<Button href="/instructors" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">groups</span>
+							<Label>{$t('nav.instructors')}</Label>
+						</Button>
+						<Button href="/marketplace" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">storefront</span>
+							<Label>{$t('nav.marketplace')}</Label>
+						</Button>
+						<Button href="/adverts" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">store</span>
+							<Label>{$t('nav.adverts')}</Label>
+						</Button>
+					</div>
+				{/if}
+
+				<!-- Mobile Resources Group -->
+				<Button onclick={() => mobileResourcesMenuOpen = !mobileResourcesMenuOpen} class="mobile-menu-btn" style="justify-content: space-between;">
+					<div style="display: flex; align-items: center;">
+						<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">library_books</span>
+						<Label>{$t('nav.resources')}</Label>
+					</div>
+					<span class="material-icons" aria-hidden="true">{mobileResourcesMenuOpen ? 'expand_less' : 'expand_more'}</span>
 				</Button>
-				<Button href="/adverts" onclick={toggleMobileMenu} class="mobile-menu-btn">
-					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">storefront</span>
-					<Label>{$t('nav.adverts')}</Label>
-				</Button>
-				<Button href="/policies" onclick={toggleMobileMenu} class="mobile-menu-btn">
-					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">policy</span>
-					<Label>{$t('nav.policies')}</Label>
-				</Button>
-				<Button href="/instructor-guide" onclick={toggleMobileMenu} class="mobile-menu-btn">
-					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">help_outline</span>
-					<Label>{$t('nav.instructor_guide')}</Label>
-				</Button>
+				{#if mobileResourcesMenuOpen}
+					<div class="mobile-submenu">
+						<Button href="/gear-guide" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">surfing</span>
+							<Label>{$t('nav.gear_guide')}</Label>
+						</Button>
+						<Button href="/policies" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">policy</span>
+							<Label>{$t('nav.policies')}</Label>
+						</Button>
+						<Button href="/instructor-guide" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">help_outline</span>
+							<Label>{$t('nav.instructor_guide')}</Label>
+						</Button>
+					</div>
+				{/if}
+
 				<Button href="/contact" onclick={toggleMobileMenu} class="mobile-menu-btn">
 					<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">mail</span>
 					<Label>{$t('nav.contact')}</Label>
@@ -448,27 +480,45 @@
 						</Button>
 					{/if}
 					{#if $auth.user.role === 'admin'}
-						<div class="mobile-menu-header">Administration</div>
-						<Button href="/admin/notifications" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">campaign</span>
-							<Label>Manage Notifications</Label>
+						<Button onclick={() => mobileAdminMenuOpen = !mobileAdminMenuOpen} class="mobile-menu-btn admin-btn" style="justify-content: space-between;">
+							<div style="display: flex; align-items: center;">
+								<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">admin_panel_settings</span>
+								<Label>{$t('admin.title')}</Label>
+							</div>
+							<span class="material-icons" aria-hidden="true">{mobileAdminMenuOpen ? 'expand_less' : 'expand_more'}</span>
 						</Button>
-						<Button href="/admin/external-ads" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">store</span>
-							<Label>External Adverts</Label>
-						</Button>
-						<Button href="/admin/pricings" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">price_change</span>
-							<Label>{$t('admin.admin_pricings')}</Label>
-						</Button>
-						<Button href="/admin/logs" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">analytics</span>
-							<Label>{$t('admin.admin_logs')}</Label>
-						</Button>
-						<Button href="/admin" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">admin_panel_settings</span>
-							<Label>{$t('admin.title')}</Label>
-						</Button>
+						{#if mobileAdminMenuOpen}
+							<div class="mobile-submenu">
+								<Button href="/admin" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">group</span>
+									<Label>{$t('admin.users_list')}</Label>
+								</Button>
+								<Button href="/admin/notifications" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">campaign</span>
+									<Label>{$t('nav.admin_notifications')}</Label>
+								</Button>
+								<Button href="/admin/external-ads" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">store</span>
+									<Label>{$t('nav.admin_external_ads')}</Label>
+								</Button>
+								<Button href="/admin/pricings" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">price_change</span>
+									<Label>{$t('nav.admin_pricings')}</Label>
+								</Button>
+								<Button href="/admin/logs" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">analytics</span>
+									<Label>{$t('nav.admin_logs')}</Label>
+								</Button>
+								<Button href="/admin/banners" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">view_carousel</span>
+									<Label>Banners</Label>
+								</Button>
+								<Button href="/admin/coupons" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">local_offer</span>
+									<Label>{$t('nav.admin_coupons')}</Label>
+								</Button>
+							</div>
+						{/if}
 						<div class="dropdown-divider" style="margin: 0.5rem -1rem;"></div>
 					{/if}
 					<Button href="/profile" onclick={toggleMobileMenu} class="mobile-menu-btn">
@@ -634,6 +684,24 @@
 		background-color: var(--surface-color) !important;
 		border-radius: 8px !important;
 		border: 1px solid var(--border-color) !important;
+	}
+
+	.mobile-submenu {
+		display: flex;
+		flex-direction: column;
+		padding-left: 1rem;
+		margin-bottom: 0.5rem;
+		border-left: 2px solid var(--border-color);
+		margin-left: 0.5rem;
+	}
+
+	:global(.mobile-submenu-btn) {
+		background-color: transparent !important;
+		border: none !important;
+		margin-bottom: 0 !important;
+		padding: 0.75rem !important;
+		font-size: 1rem !important;
+		color: var(--text-secondary) !important;
 	}
 
 	:global(.nav-btn) {

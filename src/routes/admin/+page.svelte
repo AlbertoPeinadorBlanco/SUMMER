@@ -47,6 +47,11 @@
 	let advertPrice = $state(0);
 	let advertIsActive = $state(true);
 	
+	let ratingStudentId = $state('');
+	let ratingBookingId = $state('');
+	let ratingValue = $state(5);
+	let ratingComment = $state('');
+	
 	// Form state
 	let isEditing = $state(false);
 	let currentUserId = $state(null);
@@ -152,6 +157,22 @@
 		isInnerModalOpen = true;
 	}
 
+	function openInnerRating(mode: string, rating: any = null) {
+		innerModalType = 'rating';
+		innerModalMode = mode;
+		if (mode === 'edit') {
+			innerId = rating.id;
+			ratingValue = rating.rating;
+			ratingComment = rating.comment || '';
+		} else {
+			ratingStudentId = '';
+			ratingBookingId = '';
+			ratingValue = 5;
+			ratingComment = '';
+		}
+		isInnerModalOpen = true;
+	}
+
 	async function saveInnerModal() {
 		if (!detailsData || !detailsData.user) return;
 		try {
@@ -183,6 +204,24 @@
 							price: advertPrice,
 							is_online: 0,
 							capacity: 10
+						})
+					});
+				}
+			} else if (innerModalType === 'rating') {
+				if (innerModalMode === 'edit') {
+					await fetchApi(`/admin/ratings/${innerId}`, {
+						method: 'PUT',
+						body: JSON.stringify({ rating: ratingValue, comment: ratingComment })
+					});
+				} else {
+					await fetchApi(`/admin/ratings`, {
+						method: 'POST',
+						body: JSON.stringify({ 
+							instructor_id: detailsData.user.id, 
+							student_id: ratingStudentId,
+							booking_id: ratingBookingId,
+							rating: ratingValue,
+							comment: ratingComment
 						})
 					});
 				}
@@ -590,6 +629,7 @@
 				{:else if activeTab === 'ratings'}
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
 						<h3 style="margin: 0;">{$t('admin.ratings_tab', { default: 'Ratings' })}</h3>
+						<Button variant="outlined" onclick={() => openInnerRating('create')}>Add Rating</Button>
 					</div>
 					{#if !detailsData.ratings || detailsData.ratings.length === 0}
 						<p>No ratings found.</p>
@@ -618,6 +658,7 @@
 										<Cell><div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title={rating.comment}>{rating.comment || '-'}</div></Cell>
 										<Cell>{new Date(rating.created_at).toLocaleDateString()}</Cell>
 										<Cell>
+											<IconButton class="material-icons" style="color: #1976d2;" onclick={() => openInnerRating('edit', rating)} aria-label="Edit Rating">edit</IconButton>
 											<IconButton class="material-icons" style="color: #d32f2f;" onclick={() => deleteInnerItem('rating', rating.id)} aria-label="Delete Rating">delete</IconButton>
 										</Cell>
 									</Row>
@@ -638,7 +679,7 @@
 
 <!-- Inner CRUD Modal for Bookings/Adverts -->
 <Dialog bind:open={isInnerModalOpen} aria-labelledby="inner-title" style="--mdc-dialog-z-index: 1000;">
-	<Title id="inner-title">{innerModalMode === 'edit' ? 'Edit' : 'Create'} {innerModalType === 'booking' ? 'Booking' : 'Advert'}</Title>
+	<Title id="inner-title">{innerModalMode === 'edit' ? 'Edit' : 'Create'} {innerModalType === 'booking' ? 'Booking' : innerModalType === 'advert' ? 'Advert' : 'Rating'}</Title>
 	<Content>
 		<div class="form-container">
 			{#if innerModalType === 'booking'}
@@ -671,6 +712,13 @@
 						Is Active
 					</label>
 				</div>
+			{:else if innerModalType === 'rating'}
+				{#if innerModalMode === 'create'}
+					<Textfield variant="outlined" bind:value={ratingStudentId} label="Student User ID" type="number" style="width: 100%;" />
+					<Textfield variant="outlined" bind:value={ratingBookingId} label="Booking ID" type="number" style="width: 100%;" />
+				{/if}
+				<Textfield variant="outlined" bind:value={ratingValue} label="Rating (1-5)" type="number" input$min="1" input$max="5" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={ratingComment} label="Comment" textarea style="width: 100%;" />
 			{/if}
 		</div>
 	</Content>

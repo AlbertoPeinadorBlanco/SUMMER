@@ -59,6 +59,18 @@
 				</div>
 				<div class="featured-info">
 					<h3>{featured.first_name || featured.username} {featured.last_name || ''}</h3>
+					
+					{#if featured.rating && parseFloat(featured.rating) > 0}
+						<div class="instructor-rating" style="display: flex; align-items: center; justify-content: center; gap: 4px; color: #FFD700; font-weight: bold; margin-bottom: 0.5rem; font-size: 0.95rem;">
+							<span class="material-icons" style="font-size: 1.1rem;">star</span>
+							<span style="color: var(--text-color);">{parseFloat(featured.rating).toFixed(1)}</span>
+						</div>
+					{:else}
+						<div class="instructor-rating" style="display: flex; align-items: center; justify-content: center; gap: 4px; color: #9e9e9e; font-style: italic; margin-bottom: 0.5rem; font-size: 0.85rem;">
+							<span>{$t('marketplace.not_rated')}</span>
+						</div>
+					{/if}
+					
 					<h4 class="specialty">{featured.specialization || 'Surfing Instructor'}</h4>
 					<p>{truncateWords(typeof featured.bio === 'string' && featured.bio.trim() ? featured.bio : defaultBio, 50)}</p>
 					<Button variant="raised" href={`/marketplace/${featured.id}`} class="premium-button" style="margin-top: auto;">

@@ -117,6 +117,17 @@
 						
 						<h2 class="instructor-name">{instructor.first_name} {instructor.last_name}</h2>
 						
+						{#if instructor.rating && parseFloat(instructor.rating) > 0}
+							<div class="instructor-rating" style="display: flex; align-items: center; gap: 4px; color: #FFD700; font-weight: bold; margin-bottom: 0.5rem; font-size: 0.95rem;">
+								<span class="material-icons" style="font-size: 1.1rem;">star</span>
+								<span style="color: var(--text-color);">{parseFloat(instructor.rating).toFixed(1)}</span>
+							</div>
+						{:else}
+							<div class="instructor-rating" style="display: flex; align-items: center; gap: 4px; color: #9e9e9e; font-style: italic; margin-bottom: 0.5rem; font-size: 0.85rem;">
+								<span>{$t('marketplace.not_rated')}</span>
+							</div>
+						{/if}
+						
 						{#if instructor.specialization}
 							<span class="specialization-badge">{instructor.specialization}</span>
 						{/if}
@@ -195,6 +206,7 @@
 		display: flex;
 		justify-content: center;
 		padding: 0 1rem;
+		margin-bottom: 2rem;
 	}
 
 	.instructors-container {

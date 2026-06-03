@@ -281,7 +281,19 @@
 								{/if}
 							</div>
 							<div class="instructor-text">
-								<span class="instructor-name">{ad.first_name || ad.instructor_username}</span>
+								<div style="display: flex; align-items: center; gap: 6px;">
+									<span class="instructor-name">{ad.first_name || ad.instructor_username}</span>
+									{#if ad.rating && parseFloat(ad.rating) > 0}
+										<div class="instructor-rating" style="display: flex; align-items: center; gap: 2px; color: #FFD700; font-weight: bold; font-size: 0.85rem;">
+											<span class="material-icons" style="font-size: 1rem;">star</span>
+											<span style="color: var(--text-color);">{parseFloat(ad.rating).toFixed(1)}</span>
+										</div>
+									{:else}
+										<div class="instructor-rating" style="display: flex; align-items: center; gap: 2px; color: #9e9e9e; font-style: italic; font-size: 0.8rem;">
+											<span>{$t('marketplace.not_rated')}</span>
+										</div>
+									{/if}
+								</div>
 								<div class="instructor-contact">
 									{#if ad.phone}
 										<span title="Phone">📞 {ad.phone}</span>

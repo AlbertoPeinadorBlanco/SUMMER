@@ -7,7 +7,7 @@
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
 	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import { auth } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
@@ -115,9 +115,6 @@
 					<span
 						><span class="material-icons" aria-hidden="true">place</span> {teacher.location}</span
 					>
-					<span class="price-badge" aria-label="Price: {$formatPrice(teacher.price)}"
-						>{$formatPrice(teacher.price)}</span
-					>
 				</div>
 				<div class="perk-badges">
 					{#if teacher.is_featured}
@@ -176,44 +173,6 @@
 					<p>{teacher.bio}</p>
 				</section>
 
-				<section class="ratings-section" aria-labelledby="ratings-title">
-					<h3 id="ratings-title">{$t('ratings.average_rating')}</h3>
-					{#if teacher.ratings.total > 0}
-						<div class="rating-overview">
-							<div class="rating-big-number">{teacher.ratings.average}</div>
-							<div class="rating-stars">
-								{#each [1, 2, 3, 4, 5] as star}
-									<span class="material-icons" style="color: {star <= Math.round(teacher.ratings.average) ? '#fbbf24' : '#d1d5db'};">
-										{star <= Math.round(teacher.ratings.average) ? 'star' : 'star_border'}
-									</span>
-								{/each}
-								<span class="rating-count">({teacher.ratings.total})</span>
-							</div>
-						</div>
-						<div class="reviews-list">
-							{#each teacher.ratings.reviews as review}
-								<div class="review-item">
-									<div class="review-header">
-										<strong>{review.student_name}</strong>
-										<span class="review-date">{new Date(review.created_at).toLocaleDateString()}</span>
-									</div>
-									<div class="review-stars">
-										{#each [1, 2, 3, 4, 5] as star}
-											<span class="material-icons" style="font-size: 14px; color: {star <= review.rating ? '#fbbf24' : '#d1d5db'};">
-												{star <= review.rating ? 'star' : 'star_border'}
-											</span>
-										{/each}
-									</div>
-									{#if review.comment}
-										<p class="review-comment">{review.comment}</p>
-									{/if}
-								</div>
-							{/each}
-						</div>
-					{:else}
-						<p>{$t('ratings.no_ratings')}</p>
-					{/if}
-				</section>
 
 				<section class="classes-section" aria-labelledby="classes-title">
 					<h3 id="classes-title">{$t('profile.classes_title')}</h3>
@@ -242,6 +201,50 @@
 							<p>No classes scheduled currently.</p>
 						{/each}
 					</div>
+				</section>
+
+				<section class="ratings-section" aria-labelledby="ratings-title" style="margin-top: 3rem;">
+					<h3 id="ratings-title">{$t('ratings.average_rating')}</h3>
+					{#if teacher.ratings.total > 0}
+						<div class="rating-overview">
+							<div class="rating-big-number">{teacher.ratings.average}</div>
+							<div class="rating-stars">
+								{#each [1, 2, 3, 4, 5] as star}
+									<span class="material-icons" style="color: {star <= Math.round(teacher.ratings.average) ? '#fbbf24' : '#d1d5db'};">
+										{star <= Math.round(teacher.ratings.average) ? 'star' : 'star_border'}
+									</span>
+								{/each}
+								<span class="rating-count">({teacher.ratings.total})</span>
+							</div>
+						</div>
+						<div class="reviews-list">
+							{#each teacher.ratings.reviews as review}
+								<div class="review-item" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px;">
+									<div class="review-avatar">
+										<img src={review.profile_picture_url ? getMediaUrl(review.profile_picture_url) : 'https://ui-avatars.com/api/?name=' + review.student_name + '&background=random'} alt={review.student_name} style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" />
+									</div>
+									<div class="review-content" style="flex: 1;">
+										<div class="review-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+											<strong style="color: var(--text-color);">{review.student_name}</strong>
+											<span class="review-date" style="color: #6b7280; font-size: 0.85rem;">{new Date(review.created_at).toLocaleDateString()}</span>
+										</div>
+										<div class="review-stars" style="margin-bottom: 0.5rem;">
+											{#each [1, 2, 3, 4, 5] as star}
+												<span class="material-icons" style="font-size: 16px; color: {star <= review.rating ? '#FFD700' : '#d1d5db'};">
+													{star <= review.rating ? 'star' : 'star_border'}
+												</span>
+											{/each}
+										</div>
+										{#if review.comment}
+											<p class="review-comment" style="color: #4b5563; margin: 0; line-height: 1.5; font-size: 0.95rem;">{review.comment}</p>
+										{/if}
+									</div>
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<p>{$t('ratings.no_ratings')}</p>
+					{/if}
 				</section>
 			</div>
 
@@ -393,6 +396,7 @@
 		font-size: 2.5rem;
 		margin: 0 0 0.5rem 0;
 		color: var(--terciary-color);
+		text-transform: capitalize;
 	}
 
 	.specialty {

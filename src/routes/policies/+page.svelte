@@ -60,6 +60,15 @@
 		<hr />
 
 		<section class="policy-section">
+			<h2>{$t('instructors.ratings_explained_title')}</h2>
+			<div class="legal-text">
+				<p>{$t('instructors.ratings_explained_desc')}</p>
+			</div>
+		</section>
+
+		<hr />
+
+		<section class="policy-section">
 			<h2>{$t('geolocation.policy_title')}</h2>
 			<div class="legal-text">
 				<p>{$t('geolocation.policy_desc')}</p>

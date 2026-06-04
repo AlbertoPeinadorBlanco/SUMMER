@@ -8,6 +8,7 @@
 
 	import { fetchApi, getMediaUrl } from '$lib/api';
 
+	//instructors page
 	let instructors: any[] = $state([]);
 	let filteredInstructors: any[] = $state([]);
 	let loading = $state(true);

@@ -35,6 +35,10 @@
 	let error = $state('');
 	let successMsg = $state('');
 
+	let isBoostAdvertModalOpen = $state(false);
+	let instructorAdverts: any[] = $state([]);
+	let loadingAdverts = $state(false);
+
 	let featured_instructor: any = $state(null);
 
 	onMount(async () => {
@@ -207,9 +211,13 @@
 			});
 			if (res.url) {
 				window.location.href = res.url;
+			} else {
+				throw new Error('No checkout URL returned');
 			}
 		} catch (err: any) {
-			error = err.message || $t('profile.alerts.checkout_failed');
+			error = err.message || 'Error processing upgrade';
+			showToast(error, 'error');
+		} finally {
 			loading = false;
 		}
 	}
@@ -232,6 +240,33 @@
 			error = err.message || $t('profile.alerts.checkout_failed');
 			loading = false;
 		}
+	}
+
+    async function openBoostAdvertModal() {
+		if (!user) return;
+		isBoostAdvertModalOpen = true;
+		loadingAdverts = true;
+		instructorAdverts = [];
+		try {
+			const res = await fetchApi(`/classes?instructor_id=${user.id}`);
+			instructorAdverts = Array.isArray(res) ? res : [];
+		} catch(err: any) {
+			console.error(err);
+			showToast('Error loading adverts', 'error');
+		} finally {
+			loadingAdverts = false;
+		}
+	}
+	
+	function triggerAdvertBoost(classId: number) {
+		fetchApi('/stripe/create-checkout-session', {
+			method: 'POST',
+			body: JSON.stringify({ item_key: 'bump_advert', class_id: classId })
+		}).then(res => {
+			if(res.url) window.location.href = res.url;
+		}).catch(err => {
+			showToast(err.message, 'error');
+		});
 	}
 
 	async function saveInstructorProfile() {
@@ -465,17 +500,29 @@
 							<p class="desc">{$t('profile_enhancements.personal_link_desc')}</p>
 						</div>
 						{#if user.bumped_at && new Date(user.bumped_at).getTime() > Date.now() - 24 * 60 * 60 * 1000}
-							<div class="active-boost">
+							<div class="active-boost" style="margin-bottom: 10px;">
 								<span class="material-icons" style="color: #4CAF50;">check_circle</span>
 								<Label>{$t('profile_enhancements.boost_active')}</Label>
 							</div>
-						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('bump_instructor'); }} disabled={loading}>
-								<Label>
-									{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.bump_instructor || 2.00, true) } })}
-								</Label>
-							</Button>
 						{/if}
+						<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('bump_instructor'); }} disabled={loading}>
+							<Label>
+								{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.bump_instructor || 2.00, true) } })}
+							</Label>
+						</Button>
+					</div>
+
+					<!-- Boost Advert Perk -->
+					<div class="upgrade-row">
+						<div class="upgrade-info">
+							<h4>Boost Advert</h4>
+							<p class="desc">Push one of your adverts to the top for 24 hours.</p>
+						</div>
+						<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); openBoostAdvertModal(); }} disabled={loading}>
+							<Label>
+								{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.bump_advert || 2.00, true) } })}
+							</Label>
+						</Button>
 					</div>
 
 					<!-- Available Today Badge -->
@@ -731,6 +778,38 @@
 			<Label>{isDeleting ? $t('profile.saving') : $t('profile.danger_zone.yes')}</Label>
 		</Button>
 	</DialogActions>
+</Dialog>
+
+<Dialog bind:open={isBoostAdvertModalOpen} aria-labelledby="boost-advert-title">
+    <DialogTitle id="boost-advert-title">Select Advert to Boost</DialogTitle>
+    <DialogContent>
+        {#if loadingAdverts}
+            <div style="text-align: center; padding: 2rem;">Loading adverts...</div>
+        {:else if instructorAdverts.length === 0}
+            <div style="text-align: center; padding: 2rem;">You have no active adverts to boost.</div>
+        {:else}
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                {#each instructorAdverts as ad}
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 1rem; border-radius: 8px; border: 1px solid #eee;">
+                        <div style="flex: 1; padding-right: 1rem;">
+                            <strong style="display: block; font-size: 1.1rem; margin-bottom: 4px;">{ad.title}</strong>
+                            {#if ad.bumped_at && new Date(ad.bumped_at).getTime() > Date.now() - 24 * 60 * 60 * 1000}
+                                <span style="color: #4CAF50; font-size: 0.85rem; font-weight: bold;">(Currently Boosted)</span>
+                            {/if}
+                        </div>
+                        <Button variant="raised" onclick={() => triggerAdvertBoost(ad.id)} style="background: var(--primary-color); color: white;">
+                            <Label>Boost</Label>
+                        </Button>
+                    </div>
+                {/each}
+            </div>
+        {/if}
+    </DialogContent>
+    <DialogActions>
+        <Button onclick={() => isBoostAdvertModalOpen = false}>
+            <Label>Cancel</Label>
+        </Button>
+    </DialogActions>
 </Dialog>
 
 <style>

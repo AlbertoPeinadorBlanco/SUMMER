@@ -599,8 +599,8 @@
     "free_tier_title": "Free Tier",
     "free_tier_desc": "Get started with 1 free advert. You can delete and replace it at any time.",
     "extra_slots_title": "Extra Advert Slots",
-    "extra_slots_desc": "Need to list more classes? Purchase additional advert slots that you keep forever.",
-    "per_slot": "/ slot"
+    "extra_slots_desc": "Get an additional active advert for €10 per month. You can draft as many adverts as you want for free, but you must subscribe to activate them.",
+    "per_slot": "/ month"
   },
   "auth": {
     "login_title": "Login",

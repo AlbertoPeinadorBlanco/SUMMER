@@ -55,25 +55,36 @@
 		classes.reduce((sum, ad) => sum + (parseFloat(ad.price) * (ad.bookings_count || 0)), 0)
 	);
 	
-	let extraSlots = $derived(user?.extra_advert_slots || 0);
-	let allowedAdverts = $derived(1 + extraSlots);
-	let canCreateMore = $derived(classes.length < allowedAdverts || editingId !== null);
-
-	async function handleBuySlot() {
+	async function toggleActiveStatus(ad: any, event: Event) {
+		event.preventDefault();
+		const newStatus = !ad.is_active;
 		try {
-			loading = true;
-			const res = await fetchApi('/stripe/create-checkout-session', {
-				method: 'POST',
-				body: JSON.stringify({ item_key: 'buy_advert_slot' })
+			await fetchApi(`/classes/${ad.id}/toggle-active`, {
+				method: 'PUT',
+				body: JSON.stringify({ is_active: newStatus })
 			});
-			if (res && res.url) {
-				window.location.href = res.url;
-			}
+			ad.is_active = newStatus;
+			showToast($t('manageAds.status_updated', { default: 'Status updated' }), 'success');
+			classes = [...classes];
 		} catch (err: any) {
-			console.error('Error starting checkout:', err);
-			showToast('Failed to start checkout', 'error');
-		} finally {
-			loading = false;
+			if (err.message && err.message.includes('subscribe')) {
+				const confirmSub = confirm(err.message + '\n\nProceed to checkout for €10/mo?');
+				if (confirmSub) {
+					try {
+						const checkoutRes = await fetchApi('/stripe/create-checkout-session', {
+							method: 'POST',
+							body: JSON.stringify({ item_key: 'buy_advert_slot', class_id: ad.id })
+						});
+						if (checkoutRes && checkoutRes.url) {
+							window.location.href = checkoutRes.url;
+						}
+					} catch (checkoutErr: any) {
+						showToast(checkoutErr.message, 'error');
+					}
+				}
+			} else {
+				showToast(err.message || 'Error updating status', 'error');
+			}
 		}
 	}
 	$effect(() => {
@@ -308,21 +319,7 @@
 				</div>
 			{/if}
 
-			{#if !canCreateMore}
-				<div class="limit-reached-banner" style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-					<h3 style="margin-top: 0; color: #e65100; display: flex; align-items: center; gap: 0.5rem;">
-						<span class="material-icons">lock</span> Limit Reached
-					</h3>
-					<p style="color: #666; margin-bottom: 1.5rem;">
-						{@html $t('manage_ads.limit_reached', { values: { allowedAdverts: `<strong>${allowedAdverts}</strong>` } })} 
-						You can purchase an additional advert slot to create more classes.
-					</p>
-					<Button variant="raised" onclick={handleBuySlot} disabled={loading} class="premium-button">
-						<Label>{loading ? $t('manage_ads.loading') : $t('manage_ads.buy_slot', { values: { price: '€10.00' } })}</Label>
-					</Button>
-				</div>
-			{:else}
-				<form onsubmit={handleSubmit} class="create-form">
+			<form onsubmit={handleSubmit} class="create-form">
 				<div class="form-row">
 					<Select
 						variant="outlined"
@@ -460,7 +457,6 @@
 					</Button>
 				</div>
 			</form>
-			{/if}
 		</div>
 
 		<!-- Right Side: Ads List -->
@@ -496,6 +492,11 @@
 										{#if ad.is_online}
 											<span class="badge online">{$t('advert.online')}</span>
 										{/if}
+										{#if ad.is_active}
+											<span class="badge" style="background: #e8f5e9; color: #2e7d32;">Active</span>
+										{:else}
+											<span class="badge" style="background: #ffebee; color: #c62828;">Inactive</span>
+										{/if}
 									</div>
 								</div>
 							</div>
@@ -506,6 +507,10 @@
 									<span class="bookings-count">({ad.bookings_count || 0} {$t('manageAds.bookings')})</span>
 								</div>
 								<div class="ad-actions">
+									<label class="toggle-container" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-right: 1rem;">
+										<span style="font-size: 0.9rem; color: #666;">{ad.is_active ? 'Published' : 'Hidden'}</span>
+										<input type="checkbox" checked={ad.is_active} onclick={(e) => toggleActiveStatus(ad, e)} style="width: 18px; height: 18px;" />
+									</label>
 									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00;">
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">rocket_launch</span>
 										<Label>{$t('marketplace.boosted')} (2€)</Label>

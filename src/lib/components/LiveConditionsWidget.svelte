@@ -385,7 +385,9 @@
         }
         .widget-container {
             padding: 1rem;
-            margin: -2rem 1rem 2rem 1rem;
+            margin: -2rem auto 2rem auto;
+            width: 100%;
+            box-sizing: border-box;
         }
         .widget-header {
             flex-direction: column;

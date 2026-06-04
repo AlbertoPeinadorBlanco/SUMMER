@@ -28,7 +28,7 @@
 	<SEO title="{$t('blog.not_found_title', { default: 'Post Not Found' })} - SurfMarket" description="{$t('blog.not_found_desc', { default: 'The requested blog post could not be found.' })}" />
 	<div class="error-container">
 		<h1>{$t('blog.not_found_title', { default: 'Post Not Found' })}</h1>
-		<p>{$t('blog.not_found_desc', { default: 'The blog post you\\'re looking for doesn\\'t exist or has been removed.' })}</p>
+		<p>{$t('blog.not_found_desc', { default: "The blog post you're looking for doesn't exist or has been removed." })}</p>
 		<Button href="/blog" variant="raised">{$t('blog.back_to_blog', { default: 'Back to Blog' })}</Button>
 	</div>
 {:else}

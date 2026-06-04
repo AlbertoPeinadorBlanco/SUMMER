@@ -8,7 +8,7 @@
 	import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
 	import Dialog, { Title, Content, Actions } from '@smui/dialog';
 	import Textfield from '@smui/textfield';
-	import Switch from '@smui/switch';
+	import Checkbox from '@smui/checkbox';
 	import IconButton from '@smui/icon-button';
 	import { showToast } from '$lib/stores/toast';
 
@@ -253,7 +253,7 @@
 
 			<div class="form-row switch-row">
 				<div style="display: flex; align-items: center; gap: 10px;">
-					<Switch bind:checked={formIsPublished} />
+					<Checkbox bind:checked={formIsPublished} />
 					<Label>Publish immediately</Label>
 				</div>
 			</div>

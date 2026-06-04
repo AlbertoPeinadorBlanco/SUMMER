@@ -192,13 +192,13 @@
 	<Title id="form-title">{isEditing ? $t('admin.ext_ads_edit_title') : $t('admin.ext_ads_create_title')}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formShopName} label={$t('admin.ext_ads_shop_name_label')} style="width: 100%;" />
-			<Textfield bind:value={formLocation} label={$t('admin.ext_ads_location_label')} style="width: 100%;" />
-			<Textfield bind:value={formImageUrl} label={$t('admin.ext_ads_image_url_label')} style="width: 100%;" />
-			<Textfield bind:value={formLinkUrl} label={$t('admin.ext_ads_link_url_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formShopName} label={$t('admin.ext_ads_shop_name_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formLocation} label={$t('admin.ext_ads_location_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formImageUrl} label={$t('admin.ext_ads_image_url_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formLinkUrl} label={$t('admin.ext_ads_link_url_label')} style="width: 100%;" />
 			
 			<div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
-				<Textfield type="number" bind:value={formDisplayOrder} label="Display Order (0 is first)" style="width: 200px;" />
+				<Textfield variant="outlined" type="number" bind:value={formDisplayOrder} label="Display Order (0 is first)" style="width: 200px;" />
 				<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 					<input type="checkbox" bind:checked={formIsActive} style="width: 18px; height: 18px;" />
 					{$t('admin.ext_ads_is_active_label')}

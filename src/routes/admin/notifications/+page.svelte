@@ -208,7 +208,7 @@
 					</select>
 				</div>
 			{:else}
-				<Textfield value={formUserId} label={$t('admin.notif_user')} disabled style="width: 100%;" />
+				<Textfield variant="outlined" value={formUserId} label={$t('admin.notif_user')} disabled style="width: 100%;" />
 			{/if}
 
 			<div class="select-field">
@@ -223,7 +223,7 @@
 				</select>
 			</div>
 
-			<Textfield textarea bind:value={formMessage} label={$t('admin.notif_message_label')} style="width: 100%; height: 100px;" />
+			<Textfield variant="outlined" textarea bind:value={formMessage} label={$t('admin.notif_message_label')} style="width: 100%; height: 100px;" />
 			
 			{#if isEditing}
 				<div class="select-field" style="margin-top: 1rem;">

@@ -6,7 +6,7 @@ export async function GET({ fetch, url }) {
 	try {
 		// Fetch dynamic routes from backend API
 		const res = await fetch(`${API_BASE_URL}/sitemap-data`);
-		let dynamicRoutes = { classes: [], instructors: [] };
+		let dynamicRoutes = { classes: [], instructors: [], blog_posts: [] };
 		if (res.ok) {
 			dynamicRoutes = await res.json();
 		}
@@ -25,6 +25,7 @@ export async function GET({ fetch, url }) {
 			{ path: '/instructor/manage-ads', changefreq: 'weekly', priority: 0.6 },
 			{ path: '/levels', changefreq: 'monthly', priority: 0.5 },
 			{ path: '/profile', changefreq: 'daily', priority: 0.7 },
+			{ path: '/blog', changefreq: 'weekly', priority: 0.8 },
 			{ path: '/signup', changefreq: 'yearly', priority: 0.8 },
 			{ path: '/sitemap', changefreq: 'monthly', priority: 0.4 }
 		];
@@ -61,6 +62,17 @@ export async function GET({ fetch, url }) {
 		<lastmod>${new Date(i.lastmod).toISOString()}</lastmod>
 		<changefreq>weekly</changefreq>
 		<priority>0.7</priority>
+	</url>`;
+		});
+
+		// Add dynamic blog posts
+		dynamicRoutes.blog_posts?.forEach(bp => {
+			xml += `
+	<url>
+		<loc>${site}/blog/${bp.slug}</loc>
+		<lastmod>${new Date(bp.lastmod).toISOString()}</lastmod>
+		<changefreq>monthly</changefreq>
+		<priority>0.8</priority>
 	</url>`;
 		});
 

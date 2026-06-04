@@ -60,6 +60,16 @@
 			alert(err.message);
 		}
 	}
+
+	async function deletePricing(key: string) {
+		if (!confirm($t('admin.confirm_delete') || `Are you sure you want to delete ${key}?`)) return;
+		try {
+			await fetchApi(`/pricings/admin/${key}`, { method: 'DELETE' });
+			await fetchPricings();
+		} catch (err: any) {
+			alert(err.message);
+		}
+	}
 </script>
 
 <SEO title={$t('admin.pricings_title')} />
@@ -98,7 +108,10 @@
 								<strong>{pricing.price} {pricing.currency}</strong>
 							</Cell>
 							<Cell>
-								<IconButton class="material-icons" onclick={() => openEditModal(pricing)} aria-label="Edit Price">edit</IconButton>
+								<div style="display: flex; gap: 4px; justify-content: flex-end;">
+									<IconButton class="material-icons" onclick={() => openEditModal(pricing)} aria-label="Edit Price">edit</IconButton>
+									<IconButton class="material-icons" onclick={() => deletePricing(pricing.item_key)} aria-label="Delete Price" style="color: #d32f2f;">delete</IconButton>
+								</div>
 							</Cell>
 						</Row>
 					{/each}
@@ -113,7 +126,7 @@
 	<Title id="form-title">{$t('admin.pricings_edit_title')}: {currentPricingKey}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formPrice} label={$t('admin.pricings_price_label')} type="number" step="0.01" style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formPrice} label={$t('admin.pricings_price_label')} type="number" step="0.01" style="width: 100%;" />
 		</div>
 	</Content>
 	<Actions>

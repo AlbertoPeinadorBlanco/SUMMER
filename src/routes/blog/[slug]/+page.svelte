@@ -22,6 +22,20 @@
 	function createMarkup(html: string) {
 		return html;
 	}
+
+	let articleSchema = $derived(post ? {
+		"@context": "https://schema.org",
+		"@type": "Article",
+		"headline": getLocalizedValue(post, 'title'),
+		"image": post.cover_image_url ? [getMediaUrl(post.cover_image_url)] : [],
+		"datePublished": new Date(post.created_at).toISOString(),
+		"dateModified": new Date(post.updated_at || post.created_at).toISOString(),
+		"author": [{
+			"@type": "Person",
+			"name": `${post.author_first_name} ${post.author_last_name}`,
+			"url": `https://surf-market.net/profile/${post.author_id}`
+		}]
+	} : null);
 </script>
 
 {#if !post}
@@ -36,6 +50,10 @@
 		title="{getLocalizedValue(post, 'title')} - SurfMarket Blog" 
 		description={getLocalizedValue(post, 'excerpt') || getLocalizedValue(post, 'title')} 
 		image={post.cover_image_url ? getMediaUrl(post.cover_image_url) : undefined} 
+		type="article"
+		publishedTime={new Date(post.created_at).toISOString()}
+		author={`${post.author_first_name} ${post.author_last_name}`}
+		schema={articleSchema}
 	/>
 
 	<article class="post-container">

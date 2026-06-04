@@ -101,6 +101,16 @@
 		const titleStr = surfClass.title;
 		return titleStr ? titleStr.charAt(0).toUpperCase() + titleStr.slice(1) : '';
 	}
+
+	let personSchema = $derived(teacher ? {
+		"@context": "https://schema.org",
+		"@type": "Person",
+		"name": teacher.name,
+		"description": teacher.bio,
+		"image": teacher.image ? [teacher.image] : [],
+		"jobTitle": teacher.specialty || "Instructor",
+		"url": `https://surf-market.net/profile/${teacher.id}`
+	} : null);
 </script>
 
 {#if teacher}
@@ -109,6 +119,7 @@
 		description={teacher.bio}
 		image={teacher.image}
 		type="profile"
+		schema={personSchema}
 	/>
 
 	<div class="profile-container" role="main" aria-labelledby="profile-name">

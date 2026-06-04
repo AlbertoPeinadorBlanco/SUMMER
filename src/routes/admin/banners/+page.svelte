@@ -205,11 +205,11 @@
 	<Title id="form-title">{isEditing ? 'Edit Banner' : 'Create Banner'}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formTitle} label="Banner Title" style="width: 100%;" />
-			<Textfield bind:value={formLinkUrl} label="Link URL" style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formTitle} label="Banner Title" style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formLinkUrl} label="Link URL" style="width: 100%;" />
 			
 			<div class="select-field">
-				<Select bind:value={formPlacement} label="Placement" style="width: 100%;">
+				<Select variant="outlined" bind:value={formPlacement} label="Placement" style="width: 100%;">
 					<Option value="home_top">Home Page Top</Option>
 					<Option value="home_bottom">Home Page Bottom</Option>
 					<Option value="marketplace_top">Marketplace Top</Option>

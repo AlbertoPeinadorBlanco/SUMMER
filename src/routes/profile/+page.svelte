@@ -66,6 +66,8 @@
 					auth.updateUser({ has_video_upgrade: true });
 				} else if (purchasedItem === 'link_upgrade') {
 					auth.updateUser({ has_link_upgrade: true });
+				} else if (purchasedItem === 'bump_instructor') {
+					auth.updateUser({ bumped_at: new Date().toISOString() });
 				} else if (purchasedItem === 'badge_upgrade') {
 					auth.updateUser({ has_badge_upgrade: true });
 				}
@@ -456,18 +458,21 @@
 						{/if}
 					</div>
 
-					<!-- Booking Link Upgrade -->
+					<!-- Boost Profile Perk -->
 					<div class="upgrade-row">
 						<div class="upgrade-info">
 							<h4>{$t('profile_enhancements.personal_link')}</h4>
 							<p class="desc">{$t('profile_enhancements.personal_link_desc')}</p>
 						</div>
-						{#if user.has_link_upgrade}
-							<Textfield variant="outlined" bind:value={booking_link} label={$t('profile_enhancements.booking_url')} style="flex: 1;" />
+						{#if user.bumped_at && new Date(user.bumped_at).getTime() > Date.now() - 24 * 60 * 60 * 1000}
+							<div class="active-boost">
+								<span class="material-icons" style="color: #4CAF50;">check_circle</span>
+								<Label>{$t('profile_enhancements.boost_active')}</Label>
+							</div>
 						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('link'); }} disabled={loading}>
+							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('bump_instructor'); }} disabled={loading}>
 								<Label>
-									{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.link_upgrade, true) } })}
+									{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.bump_instructor || 2.00, true) } })}
 								</Label>
 							</Button>
 						{/if}
@@ -998,6 +1003,28 @@
 	}
 	.upgrade-row:last-of-type {
 		border-bottom: none;
+	}
+	.upgrade-row h4 {
+		margin: 0;
+		color: #0d1b2a;
+		font-size: 1.1rem;
+	}
+
+	.upgrade-row p.desc {
+		margin: 0.2rem 0 0 0;
+		color: #415a77;
+		font-size: 0.9rem;
+	}
+
+	.active-boost {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: rgba(76, 175, 80, 0.1);
+		padding: 0.5rem 1rem;
+		border-radius: 8px;
+		color: #2e7d32;
+		font-weight: 600;
 	}
 	.upgrade-info h4 {
 		margin: 0 0 0.25rem 0;

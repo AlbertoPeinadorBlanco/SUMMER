@@ -125,7 +125,7 @@
 			{#if activeTab === 'user_audit' || activeTab === 'audit'}
 				<div class="filter-bar" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; background: var(--surface-color); padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center;">
 					<div style="flex: 1;">
-						<Select bind:value={filterAction} label="Filter by Action" style="width: 100%;">
+						<Select variant="outlined" bind:value={filterAction} label="Filter by Action" style="width: 100%;">
 							<Option value="All">All Actions</Option>
 							{#each uniqueActions as action}
 								<Option value={action}>{action}</Option>
@@ -133,7 +133,7 @@
 						</Select>
 					</div>
 					<div style="flex: 1;">
-						<Select bind:value={filterEntity} label="Filter by Entity" style="width: 100%;">
+						<Select variant="outlined" bind:value={filterEntity} label="Filter by Entity" style="width: 100%;">
 							<Option value="All">All Entities</Option>
 							{#each uniqueEntities as entity}
 								<Option value={entity}>{entity}</Option>
@@ -141,7 +141,7 @@
 						</Select>
 					</div>
 					<div style="flex: 1.5;">
-						<Textfield bind:value={searchQuery} label="Search User or Details..." style="width: 100%;">
+						<Textfield variant="outlined" bind:value={searchQuery} label="Search User or Details..." style="width: 100%;">
 							{#snippet trailingIcon()}
 								<span class="material-icons">search</span>
 							{/snippet}

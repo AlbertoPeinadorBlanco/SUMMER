@@ -113,6 +113,36 @@
 		const descStr = ad.description;
 		return descStr || '';
 	}
+
+	let eventSchema = $derived(advert ? {
+		"@context": "https://schema.org",
+		"@type": "Event",
+		"name": getTitle(advert),
+		"description": getDescription(advert),
+		"image": advert.image_url ? [getMediaUrl(advert.image_url)] : [],
+		"startDate": new Date().toISOString(),
+		"eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+		"eventStatus": "https://schema.org/EventScheduled",
+		"location": {
+			"@type": "Place",
+			"name": advert.location || "SurfMarket Location",
+			"address": {
+				"@type": "PostalAddress",
+				"addressLocality": advert.location || "SurfMarket Location"
+			}
+		},
+		"offers": {
+			"@type": "Offer",
+			"price": advert.price,
+			"priceCurrency": "EUR",
+			"availability": "https://schema.org/InStock"
+		},
+		"organizer": {
+			"@type": "Person",
+			"name": `${advert.instructor_first_name} ${advert.instructor_last_name}`,
+			"url": `https://surf-market.net/profile/${advert.instructor_id}`
+		}
+	} : null);
 </script>
 
 <svelte:head>
@@ -127,6 +157,7 @@
 		description={getDescription(advert).substring(0, 160)}
 		image={advert.image_url ? getMediaUrl(advert.image_url) : undefined}
 		type="article"
+		schema={eventSchema}
 	/>
 
 	<div class="advert-container" role="main">

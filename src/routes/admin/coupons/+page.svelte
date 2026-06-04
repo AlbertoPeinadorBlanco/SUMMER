@@ -194,11 +194,11 @@
 	<Title id="form-title">{isEditing ? $t('admin.coupons_edit_title') : $t('admin.coupons_create_title')}</Title>
 	<Content>
 		<div class="form-container">
-			<Textfield bind:value={formShopName} label={$t('admin.coupons_shop_name_label')} style="width: 100%;" />
-			<Textfield bind:value={formDiscountText} label={$t('admin.coupons_discount_text_label')} style="width: 100%;" />
-			<Textfield bind:value={formCouponCode} label={$t('admin.coupons_code_label')} style="width: 100%;" />
-			<Textfield bind:value={formImageUrl} label={$t('admin.coupons_image_url')} style="width: 100%;" />
-			<Textfield bind:value={formLinkUrl} label={$t('admin.coupons_link_url')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formShopName} label={$t('admin.coupons_shop_name_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formDiscountText} label={$t('admin.coupons_discount_text_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formCouponCode} label={$t('admin.coupons_code_label')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formImageUrl} label={$t('admin.coupons_image_url')} style="width: 100%;" />
+			<Textfield variant="outlined" bind:value={formLinkUrl} label={$t('admin.coupons_link_url')} style="width: 100%;" />
 			
 			<div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
 				<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">

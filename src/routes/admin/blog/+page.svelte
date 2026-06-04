@@ -211,17 +211,17 @@
 	<Content id="post-modal-content">
 		<form class="post-form" onsubmit={(e) => { e.preventDefault(); savePost(); }}>
 			<div class="form-row" style="display: flex; gap: 1rem;">
-				<Textfield bind:value={formTitle} label="Title (EN)" style="width: 100%;" required />
-				<Textfield bind:value={formTitleEs} label="Title (ES)" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={formTitle} label="Title (EN)" style="width: 100%;" required />
+				<Textfield variant="outlined" bind:value={formTitleEs} label="Title (ES)" style="width: 100%;" />
 			</div>
 			
 			<div class="form-row" style="display: flex; gap: 1rem;">
-				<Textfield bind:value={formExcerpt} label="Excerpt (EN)" style="width: 100%;" />
-				<Textfield bind:value={formExcerptEs} label="Excerpt (ES)" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={formExcerpt} label="Excerpt (EN)" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={formExcerptEs} label="Excerpt (ES)" style="width: 100%;" />
 			</div>
 
 			<div class="form-row">
-				<Textfield bind:value={formCoverImage} label="Cover Image URL (e.g. from Unsplash)" style="width: 100%;" />
+				<Textfield variant="outlined" bind:value={formCoverImage} label="Cover Image URL (e.g. from Unsplash)" style="width: 100%;" />
 				{#if formCoverImage}
 					<div class="preview-img">
 						<img src={getMediaUrl(formCoverImage)} alt="Preview" />

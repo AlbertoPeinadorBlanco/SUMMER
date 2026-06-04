@@ -41,7 +41,40 @@
 		} catch (e) {
 			console.error("Failed to load coupons", e);
 		}
+
+		if (currentUser) {
+			try {
+				const favs = await fetchApi('/favourites/instructors');
+				userFavInstructors = new Set(favs.map((f: any) => f.id || f.instructor_id));
+			} catch (e) {
+				console.error('Failed to load fav instructors', e);
+			}
+		}
 	});
+
+	let userFavInstructors = $state<Set<number>>(new Set());
+
+	async function toggleFavInstructor(event: Event) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!currentUser) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast($t('favourites.login_required', { default: 'Please login to favourite this item.' }), 'error'));
+			return;
+		}
+		try {
+			const res = await fetchApi(`/favourites/instructors/${teacher.id}`, { method: 'POST' });
+			const newSet = new Set(userFavInstructors);
+			if (res.is_favourited) {
+				newSet.add(teacher.id);
+			} else {
+				newSet.delete(teacher.id);
+			}
+			userFavInstructors = newSet;
+			import('$lib/stores/toast').then(({ showToast }) => showToast(res.message, 'success'));
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message, 'error'));
+		}
+	}
 
 	async function handleContact(e: Event) {
 		e.preventDefault();
@@ -109,8 +142,17 @@
 				{/if}
 			</div>
 			<div class="profile-info">
-				<h1 id="profile-name">{teacher.name}</h1>
-				<h2 class="specialty">{teacher.specialty}</h2>
+				<div style="display: flex; align-items: center; gap: 10px;">
+					<h1 id="profile-name" style="margin: 0;">{teacher.name}</h1>
+					<div class="fav-btn-container" style="background: rgba(255,255,255,0.8); border-radius: 50%;">
+						{#await import('@smui/icon-button') then { default: IconButton }}
+							<IconButton class="material-icons" onclick={toggleFavInstructor} style="color: {userFavInstructors.has(teacher.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
+								{userFavInstructors.has(teacher.id) ? 'favorite' : 'favorite_border'}
+							</IconButton>
+						{/await}
+					</div>
+				</div>
+				<h2 class="specialty" style="margin-top: 0.5rem;">{teacher.specialty}</h2>
 				<div class="meta-info">
 					<span
 						><span class="material-icons" aria-hidden="true">place</span> {teacher.location}</span

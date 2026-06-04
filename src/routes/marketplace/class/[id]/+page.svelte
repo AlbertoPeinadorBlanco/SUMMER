@@ -28,10 +28,39 @@
 					}
 				})
 				.catch(console.error);
+			
+			fetchApi('/favourites/classes').then((favs: any[]) => {
+				userFavClasses = new Set(favs.map(f => f.id));
+			}).catch(e => console.error('Failed to load favs', e));
 		} else {
 			userBookedClassIds = new Set();
+			userFavClasses = new Set();
 		}
 	});
+
+	let userFavClasses = $state<Set<number>>(new Set());
+
+	async function toggleFavClass(event: Event) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!$auth.isAuthenticated) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast($t('favourites.login_required', { default: 'Please login to favourite this item.' }), 'error'));
+			return;
+		}
+		try {
+			const res = await fetchApi(`/favourites/classes/${advert.id}`, { method: 'POST' });
+			const newSet = new Set(userFavClasses);
+			if (res.is_favourited) {
+				newSet.add(advert.id);
+			} else {
+				newSet.delete(advert.id);
+			}
+			userFavClasses = newSet;
+			import('$lib/stores/toast').then(({ showToast }) => showToast(res.message, 'success'));
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message, 'error'));
+		}
+	}
 
 	function openBookingDialog() {
 		if (!$auth.isAuthenticated) {
@@ -130,7 +159,16 @@
 			</div>
 			
 			<div class="advert-title-section">
-				<h1 id="advert-title">{getTitle(advert)}</h1>
+				<div style="display: flex; align-items: center; gap: 10px;">
+					<h1 id="advert-title" style="margin: 0;">{getTitle(advert)}</h1>
+					<div class="fav-btn-container" style="background: rgba(255,255,255,0.8); border-radius: 50%;">
+						{#await import('@smui/icon-button') then { default: IconButton }}
+							<IconButton class="material-icons" onclick={toggleFavClass} style="color: {userFavClasses.has(advert.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
+								{userFavClasses.has(advert.id) ? 'favorite' : 'favorite_border'}
+							</IconButton>
+						{/await}
+					</div>
+				</div>
 				<div class="price-tag">
 					{$formatPrice(advert.price, advert.class_type === 'course' || advert.class_type === 'curso')}
 				</div>

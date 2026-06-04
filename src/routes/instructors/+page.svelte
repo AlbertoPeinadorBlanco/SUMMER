@@ -59,6 +59,45 @@
 			filteredInstructors = instructors;
 		}
 	});
+
+	let userFavInstructors = $state<Set<number>>(new Set());
+
+	$effect(() => {
+		import('$lib/stores/auth').then(({ auth }) => {
+			let isAuth = false;
+			auth.subscribe(a => isAuth = a.isAuthenticated)();
+			if (isAuth) {
+				fetchApi('/favourites/instructors').then((favs: any[]) => {
+					userFavInstructors = new Set(favs.map(f => f.id || f.instructor_id));
+				}).catch(e => console.error('Failed to load fav instructors', e));
+			}
+		});
+	});
+
+	async function toggleFavInstructor(instructor: any, event: Event) {
+		event.preventDefault();
+		event.stopPropagation();
+		try {
+			const { auth } = await import('$lib/stores/auth');
+			let isAuth = false;
+			auth.subscribe(a => isAuth = a.isAuthenticated)();
+			if (!isAuth) {
+				import('$lib/stores/toast').then(({ showToast }) => showToast($t('favourites.login_required', { default: 'Please login to favourite this item.' }), 'error'));
+				return;
+			}
+			const res = await fetchApi(`/favourites/instructors/${instructor.id}`, { method: 'POST' });
+			const newSet = new Set(userFavInstructors);
+			if (res.is_favourited) {
+				newSet.add(instructor.id);
+			} else {
+				newSet.delete(instructor.id);
+			}
+			userFavInstructors = newSet;
+			import('$lib/stores/toast').then(({ showToast }) => showToast(res.message, 'success'));
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message, 'error'));
+		}
+	}
 </script>
 
 <SEO title={$t('instructors.title')} description={$t('instructors.subtitle')} />
@@ -99,6 +138,13 @@
 		<div class="instructor-grid">
 			{#each filteredInstructors as instructor}
 				<a href="/marketplace/{instructor.id}" class="instructor-card premium-card {isFeatured(instructor) ? 'is-featured' : ''}" style="position: relative;">
+					<div class="fav-btn-container" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(255,255,255,0.8); border-radius: 50%;">
+						{#await import('@smui/icon-button') then { default: IconButton }}
+							<IconButton class="material-icons" onclick={(e) => toggleFavInstructor(instructor, e)} style="color: {userFavInstructors.has(instructor.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
+								{userFavInstructors.has(instructor.id) ? 'favorite' : 'favorite_border'}
+							</IconButton>
+						{/await}
+					</div>
 					{#if isFeatured(instructor)}
 						<div class="featured-star-badge" title={$t('profile_enhancements.public_featured')}>
 							<span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span>

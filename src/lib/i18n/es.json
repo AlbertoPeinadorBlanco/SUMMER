@@ -698,5 +698,17 @@
     "limit_reached": "Has alcanzado tu límite de {allowedAdverts} anuncio(s) activo(s).",
     "buy_slot": "Comprar un anuncio ({price})",
     "loading": "Cargando..."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Lee las últimas noticias sobre actividades en el mar, condiciones de la playa y consejos de surf.",
+    "hero_title": "Blog de SurfMarket",
+    "hero_subtitle": "Últimas noticias, condiciones de la playa e historias del mar.",
+    "no_posts": "Aún no hay publicaciones de blog. ¡Vuelve pronto!",
+    "by": "Por",
+    "read_article": "Leer artículo",
+    "not_found_title": "Publicación no encontrada",
+    "not_found_desc": "La publicación de blog que buscas no existe o ha sido eliminada.",
+    "back_to_blog": "Volver al Blog"
   }
 }

@@ -697,5 +697,25 @@
     "limit_reached": "You have reached your limit of {allowedAdverts} active advert(s).",
     "buy_slot": "Buy Advert Slot ({price})",
     "loading": "Loading..."
+  },
+  "favourites": {
+    "title": "My Favourites",
+    "no_classes": "You haven't favourited any classes yet.",
+    "no_instructors": "You haven't favourited any instructors yet.",
+    "tab_classes": "Classes",
+    "tab_instructors": "Instructors",
+    "login_required": "Please login to favourite this item."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Read the latest news about sea activities, beach conditions, and surfing tips.",
+    "hero_title": "SurfMarket Blog",
+    "hero_subtitle": "Latest news, beach conditions, and stories from the sea.",
+    "no_posts": "No blog posts published yet. Check back soon!",
+    "by": "By",
+    "read_article": "Read article",
+    "not_found_title": "Post Not Found",
+    "not_found_desc": "The blog post you're looking for doesn't exist or has been removed.",
+    "back_to_blog": "Back to Blog"
   }
 }

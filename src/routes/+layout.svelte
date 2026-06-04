@@ -178,6 +178,11 @@
 							{/if}
 						</div>
 
+						<Button href="/blog" class="nav-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">article</span>
+							<Label>{$t('blog.title', { default: 'Blog' })}</Label>
+						</Button>
+
 						<!-- Admin Dropdown (Only visible to admins) -->
 						{#if $auth.isAuthenticated && $auth.user && $auth.user.role === 'admin'}
 							<div class="user-menu-container" style="position: relative;" onmouseleave={() => (adminMenuOpen = false)} role="group">
@@ -211,6 +216,10 @@
 										<a href="/admin/banners" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
 											<span class="material-icons" aria-hidden="true">view_carousel</span>
 											Banners
+										</a>
+										<a href="/admin/blog" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">article</span>
+											{$t('blog.title', { default: 'Blog' })}
 										</a>
 										<a href="/admin/coupons" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
 											<span class="material-icons" aria-hidden="true">local_offer</span>
@@ -274,6 +283,10 @@
 									<a href="/profile" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">person</span>
 										{$t('nav.profile')}
+									</a>
+									<a href="/favourites" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true" style="color: #e63946;">favorite</span>
+										{$t('favourites.title', { default: 'My Favourites' })}
 									</a>
 									<a href="/bookings" class="dropdown-item" onclick={() => (userMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">book_online</span>

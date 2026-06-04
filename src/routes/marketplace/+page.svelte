@@ -8,7 +8,9 @@
 	import { formatPrice } from '$lib/stores/currency';
 	import { auth } from '$lib/stores/auth';
 	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { page } from '$app/stores';
 	import SEO from '$lib/components/SEO.svelte';
+	import IconButton from '@smui/icon-button';
 	import { showToast } from '$lib/stores/toast';
 	import { onMount } from 'svelte';
 	import BannerAd from '$lib/components/BannerAd.svelte';
@@ -28,6 +30,7 @@
 	let bookingSuccess = $state(false);
 
 	let userBookedClassIds = $state<Set<number>>(new Set());
+	let userFavClasses = $state<Set<number>>(new Set());
 
 	let activeAds: any[] = $state([]);
 	let activeCoupon: any = $state(null);
@@ -60,8 +63,13 @@
 					}
 				})
 				.catch(console.error);
+
+			fetchApi('/favourites/classes').then((favs: any[]) => {
+				userFavClasses = new Set(favs.map(f => f.id));
+			}).catch(e => console.error('Failed to load favs', e));
 		} else {
 			userBookedClassIds = new Set();
+			userFavClasses = new Set();
 		}
 	});
 
@@ -108,6 +116,28 @@
 			bookingError = err.message || 'An error occurred while booking.';
 		} finally {
 			bookingLoading = false;
+		}
+	}
+
+	async function toggleFavourite(ad: any, event: Event) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!$auth.isAuthenticated) {
+			showToast($t('favourites.login_required', { default: 'Please login to favourite this item.' }), 'error');
+			return;
+		}
+		try {
+			const res = await fetchApi(`/favourites/classes/${ad.id}`, { method: 'POST' });
+			const newSet = new Set(userFavClasses);
+			if (res.is_favourited) {
+				newSet.add(ad.id);
+			} else {
+				newSet.delete(ad.id);
+			}
+			userFavClasses = newSet;
+			showToast(res.message, 'success');
+		} catch (err: any) {
+			showToast(err.message, 'error');
 		}
 	}
 
@@ -220,6 +250,11 @@
 <div class="teacher-grid" role="list" aria-labelledby="marketplace-title">
 	{#each filteredClasses as ad (ad.id)}
 		<article class="card-container premium-card {ad.featured_until && new Date(ad.featured_until) > new Date() ? 'is-featured' : ''}" role="listitem" style="position: relative;">
+			<div class="fav-btn-container" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(255,255,255,0.8); border-radius: 50%;">
+				<IconButton class="material-icons" onclick={(e) => toggleFavourite(ad, e)} style="color: {userFavClasses.has(ad.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
+					{userFavClasses.has(ad.id) ? 'favorite' : 'favorite_border'}
+				</IconButton>
+			</div>
 			{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
 				<div class="featured-star-badge" title={$t('profile_enhancements.public_featured')}>
 					<span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span>

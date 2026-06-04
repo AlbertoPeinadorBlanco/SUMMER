@@ -65,6 +65,7 @@
 	let formTier = $state('basic');
 	let formVerified = $state(false);
 
+	//onmount
 	onMount(async () => {
 		if (!$auth.isAuthenticated || $auth.user?.role !== 'admin') {
 			goto('/');

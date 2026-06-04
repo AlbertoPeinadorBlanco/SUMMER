@@ -63,6 +63,7 @@
 	let formLastName = $state('');
 	let formRole = $state('user');
 	let formTier = $state('basic');
+	let formVerified = $state(false);
 
 	onMount(async () => {
 		if (!$auth.isAuthenticated || $auth.user?.role !== 'admin') {
@@ -93,6 +94,7 @@
 		formLastName = '';
 		formRole = 'user';
 		formTier = 'basic';
+		formVerified = false;
 		isCreateEditModalOpen = true;
 	}
 
@@ -105,6 +107,7 @@
 		formFirstName = user.first_name || '';
 		formLastName = user.last_name || '';
 		formRole = user.role || 'user';
+		formVerified = !!user.is_verified;
 		isCreateEditModalOpen = true;
 	}
 
@@ -429,6 +432,11 @@
 					<Option value="instructor">{$t('admin.instructor')}</Option>
 					<Option value="admin">{$t('admin.admin')}</Option>
 				</Select>
+			</div>
+
+			<div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+				<input type="checkbox" id="verified-checkbox" bind:checked={formVerified} style="width: 18px; height: 18px;" />
+				<label for="verified-checkbox" style="font-size: 1rem;">Is Verified Account</label>
 			</div>
 			
 		</div>

@@ -22,7 +22,7 @@
 
 	let shareUrl = $state('');
 	let shareText = encodeURIComponent('Check out SUMMER - The best surfing platform!');
-
+//test
 	setupI18n();
 	onMount(() => {
 		// Restore session from httpOnly cookie on every page load

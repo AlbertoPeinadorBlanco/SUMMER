@@ -140,7 +140,7 @@
 				<a href="/marketplace/{instructor.id}" class="instructor-card premium-card {isFeatured(instructor) ? 'is-featured' : ''}" style="position: relative;">
 					<div class="fav-btn-container" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(255,255,255,0.8); border-radius: 50%;">
 						{#await import('@smui/icon-button') then { default: IconButton }}
-							<IconButton class="material-icons" onclick={(e) => toggleFavInstructor(instructor, e)} style="color: {userFavInstructors.has(instructor.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
+							<IconButton class="material-icons" onclick={(e: MouseEvent) => toggleFavInstructor(instructor, e)} style="color: {userFavInstructors.has(instructor.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
 								{userFavInstructors.has(instructor.id) ? 'favorite' : 'favorite_border'}
 							</IconButton>
 						{/await}

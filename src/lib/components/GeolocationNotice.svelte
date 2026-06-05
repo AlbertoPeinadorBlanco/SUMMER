@@ -5,7 +5,7 @@
     import Button from '@smui/button';
     import { onMount } from 'svelte';
 
-    let showNotice = false;
+    let showNotice = $state(false);
 
     onMount(() => {
         if (browser && $isGeolocationEnabled) {

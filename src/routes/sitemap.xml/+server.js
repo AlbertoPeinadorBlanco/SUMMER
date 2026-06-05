@@ -6,6 +6,7 @@ export async function GET({ fetch, url }) {
 	try {
 		// Fetch dynamic routes from backend API
 		const res = await fetch(`${API_BASE_URL}/sitemap-data`);
+		/** @type {{ classes: any[], instructors: any[], blog_posts: any[] }} */
 		let dynamicRoutes = { classes: [], instructors: [], blog_posts: [] };
 		if (res.ok) {
 			dynamicRoutes = await res.json();

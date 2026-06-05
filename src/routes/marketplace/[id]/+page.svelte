@@ -26,8 +26,8 @@
 
 	$effect(() => {
 		if (currentUser && !contactName && !contactEmail) {
-			contactName = currentUser.first_name + ' ' + currentUser.last_name;
-			contactEmail = currentUser.email;
+			contactName = [currentUser.first_name, currentUser.last_name].filter(Boolean).join(' ') || currentUser.username || '';
+			contactEmail = currentUser.email || '';
 		}
 	});
 
@@ -57,6 +57,7 @@
 	async function toggleFavInstructor(event: Event) {
 		event.preventDefault();
 		event.stopPropagation();
+		if (!teacher) return;
 		if (!currentUser) {
 			import('$lib/stores/toast').then(({ showToast }) => showToast($t('favourites.login_required', { default: 'Please login to favourite this item.' }), 'error'));
 			return;

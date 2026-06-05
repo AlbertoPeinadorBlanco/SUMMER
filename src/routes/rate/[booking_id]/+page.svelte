@@ -7,12 +7,12 @@
     import { fetchApi } from '$lib/api';
 
     let bookingId = $page.params.booking_id;
-    let rating = 0;
-    let comment = '';
-    let isSubmitting = false;
-    let errorMessage = '';
-    let successMessage = '';
-    let hoverRating = 0;
+    let rating = $state(0);
+    let comment = $state('');
+    let isSubmitting = $state(false);
+    let errorMessage = $state('');
+    let successMessage = $state('');
+    let hoverRating = $state(0);
 
     onMount(() => {
         if (!$auth.isAuthenticated) {
@@ -77,13 +77,13 @@
                 </div>
             {/if}
 
-            <div class="stars-container" on:mouseleave={() => hoverRating = 0}>
+            <div class="stars-container" onmouseleave={() => hoverRating = 0} role="group" aria-label="Rating">
                 {#each [1, 2, 3, 4, 5] as star}
                     <button 
                         class="star-btn"
                         class:active={star <= (hoverRating || rating)}
-                        on:mouseenter={() => hoverRating = star}
-                        on:click={() => setRating(star)}
+                        onmouseenter={() => hoverRating = star}
+                        onclick={() => setRating(star)}
                         type="button"
                     >
                         <span class="material-icons">
@@ -105,7 +105,7 @@
 
             <button 
                 class="submit-btn" 
-                on:click={submitRating} 
+                onclick={submitRating} 
                 disabled={isSubmitting || rating === 0}
             >
                 {#if isSubmitting}

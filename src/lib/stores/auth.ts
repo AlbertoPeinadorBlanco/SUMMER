@@ -20,6 +20,10 @@ export interface User {
 	video_url?: string;
 	booking_link?: string;
 	available_today?: boolean;
+	bumped_at?: string;
+	allow_communications?: boolean | number;
+	bio?: string;
+	specialization?: string;
 }
 
 function createAuthStore() {

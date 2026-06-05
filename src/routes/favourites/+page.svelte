@@ -74,7 +74,7 @@
 
 	<div class="tabs-container">
 		<TabBar tabs={['classes', 'instructors']} bind:active={activeTab}>
-			{#snippet tab(tab)}
+			{#snippet tab(tab: string)}
 				<Tab {tab}>
 					<TabLabel>{tab === 'classes' ? $t('favourites.tab_classes', { default: 'Classes' }) : $t('favourites.tab_instructors', { default: 'Instructors' })}</TabLabel>
 				</Tab>
@@ -99,7 +99,7 @@
 					{#each classes as ad (ad.id)}
 						<article class="card-container premium-card" style="position: relative;">
 							<div class="fav-btn-container" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(255,255,255,0.8); border-radius: 50%;">
-								<IconButton class="material-icons" onclick={(e) => toggleFavClass(ad.id, e)} style="color: #e63946;">
+								<IconButton class="material-icons" onclick={(e: MouseEvent) => toggleFavClass(ad.id, e)} style="color: #e63946;">
 									favorite
 								</IconButton>
 							</div>
@@ -136,7 +136,7 @@
 					{#each instructors as teacher (teacher.id)}
 						<article class="card-container premium-card" style="position: relative;">
 							<div class="fav-btn-container" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(255,255,255,0.8); border-radius: 50%;">
-								<IconButton class="material-icons" onclick={(e) => toggleFavInstructor(teacher.id, e)} style="color: #e63946;">
+								<IconButton class="material-icons" onclick={(e: MouseEvent) => toggleFavInstructor(teacher.id, e)} style="color: #e63946;">
 									favorite
 								</IconButton>
 							</div>

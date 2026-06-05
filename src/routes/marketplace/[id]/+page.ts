@@ -38,7 +38,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 
 		const isFeatured = u.featured_until && new Date(u.featured_until) > new Date();
 
-		let ratings = { average: 0, total: 0, reviews: [] };
+		let ratings: { average: number; total: number; reviews: any[] } = { average: 0, total: 0, reviews: [] };
 		try {
 			const ratingsRes = await fetch(`${API_BASE_URL}/ratings/instructor/${teacherId}`);
 			if (ratingsRes.ok) {
@@ -56,6 +56,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			price: teacherClasses.length > 0 ? teacherClasses[0].price : 50,
 			image: u.profile_picture_url ? getMediaUrl(u.profile_picture_url) : images[u.id % images.length],
 			bio: u.bio || 'Passionate surfing instructor ready to hit the waves!',
+			allow_communications: u.allow_communications,
 			tier: u.tier || 'basic',
 			// Perks — only expose values if the upgrade was purchased
 			video_url: u.has_video_upgrade ? u.video_url : null,

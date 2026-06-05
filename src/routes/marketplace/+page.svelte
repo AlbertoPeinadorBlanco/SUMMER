@@ -251,7 +251,7 @@
 	{#each filteredClasses as ad (ad.id)}
 		<article class="card-container premium-card {ad.featured_until && new Date(ad.featured_until) > new Date() ? 'is-featured' : ''}" role="listitem" style="position: relative;">
 			<div class="fav-btn-container" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(255,255,255,0.8); border-radius: 50%;">
-				<IconButton class="material-icons" onclick={(e) => toggleFavourite(ad, e)} style="color: {userFavClasses.has(ad.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
+				<IconButton class="material-icons" onclick={(e: MouseEvent) => toggleFavourite(ad, e)} style="color: {userFavClasses.has(ad.id) ? '#e63946' : '#666'};" aria-label="Toggle favourite">
 					{userFavClasses.has(ad.id) ? 'favorite' : 'favorite_border'}
 				</IconButton>
 			</div>
@@ -352,7 +352,7 @@
 					<ActionButtons>
 						<button 
 							class="book-btn-custom" 
-							onclick={(e) => { e.preventDefault(); e.stopPropagation(); openBookingDialog(ad, e); }}
+							onclick={(e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); openBookingDialog(ad, e); }}
 							disabled={userBookedClassIds.has(ad.id)}
 							style={userBookedClassIds.has(ad.id) ? 'background-color: #bdbdbd; cursor: not-allowed; border-color: #bdbdbd;' : ''}
 						>

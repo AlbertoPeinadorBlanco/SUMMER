@@ -4,7 +4,7 @@
 	import Card, { Content } from '@smui/card';
 	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
 
@@ -246,7 +246,7 @@
 					<Content>
 						<h3 class="instructor-heading">{$t('advert.instructor')}</h3>
 						<div class="instructor-profile">
-							<img src={advert.profile_picture_url ? getMediaUrl(advert.profile_picture_url) : 'https://ui-avatars.com/api/?name=' + (advert.first_name || advert.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="64" height="64" />
+							<img src={advert.profile_picture_url ? getMediaUrl(advert.profile_picture_url) : getAvatarPlaceholder(advert.first_name || advert.instructor_username, advert.avatar_color)} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="64" height="64" />
 							<div class="instructor-info">
 								<h4>{advert.first_name || advert.instructor_username} {advert.last_name || ''}</h4>
 								<a href="/marketplace/{advert.instructor_id}" class="profile-link">

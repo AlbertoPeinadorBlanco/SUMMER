@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { locale, t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Button from '@smui/button';
@@ -76,7 +76,7 @@
 					{#if post.author_avatar}
 						<img src={getMediaUrl(post.author_avatar)} alt="Author avatar" class="author-avatar" />
 					{:else}
-						<img src={'https://ui-avatars.com/api/?name=' + (post.author_first_name || 'U') + '&background=random'} alt="Author avatar" class="author-avatar" />
+						<img src={getAvatarPlaceholder(post.author_first_name, post.author_avatar_color)} alt="Author avatar" class="author-avatar" />
 					{/if}
 					<span class="author-name">{post.author_first_name} {post.author_last_name}</span>
 				</div>

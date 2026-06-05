@@ -7,6 +7,12 @@ export function getMediaUrl(path: string | undefined | null): string {
 	return `${MEDIA_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
+export function getAvatarPlaceholder(nameFallback: string | undefined | null, color: string | undefined | null = 'random'): string {
+	const cleanColor = (!color || color === 'random') ? 'random' : color.replace('#', '');
+	const cleanName = nameFallback || 'U';
+	return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=${cleanColor}`;
+}
+
 // Attempt a silent token refresh using the refresh cookie
 async function refreshAccessToken(): Promise<boolean> {
 	try {

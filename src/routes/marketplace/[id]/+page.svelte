@@ -7,7 +7,7 @@
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
 	import Dialog, { Title as DialogTitle, Content as DialogContent, Actions as DialogActions } from '@smui/dialog';
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { auth } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
@@ -270,7 +270,7 @@
 							{#each teacher.ratings.reviews as review}
 								<div class="review-item" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px;">
 									<div class="review-avatar">
-										<img src={review.profile_picture_url ? getMediaUrl(review.profile_picture_url) : 'https://ui-avatars.com/api/?name=' + review.student_name + '&background=random'} alt={review.student_name} style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" />
+										<img src={review.profile_picture_url ? getMediaUrl(review.profile_picture_url) : getAvatarPlaceholder(review.student_name, review.student_avatar_color)} alt={review.student_name} style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" />
 									</div>
 									<div class="review-content" style="flex: 1;">
 										<div class="review-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">

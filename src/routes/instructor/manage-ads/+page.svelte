@@ -9,7 +9,7 @@
 	import { t, locale } from 'svelte-i18n';
 	import { auth } from '$lib/stores/auth';
 	import { currencySymbol, formatPrice } from '$lib/stores/currency';
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import { showToast } from '$lib/stores/toast';
@@ -564,7 +564,7 @@
 										{#if pupil.profile_picture_url}
 											<img src={getMediaUrl(pupil.profile_picture_url)} alt={pupil.first_name} class="table-avatar" />
 										{:else}
-											<img src={'https://ui-avatars.com/api/?name=' + (pupil.first_name || 'U') + '&background=random'} alt={pupil.first_name} class="table-avatar" />
+											<img src={getAvatarPlaceholder(pupil.first_name, pupil.avatar_color)} alt={pupil.first_name} class="table-avatar" />
 										{/if}
 										<strong>{pupil.first_name} {pupil.last_name}</strong>
 									</div>

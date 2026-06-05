@@ -6,7 +6,7 @@
 	import Textfield from '@smui/textfield';
 	import Icon from '@smui/textfield/icon';
 
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 
 	//instructors page
 	let instructors: any[] = $state([]);
@@ -155,7 +155,7 @@
 							{#if instructor.profile_picture_url}
 								<img src={getMediaUrl(instructor.profile_picture_url)} alt="{instructor.first_name}" class="avatar-img" loading="lazy" decoding="async" width="80" height="80" />
 							{:else}
-								<img src={'https://ui-avatars.com/api/?name=' + (instructor.first_name || instructor.username || 'U') + '&background=random'} alt="{instructor.first_name}" class="avatar-img avatar-placeholder" loading="lazy" decoding="async" width="80" height="80" />
+								<img src={getAvatarPlaceholder(instructor.first_name || instructor.username, instructor.avatar_color)} alt="{instructor.first_name}" class="avatar-img avatar-placeholder" loading="lazy" decoding="async" width="80" height="80" />
 							{/if}
 						</div>
 						

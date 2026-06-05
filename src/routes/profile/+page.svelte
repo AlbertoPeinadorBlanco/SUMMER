@@ -5,7 +5,7 @@
 	import Card, { Content } from '@smui/card';
 	import { pricings } from '$lib/stores/pricings';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import { isGeolocationEnabled } from '$lib/stores/location';
@@ -24,6 +24,7 @@
 	let phone = $state('');
 	let username = $state('');
 	let profile_picture_url = $state('');
+	let avatar_color = $state('random');
 	let video_url = $state('');
 	let booking_link = $state('');
 	let available_today = $state(false);
@@ -104,6 +105,7 @@
 			phone = user.phone || '';
 			username = user.username || '';
 			profile_picture_url = user.profile_picture_url || '';
+			avatar_color = user.avatar_color || 'random';
 			video_url = user.video_url || '';
 			booking_link = user.booking_link || '';
 			available_today = user.available_today || false;
@@ -130,12 +132,13 @@
 				body: JSON.stringify({
 					first_name,
 					last_name,
-					phone
+					phone,
+					avatar_color
 				})
 			});
 
 			// Update local auth store so layout / other components reflect new name
-			auth.updateUser({ first_name, last_name, phone });
+			auth.updateUser({ first_name, last_name, phone, avatar_color });
 			
 			if (user.role === 'instructor') {
 				// Bio is saved in the instructor profile
@@ -157,16 +160,18 @@
 
 	async function handlePictureUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
-		const file = target.files?.[0];
-		if (!file || !user) return;
+		if (!target.files || target.files.length === 0) return;
 
+		const file = target.files[0];
 		const formData = new FormData();
 		formData.append('profile_picture', file);
 
+		loading = true;
+		error = '';
+		successMsg = '';
+
 		try {
-			loading = true;
-			error = '';
-			const res = await fetchApi(`/users/${user.id}/picture`, {
+			const res = await fetchApi(`/users/${user?.id}/picture`, {
 				method: 'POST',
 				body: formData
 			});
@@ -176,6 +181,26 @@
 			setTimeout(() => (successMsg = ''), 3000);
 		} catch (err: any) {
 			error = err.message || $t('profile.alerts.picture_failed');
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function handleDeletePicture() {
+		if (!user) return;
+		loading = true;
+		error = '';
+		successMsg = '';
+		try {
+			await fetchApi(`/users/${user.id}/picture`, {
+				method: 'DELETE'
+			});
+			profile_picture_url = '';
+			auth.updateUser({ profile_picture_url: '' });
+			successMsg = $t('profile.alerts.picture_deleted', { default: 'Picture deleted' });
+			setTimeout(() => (successMsg = ''), 3000);
+		} catch (err: any) {
+			error = err.message || $t('profile.alerts.picture_failed', { default: 'Failed to delete picture' });
 		} finally {
 			loading = false;
 		}
@@ -444,7 +469,7 @@
 				{#if profile_picture_url}
 					<img src={getMediaUrl(profile_picture_url)} alt="Profile Avatar" loading="lazy" decoding="async" width="100" height="100" />
 				{:else}
-					<img src={'https://ui-avatars.com/api/?name=' + (username || 'U') + '&background=random'} alt="Profile Avatar" class="avatar-placeholder" width="100" height="100" loading="lazy" decoding="async" />
+					<img src={getAvatarPlaceholder(username || first_name, avatar_color)} alt="Profile Avatar" class="avatar-placeholder" width="100" height="100" loading="lazy" decoding="async" />
 				{/if}
 				{#if user.is_verified === 1 || user.is_verified === true}
 					<div class="verified-badge-profile" title="Verified User">
@@ -463,6 +488,16 @@
 						disabled={loading}
 					/>
 				</label>
+				{#if profile_picture_url}
+					<Button variant="outlined" onclick={handleDeletePicture} disabled={loading} style="border-color: #dc3545; color: #dc3545; margin-left: 1rem;">
+						<Label>Delete</Label>
+					</Button>
+				{:else}
+					<div class="color-picker-container" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
+						<label for="avatar-color">Avatar Color:</label>
+						<input type="color" id="avatar-color" bind:value={avatar_color} onchange={handleUpdate} />
+					</div>
+				{/if}
 			</div>
 		</div>
 

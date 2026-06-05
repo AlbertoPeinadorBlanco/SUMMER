@@ -7,7 +7,7 @@
 	import { t, locale } from 'svelte-i18n';
 	import { formatPrice } from '$lib/stores/currency';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { page } from '$app/stores';
 	import SEO from '$lib/components/SEO.svelte';
 	import IconButton from '@smui/icon-button';
@@ -303,7 +303,7 @@
 
 						<div class="instructor-info">
 							<div style="position: relative; display: inline-block; flex-shrink: 0; line-height: 0;">
-								<img src={ad.profile_picture_url ? getMediaUrl(ad.profile_picture_url) : 'https://ui-avatars.com/api/?name=' + (ad.first_name || ad.instructor_username) + '&background=random'} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="48" height="48" />
+								<img src={ad.profile_picture_url ? getMediaUrl(ad.profile_picture_url) : getAvatarPlaceholder(ad.first_name || ad.instructor_username, ad.avatar_color)} alt="Instructor" class="instructor-avatar" loading="lazy" decoding="async" width="48" height="48" />
 								{#if ad.is_verified === 1 || ad.is_verified === true}
 									<div class="verified-badge-small" title="Verified Instructor" style="position: absolute; bottom: -2px; right: -2px; background: var(--surface-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2196f3; padding: 1px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
 										<span class="material-icons" aria-hidden="true" style="font-size: 14px;">verified</span>

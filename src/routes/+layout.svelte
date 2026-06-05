@@ -16,7 +16,7 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import { theme, toggleTheme } from '$lib/stores/theme';
 	import { selectedBeach, userLocationName, isGeolocationEnabled } from '$lib/stores/location';
-	import { getMediaUrl } from '$lib/api';
+	import { getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
@@ -272,7 +272,7 @@
 								{#if $auth.user.profile_picture_url}
 									<img src={getMediaUrl($auth.user.profile_picture_url)} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
 								{:else}
-									<img src={'https://ui-avatars.com/api/?name=' + ($auth.user.first_name || $auth.user.username || 'U') + '&background=random'} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
+									<img src={getAvatarPlaceholder($auth.user.first_name || $auth.user.username, $auth.user.avatar_color)} alt="Profile" class="nav-avatar" width="24" height="24" loading="lazy" decoding="async" />
 								{/if}
 								<span class="material-icons" aria-hidden="true" style="margin-left: 4px;">arrow_drop_down</span>
 							</Button>
@@ -536,7 +536,7 @@
 						{#if $auth.user.profile_picture_url}
 							<img src={getMediaUrl($auth.user.profile_picture_url)} alt="Profile" class="nav-avatar-mobile" width="24" height="24" loading="lazy" decoding="async" />
 						{:else}
-							<img src={'https://ui-avatars.com/api/?name=' + ($auth.user.first_name || $auth.user.username || 'U') + '&background=random'} alt="Profile" class="nav-avatar-mobile" width="24" height="24" loading="lazy" decoding="async" />
+							<img src={getAvatarPlaceholder($auth.user.first_name || $auth.user.username, $auth.user.avatar_color)} alt="Profile" class="nav-avatar-mobile" width="24" height="24" loading="lazy" decoding="async" />
 						{/if}
 						<Label>{$t('nav.profile')}</Label>
 					</Button>

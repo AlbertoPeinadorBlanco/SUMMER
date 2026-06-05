@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi, getMediaUrl } from '$lib/api';
+	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
 	import Card, { Content, PrimaryAction, Media } from '@smui/card';
@@ -146,7 +146,7 @@
 										{#if teacher.profile_picture_url}
 											<img src={getMediaUrl(teacher.profile_picture_url)} alt="{teacher.name}'s profile" style="width: 100%; height: 100%; object-fit: cover;" />
 										{:else}
-											<img src={'https://ui-avatars.com/api/?name=' + (teacher.name || 'U') + '&background=random'} alt="{teacher.name}'s profile" style="width: 100%; height: 100%; object-fit: cover;" />
+											<img src={getAvatarPlaceholder(teacher.name, teacher.avatar_color)} alt="{teacher.name}'s profile" style="width: 100%; height: 100%; object-fit: cover;" />
 										{/if}
 									</div>
 									<h2 style="margin: 0 0 0.5rem 0;">{teacher.name} {teacher.surname}</h2>

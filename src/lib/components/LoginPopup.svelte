@@ -101,18 +101,6 @@
 				<div class="error-msg" role="alert">{error}</div>
 			{/if}
 
-			<GoogleSignInButton 
-				onSuccess={() => {
-					open = false;
-					goto('/profile');
-				}} 
-				onError={(msg: string) => error = msg} 
-			/>
-
-			<div class="divider">
-				<span>{$t('auth.or_login_with_email', { default: 'or login with email' })}</span>
-			</div>
-
 			<form onsubmit={handleLogin} class="login-form">
 				<Textfield
 					variant="outlined"
@@ -151,6 +139,19 @@
 					</Button>
 				</div>
 			</form>
+
+			<div class="divider">
+				<span>{$t('auth.or_login_with_google', { default: 'or continue with Google' })}</span>
+			</div>
+
+			<GoogleSignInButton 
+				onSuccess={() => {
+					open = false;
+					goto('/profile');
+				}} 
+				onError={(msg: string) => error = msg} 
+			/>
+
 			<div class="signup-prompt">
 				<p>
 					{$t('auth.no_account')} <a href="/signup" onclick={() => (open = false)}>{$t('auth.signup_here')}</a>

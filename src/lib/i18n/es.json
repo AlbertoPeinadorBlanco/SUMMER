@@ -635,7 +635,7 @@
     "bio": "Biografía",
     "creating": "Creando...",
     "signup_btn": "Registrarse",
-    "already_account": "¿Ya tienes una cuenta? Usa el botón Iniciar sesión en el menú.",
+    "already_account": "¿Ya tienes una cuenta?",
     "forgot_password": "¿Olvidaste tu contraseña?",
     "forgot_password_desc": "Ingresa tu correo para recibir un enlace de recuperación.",
     "send_reset_email": "Enviar enlace de recuperación",

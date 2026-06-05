@@ -181,7 +181,9 @@
 			</Button>
 		</form>
 
-		<p class="login-prompt">{$t('auth.already_account')}</p>
+		<p class="login-prompt">
+			{$t('auth.already_account')} <a href="?login=true" class="login-link">{$t('auth.login_btn', { default: 'Login' })}</a>
+		</p>
 
 		<!-- Policies Dialog -->
 		<Dialog bind:open={openPolicies} aria-labelledby="policies-title" aria-describedby="policies-content" surface$style="max-width: 600px; width: 100%;">
@@ -362,6 +364,15 @@
 		margin-top: 1.5rem;
 		color: #666;
 		font-size: 0.9rem;
+	}
+	.login-link {
+		color: var(--primary-color);
+		text-decoration: none;
+		font-weight: bold;
+		cursor: pointer;
+	}
+	.login-link:hover {
+		text-decoration: underline;
 	}
 	@media (max-width: 600px) {
 		.form-row {

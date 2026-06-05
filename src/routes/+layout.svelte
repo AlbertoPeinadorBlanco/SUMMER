@@ -30,6 +30,15 @@
 		shareUrl = encodeURIComponent(window.location.origin);
 	});
 
+	$effect(() => {
+		if ($page.url.searchParams.get('login') === 'true') {
+			showLogin = true;
+			const url = new URL($page.url);
+			url.searchParams.delete('login');
+			history.replaceState(null, '', url.pathname + url.search);
+		}
+	});
+
 	function copyToClipboard() {
 		navigator.clipboard.writeText(decodeURIComponent(shareUrl)).then(() => {
 			alert('Link copied to clipboard!');

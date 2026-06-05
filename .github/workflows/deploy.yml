@@ -23,6 +23,10 @@ jobs:
           script: |
             set -e
 
+            # Use flock to prevent race conditions if both API and Frontend workflows run simultaneously
+            exec 200>/tmp/surfmarket_deploy.lock
+            flock -n 200 || { echo "Another deployment is running. Waiting..."; flock 200; }
+
             cd ~/SURFING/CODE
 
             # Pull latest code

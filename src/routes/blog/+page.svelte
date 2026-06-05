@@ -101,6 +101,14 @@
 <BannerAd placement="blog_bottom" />
 
 <style>
+	:global([data-theme="dark"]) .post-meta {
+		color: #ffffff;
+	}
+	:global([data-theme="dark"]) .post-meta .author,
+	:global([data-theme="dark"]) .post-meta .date {
+		color: #ffffff;
+	}
+
 	.blog-hero {
 		background: linear-gradient(135deg, var(--primary-color) 0%, var(--terciary-color) 100%);
 		color: white;

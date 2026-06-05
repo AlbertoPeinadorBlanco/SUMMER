@@ -22,6 +22,7 @@
 				<li><a href="/marketplace">{$t('nav.marketplace')}</a></li>
 				<li><a href="/instructors">{$t('nav.instructors')}</a></li>
 				<li><a href="/adverts">{$t('nav.adverts')}</a></li>
+				<li><a href="/blog">{$t('blog.title')}</a></li>
 				<li><a href="/about">{$t('footer.about')}</a></li>
 			</ul>
 		</section>
@@ -42,6 +43,7 @@
 				<li><a href="/profile">{$t('nav.profile')}</a></li>
 				<li><a href="/bookings">{$t('nav.my_bookings')}</a></li>
 				<li><a href="/instructor/manage-ads">{$t('nav.manageAds')}</a></li>
+				<li><a href="/instructor-guide">{$t('instructor_guide.title')}</a></li>
 				<li><a href="/signup">{$t('auth.signup_btn')}</a></li>
 			</ul>
 		</section>

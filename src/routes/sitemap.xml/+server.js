@@ -23,6 +23,7 @@ export async function GET({ fetch, url }) {
 			{ path: '/about', changefreq: 'monthly', priority: 0.6 },
 			{ path: '/bookings', changefreq: 'daily', priority: 0.6 },
 			{ path: '/instructor/manage-ads', changefreq: 'weekly', priority: 0.6 },
+			{ path: '/instructor-guide', changefreq: 'monthly', priority: 0.7 },
 			{ path: '/levels', changefreq: 'monthly', priority: 0.5 },
 			{ path: '/profile', changefreq: 'daily', priority: 0.7 },
 			{ path: '/blog', changefreq: 'weekly', priority: 0.8 },

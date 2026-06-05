@@ -216,6 +216,8 @@
 					<Option value="marketplace_sidebar">Marketplace Sidebar</Option>
 					<Option value="gear_guide_bottom">Gear Guide Bottom</Option>
 					<Option value="instructors_top">Instructors List Top</Option>
+					<Option value="blog_top">Blog Top</Option>
+					<Option value="blog_bottom">Blog Bottom</Option>
 				</Select>
 			</div>
 

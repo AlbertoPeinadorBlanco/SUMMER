@@ -35,8 +35,8 @@
 						<span class="material-icons tier-icon premium-icon">add_circle</span>
 						<h3>{$t('instructor_guide.extra_slots_title')}</h3>
 					</div>
-					<p>{$t('instructor_guide.extra_slots_desc')}</p>
-					<div class="price">{$formatPrice(10.00)} {$t('instructor_guide.per_slot')}</div>
+					<p>{$t('instructor_guide.extra_slots_desc', { values: { price: $formatPrice($pricings.buy_advert_slot || 10, true) } })}</p>
+					<div class="price">{$formatPrice($pricings.buy_advert_slot || 10, true)} {$t('instructor_guide.per_slot')}</div>
 				</Content>
 			</Card>
 		</div>
@@ -54,8 +54,8 @@
 		<div class="feature-block">
 			<div class="feature-icon"><span class="material-icons">trending_up</span></div>
 			<div class="feature-content">
-				<h3>{$t('instructor_guide.bump_title')}</h3>
-				<p>{$t('instructor_guide.bump_desc1')}</p>
+				<h3>{$t('instructor_guide.bump_title', { values: { price: $formatPrice($pricings.bump_advert || 2, true) } })}</h3>
+				<p>{$t('instructor_guide.bump_desc1', { values: { price: $formatPrice($pricings.bump_advert || 2, true) } })}</p>
 				<p><strong>{$t('instructor_guide.bump_desc2')}</strong></p>
 			</div>
 		</div>
@@ -63,8 +63,8 @@
 		<div class="feature-block">
 			<div class="feature-icon"><span class="material-icons" style="color: #FFD700;">star</span></div>
 			<div class="feature-content">
-				<h3>{$t('instructor_guide.iotw_title')}</h3>
-				<p>{$t('instructor_guide.iotw_desc1')}</p>
+				<h3>{$t('instructor_guide.iotw_title', { values: { price: $formatPrice($pricings.featured_instructor || 20, true) } })}</h3>
+				<p>{$t('instructor_guide.iotw_desc1', { values: { price: $formatPrice($pricings.featured_instructor || 20, true) } })}</p>
 				<p>{$t('instructor_guide.iotw_desc2')}</p>
 			</div>
 		</div>

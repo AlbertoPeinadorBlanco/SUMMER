@@ -155,7 +155,7 @@
 							{#if instructor.profile_picture_url}
 								<img src={getMediaUrl(instructor.profile_picture_url)} alt="{instructor.first_name}" class="avatar-img" loading="lazy" decoding="async" width="80" height="80" />
 							{:else}
-								<span class="material-icons avatar-placeholder" aria-hidden="true">person</span>
+								<img src={'https://ui-avatars.com/api/?name=' + (instructor.first_name || instructor.username || 'U') + '&background=random'} alt="{instructor.first_name}" class="avatar-img avatar-placeholder" loading="lazy" decoding="async" width="80" height="80" />
 							{/if}
 						</div>
 						

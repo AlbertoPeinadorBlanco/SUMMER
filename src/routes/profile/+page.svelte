@@ -444,9 +444,7 @@
 				{#if profile_picture_url}
 					<img src={getMediaUrl(profile_picture_url)} alt="Profile Avatar" loading="lazy" decoding="async" width="100" height="100" />
 				{:else}
-					<div class="avatar-placeholder">
-						{username ? username.charAt(0).toUpperCase() : 'U'}
-					</div>
+					<img src={'https://ui-avatars.com/api/?name=' + (username || 'U') + '&background=random'} alt="Profile Avatar" class="avatar-placeholder" width="100" height="100" loading="lazy" decoding="async" />
 				{/if}
 				{#if user.is_verified === 1 || user.is_verified === true}
 					<div class="verified-badge-profile" title="Verified User">

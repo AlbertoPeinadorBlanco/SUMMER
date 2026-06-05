@@ -13,6 +13,7 @@
 	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import { showToast } from '$lib/stores/toast';
+	import { pricings } from '$lib/stores/pricings';
 
 	let user = $derived($auth.user);
 	let isAuthenticated = $derived($auth.isAuthenticated);
@@ -68,7 +69,7 @@
 			classes = [...classes];
 		} catch (err: any) {
 			if (err.message && err.message.includes('subscribe')) {
-				const confirmSub = confirm(err.message + '\n\nProceed to checkout for €10/mo?');
+				const confirmSub = confirm(err.message + '\n\nProceed to checkout for ' + $formatPrice($pricings.buy_advert_slot || 10, true) + '/mo?');
 				if (confirmSub) {
 					try {
 						const checkoutRes = await fetchApi('/stripe/create-checkout-session', {
@@ -513,7 +514,7 @@
 									</label>
 									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00;">
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">rocket_launch</span>
-										<Label>{$t('marketplace.boosted')} (2€)</Label>
+										<Label>{$t('marketplace.boosted')} ({$formatPrice($pricings.bump_advert || 2, true)})</Label>
 									</Button>
 									<Button variant="outlined" onclick={() => editClass(ad)}>
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">edit</span>
@@ -563,7 +564,7 @@
 										{#if pupil.profile_picture_url}
 											<img src={getMediaUrl(pupil.profile_picture_url)} alt={pupil.first_name} class="table-avatar" />
 										{:else}
-											<div class="table-avatar placeholder"><span class="material-icons">person</span></div>
+											<img src={'https://ui-avatars.com/api/?name=' + (pupil.first_name || 'U') + '&background=random'} alt={pupil.first_name} class="table-avatar" />
 										{/if}
 										<strong>{pupil.first_name} {pupil.last_name}</strong>
 									</div>

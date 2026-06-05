@@ -70,9 +70,7 @@
 					{#if post.author_avatar}
 						<img src={getMediaUrl(post.author_avatar)} alt="Author avatar" class="author-avatar" />
 					{:else}
-						<div class="author-avatar placeholder">
-							<span class="material-icons">person</span>
-						</div>
+						<img src={'https://ui-avatars.com/api/?name=' + (post.author_first_name || 'U') + '&background=random'} alt="Author avatar" class="author-avatar" />
 					{/if}
 					<span class="author-name">{post.author_first_name} {post.author_last_name}</span>
 				</div>
@@ -87,6 +85,10 @@
 			</div>
 		{/if}
 
+		<div style="margin-top: 2rem;">
+			<BannerAd placement="blog_top" />
+		</div>
+
 		<div class="post-content">
 			{@html createMarkup(getLocalizedValue(post, 'content'))}
 		</div>
@@ -96,6 +98,15 @@
 {/if}
 
 <style>
+	:global([data-theme="dark"]) .author-name,
+	:global([data-theme="dark"]) .post-date,
+	:global([data-theme="dark"]) .meta-divider {
+		color: #ffffff;
+	}
+	:global([data-theme="dark"]) .post-meta {
+		color: #ffffff;
+	}
+
 	.error-container {
 		text-align: center;
 		padding: 6rem 1rem;

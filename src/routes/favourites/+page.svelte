@@ -146,9 +146,7 @@
 										{#if teacher.profile_picture_url}
 											<img src={getMediaUrl(teacher.profile_picture_url)} alt="{teacher.name}'s profile" style="width: 100%; height: 100%; object-fit: cover;" />
 										{:else}
-											<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--surface-color); color: var(--primary-color);">
-												<span class="material-icons" style="font-size: 3rem;">person</span>
-											</div>
+											<img src={'https://ui-avatars.com/api/?name=' + (teacher.name || 'U') + '&background=random'} alt="{teacher.name}'s profile" style="width: 100%; height: 100%; object-fit: cover;" />
 										{/if}
 									</div>
 									<h2 style="margin: 0 0 0.5rem 0;">{teacher.name} {teacher.surname}</h2>

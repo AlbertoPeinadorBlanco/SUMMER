@@ -26,7 +26,7 @@
 />
 
 <div class="page-container">
-	<BannerAd />
+	<BannerAd placement="accommodations_top" />
 
 	<div class="header">
 		<h1>{$t('accommodations.title')}</h1>

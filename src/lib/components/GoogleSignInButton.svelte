@@ -14,7 +14,7 @@
 			if ((window as any).google?.accounts?.id) {
 				(window as any).google.accounts.id.initialize({
 					// Use the real env variable when ready, or fallback placeholder
-					client_id: import.meta.env.PUBLIC_GOOGLE_CLIENT_ID || 'placeholder-google-client-id',
+					client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'placeholder-google-client-id',
 					callback: handleCredentialResponse
 				});
 				(window as any).google.accounts.id.renderButton(container, {

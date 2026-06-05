@@ -381,11 +381,6 @@
 		z-index: 1;
 	}
 
-	.premium-badge {
-		background: linear-gradient(135deg, #667eea, #764ba2);
-		color: white;
-	}
-
 	.available-badge {
 		background: #e8f5e9;
 		color: #2e7d32;

@@ -38,7 +38,7 @@
 />
 
 <div class="page-container">
-	<BannerAd />
+	<BannerAd placement="beaches_top" />
 
 	<div class="header">
 		<h1>{$t('beaches.title')}</h1>

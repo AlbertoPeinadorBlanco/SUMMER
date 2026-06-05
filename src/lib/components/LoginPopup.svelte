@@ -7,6 +7,7 @@
 	import { auth } from '$lib/stores/auth';
 	import { fetchApi } from '$lib/api';
 	import { goto } from '$app/navigation';
+	import GoogleSignInButton from './GoogleSignInButton.svelte';
 
 	let { open = $bindable(false) } = $props();
 
@@ -99,6 +100,19 @@
 			{#if error}
 				<div class="error-msg" role="alert">{error}</div>
 			{/if}
+
+			<GoogleSignInButton 
+				onSuccess={() => {
+					open = false;
+					goto('/profile');
+				}} 
+				onError={(msg) => error = msg} 
+			/>
+
+			<div class="divider">
+				<span>{$t('auth.or_login_with_email', { default: 'or login with email' })}</span>
+			</div>
+
 			<form onsubmit={handleLogin} class="login-form">
 				<Textfield
 					variant="outlined"
@@ -182,6 +196,23 @@
 </Dialog>
 
 <style>
+	.divider {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		margin: 1rem 0;
+		color: #888;
+		font-size: 0.9rem;
+	}
+	.divider::before,
+	.divider::after {
+		content: '';
+		flex: 1;
+		border-bottom: 1px solid #ddd;
+	}
+	.divider span {
+		padding: 0 10px;
+	}
 	.login-form {
 		display: flex;
 		flex-direction: column;

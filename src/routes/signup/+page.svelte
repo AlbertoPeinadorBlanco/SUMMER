@@ -10,6 +10,7 @@
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
 	import SEO from '$lib/components/SEO.svelte';
+	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 
 	let username = $state('');
 	let email = $state('');
@@ -82,6 +83,20 @@
 		{#if error}
 			<div class="error-msg">{error}</div>
 		{/if}
+
+		<GoogleSignInButton 
+			onSuccess={() => {
+				success = true;
+				setTimeout(() => {
+					goto('/');
+				}, 2000);
+			}} 
+			onError={(msg) => error = msg} 
+		/>
+
+		<div class="divider">
+			<span>{$t('auth.or_signup_with_email', { default: 'or sign up with email' })}</span>
+		</div>
 
 		<form onsubmit={handleSignup} class="signup-form">
 			<div class="role-selector">
@@ -215,6 +230,23 @@
 		text-align: center;
 		margin-top: 0;
 		margin-bottom: 1.5rem;
+	}
+	.divider {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		margin: 1rem 0;
+		color: #888;
+		font-size: 0.9rem;
+	}
+	.divider::before,
+	.divider::after {
+		content: '';
+		flex: 1;
+		border-bottom: 1px solid #ddd;
+	}
+	.divider span {
+		padding: 0 10px;
 	}
 	.signup-form {
 		display: flex;

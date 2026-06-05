@@ -3,5 +3,7 @@ User-agent: *
 Disallow: /admin/
 Disallow: /profile/
 Disallow: /bookings/
+Disallow: /api/
+Allow: /
 
 Sitemap: https://surf-market.net/sitemap.xml

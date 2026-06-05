@@ -20,7 +20,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	let shareUrl = '';
+	let shareUrl = $state('');
 	let shareText = encodeURIComponent('Check out SUMMER - The best surfing platform!');
 
 	setupI18n();

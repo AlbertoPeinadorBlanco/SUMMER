@@ -20,7 +20,13 @@
 	}
 
 	function createMarkup(html: string) {
-		return html;
+		if (!html) return '';
+		return html.replace(/<img([^>]*)>/gi, (match, attrs) => {
+			let newAttrs = attrs;
+			if (!/loading=/i.test(newAttrs)) newAttrs += ' loading="lazy"';
+			if (!/decoding=/i.test(newAttrs)) newAttrs += ' decoding="async"';
+			return `<img${newAttrs}>`;
+		});
 	}
 
 	let articleSchema = $derived(post ? {

@@ -13,13 +13,16 @@
 		<link rel="preconnect" href="https://unpkg.com" />
 
 		<!-- Roboto Font -->
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=block" />
+		<link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" /></noscript>
 
 		<!-- Material Icons -->
-		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" />
+		<link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" /></noscript>
 
 		<!-- Material Components Web CSS -->
-		<link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" />
+		<link rel="preload" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<noscript><link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" /></noscript>
 	</head>
 	<script>
 		let theme = localStorage.getItem('theme');

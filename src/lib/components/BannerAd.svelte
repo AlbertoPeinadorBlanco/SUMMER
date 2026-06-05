@@ -28,7 +28,7 @@
 {#if banner}
 	<div class="banner-ad-container">
 		<a href={banner.link_url} target="_blank" rel="noopener noreferrer" class="banner-link">
-			<img src={getMediaUrl(banner.image_url)} alt={banner.title} class="banner-img" loading="lazy" />
+			<img src={getMediaUrl(banner.image_url)} alt={banner.title} class="banner-img" loading="lazy" width="1200" height="250" />
 			<div class="ad-label">Advertisement</div>
 		</a>
 	</div>
@@ -47,7 +47,6 @@
 		display: block;
 		width: 100%;
 		max-width: 1200px;
-		min-height: 120px;
 		background-color: var(--surface-color, #f0f0f0);
 		position: relative;
 		border-radius: 8px;
@@ -61,7 +60,6 @@
 	}
 	.banner-img {
 		width: 100%;
-		min-height: 120px;
 		height: auto;
 		display: block;
 		object-fit: cover;

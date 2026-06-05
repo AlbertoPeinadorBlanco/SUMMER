@@ -6,7 +6,7 @@
 	import BannerAd from '$lib/components/BannerAd.svelte';
 
 	let { data } = $props();
-	let post = data.post;
+	let post = $derived(data.post);
 
 	function formatDate(dateStr: string) {
 		return new Date(dateStr).toLocaleDateString($locale === 'es' ? 'es-ES' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });

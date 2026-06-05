@@ -18,7 +18,7 @@
   },
   "nav": {
     "home": "Home",
-    "marketplace": "Marketplace",
+    "marketplace": "Classes",
     "policies": "Policies",
     "contact": "Contact",
     "profile": "Profile",
@@ -28,7 +28,9 @@
     "manageAds": "Manage My Adverts",
     "my_bookings": "My Bookings",
     "network": "Network",
+    "accommodations": "Campings & Accommodations",
     "resources": "Resources",
+    "beaches": "Asturias Beaches",
     "instructors": "Instructors",
     "gear_guide": "Gear Guide",
     "admin_section": "Administration",
@@ -37,6 +39,9 @@
     "admin_pricings": "Platform Pricings",
     "admin_logs": "Analytics & Logs",
     "admin_coupons": "Digital Coupons",
+    "admin_accommodations": "Manage Accommodations",
+    "admin_beaches": "Manage Beaches",
+    "admin_banners": "Manage Banners",
     "adverts": "Partner Shops",
     "instructor_guide": "Instructor Guide",
     "location_disabled": "Location Disabled"
@@ -718,5 +723,25 @@
     "not_found_title": "Post Not Found",
     "not_found_desc": "The blog post you're looking for doesn't exist or has been removed.",
     "back_to_blog": "Back to Blog"
+  },
+  "accommodations": {
+    "title": "Campings & Accommodations",
+    "subtitle": "Find the perfect place to stay near the best waves in Asturias.",
+    "book": "Visit Website",
+    "type_camping": "Camping",
+    "type_surfhouse": "Surf House",
+    "type_hostel": "Hostel"
+  },
+  "beaches": {
+    "title": "Beaches of Asturias",
+    "subtitle": "Discover the top surfing spots along the beautiful Asturian coast.",
+    "level": "Required Level:",
+    "level_all_levels": "All Levels",
+    "level_beginner": "Beginner",
+    "level_beginner_intermediate": "Beginner / Intermediate",
+    "level_intermediate": "Intermediate",
+    "level_intermediate_advanced": "Intermediate / Advanced",
+    "level_advanced": "Advanced",
+    "view_map": "View on Map"
   }
 }

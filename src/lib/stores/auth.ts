@@ -11,6 +11,7 @@ export interface User {
 	last_name?: string;
 	phone?: string;
 	profile_picture_url?: string;
+	avatar_color?: string;
 	role?: string;
 	tier?: string;
 	is_verified?: boolean | number;

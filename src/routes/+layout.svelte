@@ -141,6 +141,10 @@
 										<span class="material-icons" aria-hidden="true">groups</span>
 										{$t('nav.instructors')}
 									</a>
+									<a href="/accommodations" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">holiday_village</span>
+										{$t('nav.accommodations')}
+									</a>
 									<a href="/marketplace" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">storefront</span>
 										{$t('nav.marketplace')}
@@ -165,6 +169,10 @@
 									<a href="/gear-guide" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">surfing</span>
 										{$t('nav.gear_guide')}
+									</a>
+									<a href="/beaches" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">water</span>
+										{$t('nav.beaches')}
 									</a>
 									<a href="/policies" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">policy</span>
@@ -220,6 +228,14 @@
 										<a href="/admin/blog" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
 											<span class="material-icons" aria-hidden="true">article</span>
 											{$t('blog.title', { default: 'Blog' })}
+										</a>
+										<a href="/admin/accommodations" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">holiday_village</span>
+											{$t('nav.admin_accommodations', { default: 'Manage Accommodations' })}
+										</a>
+										<a href="/admin/beaches" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
+											<span class="material-icons" aria-hidden="true">water</span>
+											{$t('nav.admin_beaches', { default: 'Manage Beaches' })}
 										</a>
 										<a href="/admin/coupons" class="dropdown-item admin-item" onclick={() => (adminMenuOpen = false)}>
 											<span class="material-icons" aria-hidden="true">local_offer</span>
@@ -442,6 +458,10 @@
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">groups</span>
 							<Label>{$t('nav.instructors')}</Label>
 						</Button>
+						<Button href="/accommodations" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">holiday_village</span>
+							<Label>{$t('nav.accommodations')}</Label>
+						</Button>
 						<Button href="/marketplace" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">storefront</span>
 							<Label>{$t('nav.marketplace')}</Label>
@@ -466,6 +486,10 @@
 						<Button href="/gear-guide" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">surfing</span>
 							<Label>{$t('nav.gear_guide')}</Label>
+						</Button>
+						<Button href="/beaches" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">water</span>
+							<Label>{$t('nav.beaches')}</Label>
 						</Button>
 						<Button href="/policies" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">policy</span>
@@ -523,6 +547,14 @@
 								<Button href="/admin/banners" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
 									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">view_carousel</span>
 									<Label>Banners</Label>
+								</Button>
+								<Button href="/admin/accommodations" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">holiday_village</span>
+									<Label>{$t('nav.admin_accommodations', { default: 'Manage Accommodations' })}</Label>
+								</Button>
+								<Button href="/admin/beaches" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
+									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">water</span>
+									<Label>{$t('nav.admin_beaches', { default: 'Manage Beaches' })}</Label>
 								</Button>
 								<Button href="/admin/coupons" onclick={toggleMobileMenu} class="mobile-menu-btn admin-btn mobile-submenu-btn">
 									<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">local_offer</span>

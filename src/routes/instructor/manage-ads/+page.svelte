@@ -414,7 +414,7 @@
 				</div>
 
 				<div class="picture-upload">
-					<label class="picture-label">{$t('createAd.form_picture')}</label>
+					<label class="picture-label" for="picture-upload-input">{$t('createAd.form_picture')}</label>
 					{#if imagePreview || currentImageUrl}
 						<img src={imagePreview || currentImageUrl} alt="Class preview" class="image-preview" />
 					{/if}

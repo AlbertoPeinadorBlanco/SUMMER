@@ -11,13 +11,13 @@
 	onMount(() => {
 		// Wait for Google SDK to load
 		const initGoogle = () => {
-			if (window.google?.accounts?.id) {
-				window.google.accounts.id.initialize({
+			if ((window as any).google?.accounts?.id) {
+				(window as any).google.accounts.id.initialize({
 					// Use the real env variable when ready, or fallback placeholder
 					client_id: import.meta.env.PUBLIC_GOOGLE_CLIENT_ID || 'placeholder-google-client-id',
 					callback: handleCredentialResponse
 				});
-				window.google.accounts.id.renderButton(container, {
+				(window as any).google.accounts.id.renderButton(container, {
 					theme: 'outline',
 					size: 'large',
 					width: '100%'

@@ -18,6 +18,8 @@ export async function GET({ fetch, url }) {
 			{ path: '/marketplace', changefreq: 'hourly', priority: 0.9 },
 			{ path: '/instructors', changefreq: 'daily', priority: 0.8 },
 			{ path: '/adverts', changefreq: 'daily', priority: 0.8 },
+			{ path: '/accommodations', changefreq: 'weekly', priority: 0.8 },
+			{ path: '/beaches', changefreq: 'weekly', priority: 0.8 },
 			{ path: '/policies', changefreq: 'monthly', priority: 0.5 },
 			{ path: '/gear-guide', changefreq: 'weekly', priority: 0.7 },
 			{ path: '/contact', changefreq: 'monthly', priority: 0.5 },

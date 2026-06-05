@@ -18,7 +18,7 @@
   },
   "nav": {
     "home": "Inicio",
-    "marketplace": "Mercado",
+    "marketplace": "Clases",
     "policies": "Políticas",
     "contact": "Contacto",
     "profile": "Perfil",
@@ -28,7 +28,9 @@
     "manageAds": "Mis Anuncios",
     "my_bookings": "Mis Reservas",
     "network": "Conecta",
+    "accommodations": "Campings y Alojamientos",
     "resources": "Recursos",
+    "beaches": "Playas de Asturias",
     "instructors": "Instructores",
     "gear_guide": "Guía de Equipamiento",
     "admin_section": "Administración",
@@ -37,6 +39,9 @@
     "admin_pricings": "Precios de la Plataforma",
     "admin_logs": "Analítica y Registros",
     "admin_coupons": "Cupones Digitales",
+    "admin_accommodations": "Gestionar Alojamientos",
+    "admin_beaches": "Gestionar Playas",
+    "admin_banners": "Gestionar Banners",
     "adverts": "Tiendas Asociadas",
     "instructor_guide": "Guía de Instructores",
     "location_disabled": "Ubicación Desactivada"
@@ -711,5 +716,25 @@
     "not_found_title": "Publicación no encontrada",
     "not_found_desc": "La publicación de blog que buscas no existe o ha sido eliminada.",
     "back_to_blog": "Volver al Blog"
+  },
+  "accommodations": {
+    "title": "Campings y Alojamientos",
+    "subtitle": "Encuentra el lugar perfecto para quedarte cerca de las mejores olas de Asturias.",
+    "book": "Visitar Sitio Web",
+    "type_camping": "Camping",
+    "type_surfhouse": "Surf House",
+    "type_hostel": "Hostal"
+  },
+  "beaches": {
+    "title": "Playas de Asturias",
+    "subtitle": "Descubre los mejores spots de surf a lo largo de la hermosa costa asturiana.",
+    "level": "Nivel Requerido:",
+    "level_all_levels": "Todos los Niveles",
+    "level_beginner": "Principiante",
+    "level_beginner_intermediate": "Principiante / Intermedio",
+    "level_intermediate": "Intermedio",
+    "level_intermediate_advanced": "Intermedio / Avanzado",
+    "level_advanced": "Avanzado",
+    "view_map": "Ver en el Mapa"
   }
 }

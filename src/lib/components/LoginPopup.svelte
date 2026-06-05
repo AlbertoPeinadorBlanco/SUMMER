@@ -106,7 +106,7 @@
 					open = false;
 					goto('/profile');
 				}} 
-				onError={(msg) => error = msg} 
+				onError={(msg: string) => error = msg} 
 			/>
 
 			<div class="divider">

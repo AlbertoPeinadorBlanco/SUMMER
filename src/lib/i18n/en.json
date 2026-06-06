@@ -730,19 +730,20 @@
     "book": "Visit Website",
     "type_camping": "Camping",
     "type_surfhouse": "Surf House",
-    "type_hostel": "Hostel"
+    "type_hostel": "Hostel",
+    "load_more": "Load More"
   },
-    "beaches": {
-      "title": "Beaches of Asturias",
-      "subtitle": "Discover the top surfing spots along the beautiful Asturian coast.",
-      "level": "Required Level:",
-      "level_all_levels": "All Levels",
-      "level_beginner": "Beginner",
-      "level_beginner_intermediate": "Beginner / Intermediate",
-      "level_intermediate": "Intermediate",
-      "level_intermediate_advanced": "Intermediate / Advanced",
-      "level_advanced": "Advanced",
-      "view_map": "View on Map",
-      "load_more": "Load More"
-    }
+  "beaches": {
+    "title": "Beaches of Asturias",
+    "subtitle": "Discover the top surfing spots along the beautiful Asturian coast.",
+    "level": "Required Level:",
+    "level_all_levels": "All Levels",
+    "level_beginner": "Beginner",
+    "level_beginner_intermediate": "Beginner / Intermediate",
+    "level_intermediate": "Intermediate",
+    "level_intermediate_advanced": "Intermediate / Advanced",
+    "level_advanced": "Advanced",
+    "view_map": "View on Map",
+    "load_more": "Load More"
+  }
 }

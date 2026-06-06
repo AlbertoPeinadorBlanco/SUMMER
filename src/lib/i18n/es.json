@@ -723,7 +723,8 @@
     "book": "Visitar Sitio Web",
     "type_camping": "Camping",
     "type_surfhouse": "Surf House",
-    "type_hostel": "Hostal"
+    "type_hostel": "Hostal",
+    "load_more": "Cargar más"
   },
   "beaches": {
     "title": "Playas de Asturias",

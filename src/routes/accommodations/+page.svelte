@@ -6,18 +6,24 @@
 	import { onMount } from 'svelte';
 	import { fetchApi } from '$lib/api';
 
-	let accommodations = $state<any[]>([]);
+	let allAccommodations = $state<any[]>([]);
+	let visibleCount = $state(6);
+	let visibleAccommodations = $derived(allAccommodations.slice(0, visibleCount));
 	let loading = $state(true);
 
 	onMount(async () => {
 		try {
-			accommodations = await fetchApi('/accommodations');
+			allAccommodations = await fetchApi('/accommodations');
 		} catch (e) {
 			console.error("Failed to load accommodations:", e);
 		} finally {
 			loading = false;
 		}
 	});
+
+	function loadMore() {
+		visibleCount += 6;
+	}
 </script>
 
 <SEO 
@@ -34,7 +40,7 @@
 	</div>
 
 	<div class="grid">
-		{#each accommodations as acc}
+		{#each visibleAccommodations as acc}
 			<div class="card">
 				<div class="card-image-wrapper">
 					<img src={acc.image_url} alt={acc.name} class="card-image" loading="lazy" />
@@ -75,6 +81,14 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if visibleCount < allAccommodations.length}
+		<div class="load-more-container">
+			<Button variant="raised" onclick={loadMore} class="load-more-btn">
+				<Label>{$t('accommodations.load_more', { default: 'Load More' })}</Label>
+			</Button>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -198,5 +212,22 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-top: auto;
+	}
+
+	.load-more-container {
+		display: flex;
+		justify-content: center;
+		margin-top: 3rem;
+		padding-bottom: 2rem;
+	}
+
+	:global(.load-more-btn) {
+		background-color: var(--primary-color) !important;
+		color: white !important;
+		padding: 0 2rem !important;
+		height: 48px !important;
+		border-radius: 24px !important;
+		font-weight: bold !important;
+		letter-spacing: 0.5px !important;
 	}
 </style>

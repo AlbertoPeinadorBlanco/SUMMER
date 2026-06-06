@@ -6,12 +6,14 @@
 	import { onMount } from 'svelte';
 	import { fetchApi } from '$lib/api';
 
-	let beaches = $state<any[]>([]);
+	let allBeaches = $state<any[]>([]);
+	let visibleCount = $state(6);
+	let visibleBeaches = $derived(allBeaches.slice(0, visibleCount));
 	let loading = $state(true);
 
 	onMount(async () => {
 		try {
-			beaches = await fetchApi('/beaches');
+			allBeaches = await fetchApi('/beaches');
 		} catch (e) {
 			console.error("Failed to load beaches:", e);
 		} finally {
@@ -30,6 +32,9 @@
 		};
 		return mapping[level] || level;
 	}
+	function loadMore() {
+		visibleCount += 6;
+	}
 </script>
 
 <SEO 
@@ -46,7 +51,7 @@
 	</div>
 
 	<div class="grid">
-		{#each beaches as beach}
+		{#each visibleBeaches as beach}
 			<div class="card">
 				<div class="card-image-wrapper">
 					<img src={beach.image_url} alt={beach.name} class="card-image" loading="lazy" />
@@ -80,6 +85,14 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if visibleCount < allBeaches.length}
+		<div class="load-more-container">
+			<Button variant="raised" onclick={loadMore} class="load-more-btn">
+				<Label>{$t('beaches.load_more', { default: 'Load More' })}</Label>
+			</Button>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -209,5 +222,22 @@
 		width: 100%;
 		border-color: var(--secondary-color) !important;
 		color: var(--secondary-color) !important;
+	}
+
+	.load-more-container {
+		display: flex;
+		justify-content: center;
+		margin-top: 3rem;
+		padding-bottom: 2rem;
+	}
+
+	:global(.load-more-btn) {
+		background-color: var(--primary-color) !important;
+		color: white !important;
+		padding: 0 2rem !important;
+		height: 48px !important;
+		border-radius: 24px !important;
+		font-weight: bold !important;
+		letter-spacing: 0.5px !important;
 	}
 </style>

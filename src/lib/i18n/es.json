@@ -735,6 +735,7 @@
     "level_intermediate": "Intermedio",
     "level_intermediate_advanced": "Intermedio / Avanzado",
     "level_advanced": "Avanzado",
-    "view_map": "Ver en el Mapa"
+    "view_map": "Ver en el Mapa",
+    "load_more": "Cargar más"
   }
 }

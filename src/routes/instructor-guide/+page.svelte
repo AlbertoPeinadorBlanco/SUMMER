@@ -8,7 +8,7 @@
 
 </script>
 
-<SEO title="{$t('instructor_guide.title')} - SUMMER" description="{$t('instructor_guide.subtitle')}" />
+<SEO title="{$t('instructor_guide.title')} - Surf-Market.net" description="{$t('instructor_guide.subtitle')}" />
 
 <div class="guide-container">
 	<div class="hero-section">

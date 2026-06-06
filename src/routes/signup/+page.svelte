@@ -68,7 +68,7 @@
 	}
 </script>
 
-<SEO title={$t('auth.signup_title')} description="Create a new account on SurfMarket" />
+<SEO title={$t('auth.signup_title')} description="Create a new account on Surf-Market.net" />
 
 <div class="signup-container">
 	<h1>{$t('auth.signup_title')}</h1>

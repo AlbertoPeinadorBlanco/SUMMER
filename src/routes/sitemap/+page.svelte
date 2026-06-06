@@ -5,7 +5,7 @@
 
 <SEO
 	title="{$t('footer.sitemap')} - {$t('app.title')}"
-	description="Site map for SurfMarket - Find all our pages here."
+	description="Site map for Surf-Market.net - Find all our pages here."
 />
 
 <div class="sitemap-container" role="main">

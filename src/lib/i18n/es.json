@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "SurfMarket",
+    "title": "Surf-Market.net",
     "meta_description": "Encuentra los mejores profesores y clases de deportes acuáticos"
   },
   "legal": {
@@ -9,7 +9,7 @@
     "agree_to": "Acepto la",
     "and": "y los",
     "policies_title": "Políticas Legales",
-    "policies_desc": "Por favor, lee atentamente nuestros Términos de Servicio y Política de Privacidad antes de usar SurfMarket."
+    "policies_desc": "Por favor, lee atentamente nuestros Términos de Servicio y Política de Privacidad antes de usar Surf-Market.net."
   },
   "cookie": {
     "message": "Utilizamos cookies para mejorar tu experiencia de navegación, mostrar anuncios o contenido personalizado y analizar nuestro tráfico. Al hacer clic en 'Aceptar', aceptas nuestro uso de cookies.",
@@ -85,12 +85,12 @@
     "dir_nw": "NO"
   },
   "about": {
-    "title": "Acerca de SurfMarket",
+    "title": "Acerca de Surf-Market.net",
     "subtitle": "Tu puente hacia la ola perfecta.",
-    "what_is_title": "¿Qué es SurfMarket?",
-    "what_is_desc": "SurfMarket es un mercado digital que conecta a entusiastas de los deportes acuáticos con instructores experimentados. Ya sea que estés tomando tu primera ola, remando en kayak o aprendiendo windsurf, nuestra plataforma ofrece una manera segura y fácil de encontrar la clase adecuada para tu nivel de habilidad.",
+    "what_is_title": "¿Qué es Surf-Market.net?",
+    "what_is_desc": "Surf-Market.net es un mercado digital que conecta a entusiastas de los deportes acuáticos con instructores experimentados. Ya sea que estés tomando tu primera ola, remando en kayak o aprendiendo windsurf, nuestra plataforma ofrece una manera segura y fácil de encontrar la clase adecuada para tu nivel de habilidad.",
     "how_works_title": "¿Cómo funciona?",
-    "how_works_desc": "Los estudiantes pueden navegar fácilmente a través de las clases disponibles filtrando por ubicación, nivel de dificultad y tipo de clase. Una vez que encuentres la opción perfecta, puedes reservarla al instante. Para los instructores, SurfMarket proporciona un panel simplificado para gestionar anuncios, hacer un seguimiento de las ganancias y coordinar con los alumnos.",
+    "how_works_desc": "Los estudiantes pueden navegar fácilmente a través de las clases disponibles filtrando por ubicación, nivel de dificultad y tipo de clase. Una vez que encuentres la opción perfecta, puedes reservarla al instante. Para los instructores, Surf-Market.net proporciona un panel simplificado para gestionar anuncios, hacer un seguimiento de las ganancias y coordinar con los alumnos.",
     "mission_title": "Nuestra Misión",
     "mission_desc": "Nuestro objetivo es democratizar el acceso a una educación de deportes acuáticos de alta calidad mediante la creación de una plataforma transparente e impulsada por la comunidad donde los instructores pueden prosperar y los estudiantes pueden aprender de forma segura."
   },
@@ -274,28 +274,28 @@
     "last_updated": "Última actualización",
     "privacy_title": "Política de Privacidad",
     "privacy_1_title": "1. Información que Recopilamos",
-    "privacy_1_desc": "Cuando utilizas SurfMarket, recopilamos información que nos proporcionas directamente, como tu nombre, dirección de correo electrónico e información de pago al reservar una clase de surf. También recopilamos datos sobre tu uso de la plataforma para mejorar nuestros servicios.",
+    "privacy_1_desc": "Cuando utilizas Surf-Market.net, recopilamos información que nos proporcionas directamente, como tu nombre, dirección de correo electrónico e información de pago al reservar una clase de surf. También recopilamos datos sobre tu uso de la plataforma para mejorar nuestros servicios.",
     "privacy_2_title": "2. Cómo Usamos tu Información",
     "privacy_2_desc": "Utilizamos la información recopilada para facilitar las reservas entre usuarios e instructores, procesar pagos y comunicarnos contigo sobre tu cuenta y próximas clases.",
     "privacy_3_title": "3. Seguridad de los Datos",
     "privacy_3_desc": "Implementamos medidas de seguridad técnicas y organizativas adecuadas para proteger tu información personal contra el acceso, alteración, divulgación o destrucción no autorizados.",
     "privacy_4_title": "4. Analíticas y Rastreo",
-    "privacy_4_desc": "Utilizamos Google Analytics para medir el tráfico y las tendencias de uso en nuestra plataforma. Esto nos ayuda a entender cómo interactúan los usuarios con SurfMarket para poder mejorar la experiencia. Google Analytics utiliza cookies para recopilar datos anónimos sobre tus visitas. Puedes optar por no participar en Google Analytics utilizando extensiones del navegador o ajustando tus preferencias de cookies.",
+    "privacy_4_desc": "Utilizamos Google Analytics para medir el tráfico y las tendencias de uso en nuestra plataforma. Esto nos ayuda a entender cómo interactúan los usuarios con Surf-Market.net para poder mejorar la experiencia. Google Analytics utiliza cookies para recopilar datos anónimos sobre tus visitas. Puedes optar por no participar en Google Analytics utilizando extensiones del navegador o ajustando tus preferencias de cookies.",
     "terms_title": "Términos y Condiciones",
     "terms_1_title": "1. Aceptación de los Términos",
-    "terms_1_desc": "Al acceder y utilizar SurfMarket, aceptas estar sujeto a los términos y disposiciones de este acuerdo.",
+    "terms_1_desc": "Al acceder y utilizar Surf-Market.net, aceptas estar sujeto a los términos y disposiciones de este acuerdo.",
     "terms_2_title": "2. Reservas y Cancelaciones",
     "terms_2_desc": "Todas las reservas están sujetas a disponibilidad. Las políticas de cancelación, reembolsos y reprogramación son determinadas de forma independiente por cada instructor. Comuníquese directamente con su instructor para comprender su política específica de cancelación y reembolso.",
     "terms_3_title": "3. Responsabilidad del Instructor",
-    "terms_3_desc": "SurfMarket actúa únicamente como un mercado que conecta a los estudiantes con instructores de surf independientes. Los instructores son contratistas independientes y SurfMarket no es responsable de ninguna lesión, daño o pérdida ocurrida durante las clases.",
+    "terms_3_desc": "Surf-Market.net actúa únicamente como un mercado que conecta a los estudiantes con instructores de surf independientes. Los instructores son contratistas independientes y Surf-Market.net no es responsable de ninguna lesión, daño o pérdida ocurrida durante las clases.",
     "behavior_title": "4. Política de Comportamiento",
     "behavior_desc": "Se espera que los usuarios mantengan un comportamiento respetuoso hacia los instructores y otros estudiantes. Cualquier forma de acoso, discriminación o comportamiento abusivo puede resultar en la suspensión inmediata o terminación de su cuenta.",
     "communications_title": "5. Política de Comunicaciones",
     "communications_desc": "Todas las comunicaciones en la plataforma deben ser respetuosas, profesionales y corteses. No toleramos el acoso, el lenguaje ofensivo, la discriminación ni ninguna forma de comportamiento abusivo en los mensajes. Violar esta política resultará en la suspensión o cancelación inmediata de su cuenta.",
     "payments_title": "6. Política de Pagos",
-    "payments_desc": "Los instructores gestionan sus propios pagos y tarifas de clases directamente con los estudiantes fuera de la plataforma. SurfMarket no procesa ninguna transacción por la reserva de clases. En su lugar, SurfMarket opera bajo un modelo de publicidad donde únicamente cobramos a los instructores cuotas de suscripción o pagos únicos para publicar, promocionar y mantener sus anuncios en nuestro mercado.",
+    "payments_desc": "Los instructores gestionan sus propios pagos y tarifas de clases directamente con los estudiantes fuera de la plataforma. Surf-Market.net no procesa ninguna transacción por la reserva de clases. En su lugar, Surf-Market.net opera bajo un modelo de publicidad donde únicamente cobramos a los instructores cuotas de suscripción o pagos únicos para publicar, promocionar y mantener sus anuncios en nuestro mercado.",
     "contact_title": "7. Contáctanos",
-    "contact_desc": "Si tienes alguna pregunta sobre estas políticas, necesitas ayuda con tu cuenta o deseas reportar un problema, comunícate con nosotros en cualquier momento a surfmarket.contact@gmail.com."
+    "contact_desc": "Si tienes alguna pregunta sobre estas políticas, necesitas ayuda con tu cuenta o deseas reportar un problema, comunícate con nosotros en cualquier momento a Surf-Market.net.contact@gmail.com."
   },
   "levels": {
     "title": "Niveles de Dificultad",
@@ -571,7 +571,7 @@
   },
   "instructor_guide": {
     "title": "Guía para Instructores",
-    "subtitle": "¡Bienvenido a Surfmarket! Descubre cómo funciona nuestra plataforma y aprende a maximizar tu visibilidad para atraer a más estudiantes.",
+    "subtitle": "¡Bienvenido a Surf-Market.net! Descubre cómo funciona nuestra plataforma y aprende a maximizar tu visibilidad para atraer a más estudiantes.",
     "subscriptions_title": "Tipos de Suscripción",
     "subscriptions_desc": "Ofrecemos niveles de suscripción flexibles para adaptarse a tus necesidades:",
     "basic_title": "Básico / Gratis",
@@ -597,7 +597,7 @@
     "link_title": "Enlace de Reserva Externo:",
     "link_desc": "Dirige a los estudiantes a tu propio software de programación externo.",
     "share_title": "Comparte esta Guía",
-    "share_desc": "¡Ayuda a otros instructores a descubrir Surfmarket compartiendo esta página!",
+    "share_desc": "¡Ayuda a otros instructores a descubrir Surf-Market.net compartiendo esta página!",
     "copy_link": "Copiar Enlace",
     "btn_upgrade": "Comprar Suscripción",
     "btn_manage_ads": "Gestionar Anuncios e Impulsos",
@@ -647,7 +647,7 @@
     "policy_title": "Política de Geolocalización",
     "policy_desc": "Utilizamos tu ubicación para mostrar las condiciones de surf y clases más cercanas. Este cálculo se realiza en tu navegador y no almacenamos tu ubicación en nuestros servidores. Puedes desactivarlo en cualquier momento desde tu perfil.",
     "toggle_label": "Activar Geolocalización",
-    "toggle_desc": "Permite que SurfMarket calcule tu ubicación para ofrecerte recomendaciones de clases y clima localizados.",
+    "toggle_desc": "Permite que Surf-Market.net calcule tu ubicación para ofrecerte recomendaciones de clases y clima localizados.",
     "active_toast": "La geolocalización está activa. Puedes desactivarla cuando quieras en tu Perfil."
   },
   "sports": {
@@ -708,7 +708,7 @@
   "blog": {
     "title": "Blog",
     "description": "Lee las últimas noticias sobre actividades en el mar, condiciones de la playa y consejos de surf.",
-    "hero_title": "Blog de SurfMarket",
+    "hero_title": "Blog de Surf-Market.net",
     "hero_subtitle": "Últimas noticias, condiciones de la playa e historias del mar.",
     "no_posts": "Aún no hay publicaciones de blog. ¡Vuelve pronto!",
     "by": "Por",

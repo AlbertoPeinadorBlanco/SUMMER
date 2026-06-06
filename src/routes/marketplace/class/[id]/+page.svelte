@@ -125,10 +125,10 @@
 		"eventStatus": "https://schema.org/EventScheduled",
 		"location": {
 			"@type": "Place",
-			"name": advert.location || "SurfMarket Location",
+			"name": advert.location || "Surf-Market.net Location",
 			"address": {
 				"@type": "PostalAddress",
-				"addressLocality": advert.location || "SurfMarket Location"
+				"addressLocality": advert.location || "Surf-Market.net Location"
 			}
 		},
 		"offers": {
@@ -153,7 +153,7 @@
 
 {#if advert}
 	<SEO
-		title="{getTitle(advert)} - SurfMarket"
+		title="{getTitle(advert)} - Surf-Market.net"
 		description={getDescription(advert).substring(0, 160)}
 		image={advert.image_url ? getMediaUrl(advert.image_url) : undefined}
 		type="article"

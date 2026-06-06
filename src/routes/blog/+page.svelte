@@ -32,11 +32,11 @@
 	}
 </script>
 
-<SEO title="{$t('blog.title', { default: 'Blog' })} - SurfMarket" description="{$t('blog.description', { default: 'Read the latest news about sea activities, beach conditions, and surfing tips.' })}" />
+<SEO title="{$t('blog.title', { default: 'Blog' })} - Surf-Market.net" description="{$t('blog.description', { default: 'Read the latest news about sea activities, beach conditions, and surfing tips.' })}" />
 
 <div class="blog-hero">
 	<div class="hero-content">
-		<h1>{$t('blog.hero_title', { default: 'SurfMarket Blog' })}</h1>
+		<h1>{$t('blog.hero_title', { default: 'Surf-Market.net Blog' })}</h1>
 		<p>{$t('blog.hero_subtitle', { default: 'Latest news, beach conditions, and stories from the sea.' })}</p>
 	</div>
 </div>

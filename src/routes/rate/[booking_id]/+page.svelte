@@ -57,7 +57,7 @@
 </script>
 
 <svelte:head>
-    <title>{$t('ratings.rate_instructor')} - Summer Marketplace</title>
+    <title>{$t('ratings.rate_instructor')} - Surf-Market.net</title>
 </svelte:head>
 
 <div class="rate-container">

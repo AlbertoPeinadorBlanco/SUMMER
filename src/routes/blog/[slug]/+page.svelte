@@ -45,7 +45,7 @@
 </script>
 
 {#if !post}
-	<SEO title="{$t('blog.not_found_title', { default: 'Post Not Found' })} - SurfMarket" description="{$t('blog.not_found_desc', { default: 'The requested blog post could not be found.' })}" />
+	<SEO title="{$t('blog.not_found_title', { default: 'Post Not Found' })} - Surf-Market.net" description="{$t('blog.not_found_desc', { default: 'The requested blog post could not be found.' })}" />
 	<div class="error-container">
 		<h1>{$t('blog.not_found_title', { default: 'Post Not Found' })}</h1>
 		<p>{$t('blog.not_found_desc', { default: "The blog post you're looking for doesn't exist or has been removed." })}</p>
@@ -53,7 +53,7 @@
 	</div>
 {:else}
 	<SEO 
-		title="{getLocalizedValue(post, 'title')} - SurfMarket Blog" 
+		title="{getLocalizedValue(post, 'title')} - Surf-Market.net Blog"
 		description={getLocalizedValue(post, 'excerpt') || getLocalizedValue(post, 'title')} 
 		image={post.cover_image_url ? getMediaUrl(post.cover_image_url) : undefined} 
 		type="article"

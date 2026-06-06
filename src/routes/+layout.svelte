@@ -21,7 +21,7 @@
 	import { onMount } from 'svelte';
 
 	let shareUrl = $state('');
-	let shareText = encodeURIComponent('Check out SUMMER - The best surfing platform!');
+	let shareText = encodeURIComponent('Check out Surf-Market.net - The best surfing platform!');
 //test
 	setupI18n();
 	onMount(() => {

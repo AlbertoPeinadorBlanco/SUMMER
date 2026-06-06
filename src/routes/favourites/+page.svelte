@@ -65,7 +65,7 @@
 	}
 </script>
 
-<SEO title="{$t('favourites.title')} - SurfMarket" description="Your favourite classes and instructors." />
+<SEO title="{$t('favourites.title')} - Surf-Market.net" description="Your favourite classes and instructors." />
 
 <div class="favourites-page">
 	<div class="hero-section">

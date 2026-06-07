@@ -54,7 +54,15 @@
 		{#each visibleBeaches as beach}
 			<div class="card">
 				<div class="card-image-wrapper">
-					<img src={beach.image_url} alt={beach.name} class="card-image" loading="lazy" />
+					<iframe
+						title={beach.name}
+						class="card-image"
+						style="border:0;"
+						loading="lazy"
+						allowfullscreen
+						referrerpolicy="no-referrer-when-downgrade"
+						src={`https://maps.google.com/maps?q=${encodeURIComponent(beach.name + ' ' + beach.location)}&output=embed`}
+					></iframe>
 					<div class="card-level-badge">
 						<span class="material-icons">waves</span>
 						{$t(getLevelKey(beach.level), { default: beach.level })}

@@ -43,7 +43,15 @@
 		{#each visibleAccommodations as acc}
 			<div class="card">
 				<div class="card-image-wrapper">
-					<img src={acc.image_url} alt={acc.name} class="card-image" loading="lazy" />
+					<iframe
+						title={acc.name}
+						class="card-image"
+						style="border:0;"
+						loading="lazy"
+						allowfullscreen
+						referrerpolicy="no-referrer-when-downgrade"
+						src={`https://maps.google.com/maps?q=${encodeURIComponent(acc.name + ' ' + acc.location)}&output=embed`}
+					></iframe>
 					<div class="card-type-badge">
 						<span class="material-icons">
 							{#if acc.type === 'type_camping'}

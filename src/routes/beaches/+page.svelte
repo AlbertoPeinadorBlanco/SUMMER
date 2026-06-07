@@ -61,14 +61,14 @@
 						loading="lazy"
 						allowfullscreen
 						referrerpolicy="no-referrer-when-downgrade"
-						src={`https://maps.google.com/maps?q=${encodeURIComponent(beach.name + ' ' + beach.location)}&output=embed`}
+						src={`https://maps.google.com/maps?q=${encodeURIComponent(beach.name + ' ' + beach.location)}&t=k&output=embed`}
 					></iframe>
+				</div>
+				<div class="card-content">
 					<div class="card-level-badge">
 						<span class="material-icons">waves</span>
 						{$t(getLevelKey(beach.level), { default: beach.level })}
 					</div>
-				</div>
-				<div class="card-content">
 					<h2>{beach.name}</h2>
 					<div class="location">
 						<span class="material-icons">place</span>
@@ -82,13 +82,6 @@
 							{beach.description_es}
 						{/if}
 					</p>
-					
-					<div class="card-actions">
-						<Button variant="outlined" href={beach.map_link} target="_blank" class="map-button">
-							<span class="material-icons" style="margin-right: 8px;">map</span>
-							<Label>{$t('beaches.view_map')}</Label>
-						</Button>
-					</div>
 				</div>
 			</div>
 		{/each}
@@ -162,19 +155,17 @@
 	}
 
 	.card-level-badge {
-		position: absolute;
-		top: 1rem;
-		right: 1rem;
 		background: rgba(11, 163, 169, 0.85); /* Primary color */
 		color: white;
-		padding: 0.5rem 1rem;
+		padding: 0.4rem 0.8rem;
 		border-radius: 20px;
 		font-size: 0.85rem;
 		font-weight: 600;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
-		backdrop-filter: blur(4px);
+		margin-bottom: 0.8rem;
+		width: fit-content;
 	}
 
 	.card-level-badge .material-icons {
@@ -218,18 +209,6 @@
 		font-size: 0.95rem;
 		margin-bottom: 1.5rem;
 		flex: 1;
-	}
-
-	.card-actions {
-		display: flex;
-		justify-content: stretch;
-		margin-top: auto;
-	}
-
-	:global(.map-button) {
-		width: 100%;
-		border-color: var(--secondary-color) !important;
-		color: var(--secondary-color) !important;
 	}
 
 	.load-more-container {

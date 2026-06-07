@@ -62,8 +62,33 @@
 	let formFirstName = $state('');
 	let formLastName = $state('');
 	let formRole = $state('user');
-	let formTier = $state('basic');
 	let formVerified = $state(false);
+
+	let pendingAdverts: any[] = $state([]);
+	let pendingLoading = $state(false);
+
+	async function fetchPendingAdverts() {
+		try {
+			pendingLoading = true;
+			const ads = await fetchApi('/classes?admin=true');
+			pendingAdverts = ads.filter((ad: any) => ad.approval_status === 'pending');
+		} catch (err: any) {
+			console.error("Error fetching pending adverts", err);
+		} finally {
+			pendingLoading = false;
+		}
+	}
+
+	async function approveAdvert(id: number) {
+		if (!confirm('Are you sure you want to approve this advert? It will be immediately visible on the marketplace.')) return;
+		try {
+			await fetchApi(`/classes/${id}/approve`, { method: 'PUT' });
+			await fetchPendingAdverts();
+			alert('Advert approved successfully!');
+		} catch (err: any) {
+			alert(err.message || 'Error approving advert');
+		}
+	}
 
 	//onmount
 	onMount(async () => {
@@ -72,6 +97,7 @@
 			return;
 		}
 		await fetchUsers();
+		await fetchPendingAdverts();
 	});
 
 	async function fetchUsers() {
@@ -403,6 +429,43 @@
 					{/each}
 				</Body>
 			</DataTable>
+		</div>
+
+		<h2 style="margin-top: 3rem; margin-bottom: 1rem; color: #0d1b2a;">Advert Approvals</h2>
+		<div class="table-container">
+			{#if pendingLoading}
+				<p style="padding: 1rem;">Loading pending adverts...</p>
+			{:else if pendingAdverts.length === 0}
+				<p style="padding: 1rem; color: #666;">No adverts pending approval.</p>
+			{:else}
+				<DataTable style="width: 100%;">
+					<Head>
+						<Row>
+							<Cell>Class ID</Cell>
+							<Cell>Title</Cell>
+							<Cell>Instructor</Cell>
+							<Cell>Price</Cell>
+							<Cell>Actions</Cell>
+						</Row>
+					</Head>
+					<Body>
+						{#each pendingAdverts as ad}
+							<Row>
+								<Cell>{ad.id}</Cell>
+								<Cell>{ad.title}</Cell>
+								<Cell>{ad.instructor_username || ad.instructor_id}</Cell>
+								<Cell>{$formatPrice(ad.price)}</Cell>
+								<Cell>
+									<Button variant="outlined" style="border-color: #2e7d32; color: #2e7d32;" onclick={() => approveAdvert(ad.id)}>
+										<span class="material-icons" style="margin-right: 4px; font-size: 18px;">check_circle</span>
+										<Label>Approve</Label>
+									</Button>
+								</Cell>
+							</Row>
+						{/each}
+					</Body>
+				</DataTable>
+			{/if}
 		</div>
 	{/if}
 </div>

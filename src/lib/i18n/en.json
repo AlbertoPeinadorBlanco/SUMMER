@@ -702,7 +702,11 @@
   "manage_ads": {
     "limit_reached": "You have reached your limit of {allowedAdverts} active advert(s).",
     "buy_slot": "Buy Advert Slot ({price})",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "boost_btn": "Boost",
+    "boost_active": "Boost Active!",
+    "boost_position": "Marketplace Position: #{position}",
+    "boost_time_left": "Time left: {time}"
   },
   "favourites": {
     "title": "My Favourites",

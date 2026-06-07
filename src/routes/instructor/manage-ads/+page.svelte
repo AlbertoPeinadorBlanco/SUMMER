@@ -55,6 +55,31 @@
 	let totalEarnings = $derived(
 		classes.reduce((sum, ad) => sum + (parseFloat(ad.price) * (ad.bookings_count || 0)), 0)
 	);
+
+	let subscribeDialog = $state(false);
+	let subscribeAdId = $state<number | null>(null);
+
+	function openSubscribeDialog(adId: number) {
+		subscribeAdId = adId;
+		subscribeDialog = true;
+	}
+
+	async function handleSubscribeConfirm() {
+		if (subscribeAdId) {
+			try {
+				const checkoutRes = await fetchApi('/stripe/create-checkout-session', {
+					method: 'POST',
+					body: JSON.stringify({ item_key: 'buy_advert_slot', class_id: subscribeAdId })
+				});
+				if (checkoutRes && checkoutRes.url) {
+					window.location.href = checkoutRes.url;
+				}
+			} catch (checkoutErr: any) {
+				showToast(checkoutErr.message, 'error');
+			}
+		}
+		subscribeDialog = false;
+	}
 	
 	async function toggleActiveStatus(ad: any, event: Event) {
 		event.preventDefault();
@@ -69,20 +94,7 @@
 			classes = [...classes];
 		} catch (err: any) {
 			if (err.message && err.message.includes('subscribe')) {
-				const confirmSub = confirm(err.message + '\n\nProceed to checkout for ' + $formatPrice($pricings.buy_advert_slot || 10, true) + '/mo?');
-				if (confirmSub) {
-					try {
-						const checkoutRes = await fetchApi('/stripe/create-checkout-session', {
-							method: 'POST',
-							body: JSON.stringify({ item_key: 'buy_advert_slot', class_id: ad.id })
-						});
-						if (checkoutRes && checkoutRes.url) {
-							window.location.href = checkoutRes.url;
-						}
-					} catch (checkoutErr: any) {
-						showToast(checkoutErr.message, 'error');
-					}
-				}
+				openSubscribeDialog(ad.id);
 			} else {
 				showToast(err.message || 'Error updating status', 'error');
 			}
@@ -106,6 +118,18 @@
 		} finally {
 			loadingClasses = false;
 		}
+	}
+
+	function getBoostTimeLeft(bumpedAt: string | null) {
+		if (!bumpedAt) return null;
+		const bumpTime = new Date(bumpedAt).getTime();
+		const now = Date.now();
+		const diff = (bumpTime + 24 * 60 * 60 * 1000) - now;
+		if (diff <= 0) return null;
+		
+		const hours = Math.floor(diff / (1000 * 60 * 60));
+		const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+		return `${hours}h ${minutes}m`;
 	}
 
 	async function updatePupilStatus(bookingId: string | number, statusId: number) {
@@ -265,7 +289,9 @@
 				});
 			}
 
-			successMsg = $t('createAd.success_msg');
+			successMsg = editingId 
+				? 'Advert updated successfully! It is now pending admin approval.' 
+				: 'Advert created successfully! It is now pending admin approval.';
 			cancelEdit();
 			await loadClasses();
 
@@ -493,14 +519,26 @@
 										{#if ad.is_online}
 											<span class="badge online">{$t('advert.online')}</span>
 										{/if}
-										{#if ad.is_active}
-											<span class="badge" style="background: #e8f5e9; color: #2e7d32;">Active</span>
+										{#if ad.approval_status === 'pending'}
+											<span class="badge" style="background: #fff3e0; color: #e65100;">Pending Approval</span>
 										{:else}
-											<span class="badge" style="background: #ffebee; color: #c62828;">Inactive</span>
+											{#if ad.is_active}
+												<span class="badge" style="background: #e8f5e9; color: #2e7d32;">Active</span>
+											{:else}
+												<span class="badge" style="background: #ffebee; color: #c62828;">Inactive</span>
+											{/if}
 										{/if}
 									</div>
 								</div>
 							</div>
+							{#if getBoostTimeLeft(ad.bumped_at)}
+								<div class="boost-active-banner">
+									<span class="material-icons" style="font-size: 1.2rem; margin-right: 0.5rem;">rocket_launch</span>
+									<strong>{$t('manage_ads.boost_active')}</strong> 
+									<span style="margin-left: 1rem;">{$t('manage_ads.boost_position', { values: { position: ad.global_rank || '?' } })}</span>
+									<span style="margin-left: auto; opacity: 0.9;">{$t('manage_ads.boost_time_left', { values: { time: getBoostTimeLeft(ad.bumped_at) } })}</span>
+								</div>
+							{/if}
 							<div class="ad-card-bottom">
 								<div class="ad-earnings">
 									<span class="material-icons" aria-hidden="true">payments</span>
@@ -508,15 +546,15 @@
 									<span class="bookings-count">({ad.bookings_count || 0} {$t('manageAds.bookings')})</span>
 								</div>
 								<div class="ad-actions">
-									<label class="toggle-container" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-right: 1rem;">
+									<label class="toggle-container" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-right: 1rem; opacity: {ad.approval_status === 'pending' ? 0.5 : 1}; pointer-events: {ad.approval_status === 'pending' ? 'none' : 'auto'};">
 										<span style="font-size: 0.9rem; color: #666;">{ad.is_active ? 'Published' : 'Hidden'}</span>
-										<input type="checkbox" checked={ad.is_active} onclick={(e) => toggleActiveStatus(ad, e)} style="width: 18px; height: 18px;" />
+										<input type="checkbox" checked={ad.is_active} onclick={(e) => toggleActiveStatus(ad, e)} style="width: 18px; height: 18px;" disabled={ad.approval_status === 'pending'} />
 									</label>
-									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00;">
+									<Button variant="outlined" onclick={() => boostAdvert(ad.id)} style="border-color: #FFD700; color: #b89b00;" disabled={ad.approval_status === 'pending'}>
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">rocket_launch</span>
-										<Label>{$t('marketplace.boosted')} ({$formatPrice($pricings.bump_advert || 2, true)})</Label>
+										<Label>{$t('manage_ads.boost_btn')} ({$formatPrice($pricings.bump_advert || 2, true)})</Label>
 									</Button>
-									<Button variant="outlined" onclick={() => editClass(ad)}>
+									<Button variant="outlined" onclick={() => editClass(ad)} disabled={ad.approval_status === 'pending'}>
 										<span class="material-icons" aria-hidden="true" style="margin-right: 4px;">edit</span>
 										<Label>{$t('manageAds.edit')}</Label>
 									</Button>
@@ -603,6 +641,21 @@
 	<Actions>
 		<Button variant="outlined" use={[InitialFocus]}>
 			<Label>{$t('manageAds.close')}</Label>
+		</Button>
+	</Actions>
+</Dialog>
+
+<Dialog bind:open={subscribeDialog} aria-labelledby="subscribe-title" aria-describedby="subscribe-desc">
+	<Title id="subscribe-title">{$t('manage_ads.limit_reached', { values: { allowedAdverts: 1 } })}</Title>
+	<DialogContent id="subscribe-desc">
+		<p style="margin-top: 0.5rem; color: #555;">{$t('instructor_guide.extra_slots_desc', { values: { price: $formatPrice($pricings.buy_advert_slot || 10, true) } })}</p>
+	</DialogContent>
+	<Actions>
+		<Button variant="outlined" onclick={() => subscribeDialog = false}>
+			<Label>{$t('admin.cancel')}</Label>
+		</Button>
+		<Button variant="raised" onclick={handleSubscribeConfirm} class="premium-button">
+			<Label>{$t('manage_ads.buy_slot', { values: { price: $formatPrice($pricings.buy_advert_slot || 10, true) } })}</Label>
 		</Button>
 	</Actions>
 </Dialog>
@@ -807,6 +860,24 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+	.ad-card-bottom {
+		padding: 1.5rem;
+		background: #f8fafc;
+		border-top: 1px solid #e2e8f0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.boost-active-banner {
+		background: linear-gradient(135deg, #fff8e1, #ffecb3);
+		color: #f57f17;
+		padding: 0.75rem 1.5rem;
+		display: flex;
+		align-items: center;
+		font-size: 0.95rem;
+		border-top: 1px solid #ffe082;
 	}
 	.ad-card {
 		display: flex;

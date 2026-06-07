@@ -703,7 +703,11 @@
   "manage_ads": {
     "limit_reached": "Has alcanzado tu límite de {allowedAdverts} anuncio(s) activo(s).",
     "buy_slot": "Comprar un anuncio ({price})",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "boost_btn": "Impulsar",
+    "boost_active": "¡Impulso Activo!",
+    "boost_position": "Posición en el mercado: #{position}",
+    "boost_time_left": "Tiempo restante: {time}"
   },
   "blog": {
     "title": "Blog",

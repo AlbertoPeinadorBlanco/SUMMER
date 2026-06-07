@@ -94,6 +94,16 @@
     "mission_title": "Our Mission",
     "mission_desc": "We aim to democratize access to high-quality water sports education by creating a transparent, community-driven platform where instructors can thrive and students can learn safely."
   },
+  "blog": {
+    "title": "Blog",
+    "description": "Read the latest news about sea activities, beach conditions, and surfing tips.",
+    "hero_title": "Surf-Market.net Blog",
+    "hero_subtitle": "Latest news, beach conditions, and stories from the sea.",
+    "no_posts": "No blog posts published yet. Check back soon!",
+    "by": "By",
+    "read_article": "Read article",
+    "load_more": "Load More"
+  },
   "home": {
     "hero_title": "Find Your Perfect Wave",
     "hero_desc": "Connect with professional water sports teachers and book your next adventure.",

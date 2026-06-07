@@ -94,6 +94,16 @@
     "mission_title": "Nuestra Misión",
     "mission_desc": "Nuestro objetivo es democratizar el acceso a una educación de deportes acuáticos de alta calidad mediante la creación de una plataforma transparente e impulsada por la comunidad donde los instructores pueden prosperar y los estudiantes pueden aprender de forma segura."
   },
+  "blog": {
+    "title": "Blog",
+    "description": "Lee las últimas noticias sobre actividades marítimas, estado de las playas y consejos de surf.",
+    "hero_title": "Blog de Surf-Market.net",
+    "hero_subtitle": "Últimas noticias, condiciones de las playas e historias del mar.",
+    "no_posts": "Aún no hay entradas publicadas. ¡Vuelve pronto!",
+    "by": "Por",
+    "read_article": "Leer artículo",
+    "load_more": "Cargar más"
+  },
   "home": {
     "hero_title": "Encuentra Tu Ola Perfecta",
     "hero_desc": "Conecta con profesores de deportes acuáticos profesionales y reserva tu próxima aventura.",

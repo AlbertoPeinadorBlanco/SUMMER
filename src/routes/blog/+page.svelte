@@ -4,9 +4,12 @@
 	import { locale, t } from 'svelte-i18n';
 	import SEO from '$lib/components/SEO.svelte';
 	import Card, { Content, PrimaryAction, Media } from '@smui/card';
+	import Button, { Label } from '@smui/button';
 	import BannerAd from '$lib/components/BannerAd.svelte';
 
 	let posts: any[] = $state([]);
+	let visibleCount = $state(6);
+	let visiblePosts = $derived(posts.slice(0, visibleCount));
 	let loading = $state(true);
 	let error = $state(null);
 
@@ -29,6 +32,10 @@
 			return post[`${key}_es`];
 		}
 		return post[key] || '';
+	}
+
+	function loadMore() {
+		visibleCount += 6;
 	}
 </script>
 
@@ -60,7 +67,7 @@
 		</div>
 	{:else}
 		<div class="posts-grid">
-			{#each posts as post}
+			{#each visiblePosts as post}
 				<article class="post-card">
 					<Card style="height: 100%; display: flex; flex-direction: column;">
 						<PrimaryAction onclick={() => window.location.href = `/blog/${post.slug}`} style="flex: 1; display: flex; flex-direction: column;">
@@ -95,6 +102,14 @@
 				</article>
 			{/each}
 		</div>
+
+		{#if visibleCount < posts.length}
+			<div class="load-more-container">
+				<Button variant="outlined" onclick={loadMore} style="border-color: var(--primary-color); color: var(--primary-color); padding: 0 2rem;">
+					<Label>{$t('blog.load_more', { default: 'Load More' })}</Label>
+				</Button>
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -153,6 +168,12 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 		gap: 2rem;
+		margin-bottom: 3rem;
+	}
+
+	.load-more-container {
+		text-align: center;
+		margin-top: 2rem;
 	}
 
 	.card-media {

@@ -123,6 +123,15 @@
 	:global([data-theme="dark"]) .post-meta .date {
 		color: #ffffff;
 	}
+	:global([data-theme="dark"]) .post-card :global(.mdc-card) {
+		background-color: var(--surface-color) !important;
+	}
+	:global([data-theme="dark"]) .post-title {
+		color: #ffffff;
+	}
+	:global([data-theme="dark"]) .post-excerpt {
+		color: #cccccc;
+	}
 
 	.blog-hero {
 		background: linear-gradient(135deg, var(--primary-color) 0%, var(--terciary-color) 100%);

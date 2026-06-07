@@ -102,7 +102,8 @@
     "no_posts": "No blog posts published yet. Check back soon!",
     "by": "By",
     "read_article": "Read article",
-    "load_more": "Load More"
+    "load_more": "Load More",
+    "show_less": "Show Less"
   },
   "home": {
     "hero_title": "Find Your Perfect Wave",
@@ -745,7 +746,8 @@
     "type_camping": "Camping",
     "type_surfhouse": "Surf House",
     "type_hostel": "Hostel",
-    "load_more": "Load More"
+    "load_more": "Load More",
+    "show_less": "Show Less"
   },
   "beaches": {
     "title": "Beaches of Asturias",
@@ -758,6 +760,7 @@
     "level_intermediate_advanced": "Intermediate / Advanced",
     "level_advanced": "Advanced",
     "view_map": "View on Map",
-    "load_more": "Load More"
+    "load_more": "Load More",
+    "show_less": "Show Less"
   }
 }

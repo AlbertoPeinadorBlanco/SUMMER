@@ -35,6 +35,10 @@
 	function loadMore() {
 		visibleCount += 6;
 	}
+
+	function loadLess() {
+		visibleCount = Math.max(6, visibleCount - 6);
+	}
 </script>
 
 <SEO 
@@ -87,13 +91,18 @@
 		{/each}
 	</div>
 
-	{#if visibleCount < allBeaches.length}
-		<div class="load-more-container">
+	<div class="load-more-container" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+		{#if visibleCount < allBeaches.length}
 			<Button variant="raised" onclick={loadMore} class="load-more-btn">
 				<Label>{$t('beaches.load_more', { default: 'Load More' })}</Label>
 			</Button>
-		</div>
-	{/if}
+		{/if}
+		{#if visibleCount > 6}
+			<Button variant="outlined" onclick={loadLess} style="border-color: var(--secondary-color); color: var(--secondary-color);">
+				<Label>{$t('beaches.show_less', { default: 'Show Less' })}</Label>
+			</Button>
+		{/if}
+	</div>
 </div>
 
 <style>

@@ -102,7 +102,8 @@
     "no_posts": "Aún no hay entradas publicadas. ¡Vuelve pronto!",
     "by": "Por",
     "read_article": "Leer artículo",
-    "load_more": "Cargar más"
+    "load_more": "Cargar más",
+    "show_less": "Mostrar menos"
   },
   "home": {
     "hero_title": "Encuentra Tu Ola Perfecta",
@@ -738,7 +739,8 @@
     "type_camping": "Camping",
     "type_surfhouse": "Surf House",
     "type_hostel": "Hostal",
-    "load_more": "Cargar más"
+    "load_more": "Cargar más",
+    "show_less": "Mostrar menos"
   },
   "beaches": {
     "title": "Playas de Asturias",
@@ -751,6 +753,7 @@
     "level_intermediate_advanced": "Intermedio / Avanzado",
     "level_advanced": "Avanzado",
     "view_map": "Ver en el Mapa",
-    "load_more": "Cargar más"
+    "load_more": "Cargar más",
+    "show_less": "Mostrar menos"
   }
 }

@@ -90,6 +90,17 @@
 		}
 	}
 
+	async function disapproveAdvert(id: number) {
+		if (!confirm('Are you sure you want to reject this advert? The instructor will be notified to review it.')) return;
+		try {
+			await fetchApi(`/classes/${id}/disapprove`, { method: 'PUT' });
+			await fetchPendingAdverts();
+			alert('Advert rejected successfully!');
+		} catch (err: any) {
+			alert(err.message || 'Error rejecting advert');
+		}
+	}
+
 	//onmount
 	onMount(async () => {
 		if (!$auth.isAuthenticated || $auth.user?.role !== 'admin') {
@@ -352,7 +363,14 @@
 
 <SEO title={$t('admin.title')} />
 
-<div class="admin-container">
+{#if pendingAdverts.length > 0}
+	<div class="pending-banner">
+		<span class="material-icons">warning</span>
+		<strong>Action Required:</strong> You have {pendingAdverts.length} advert{pendingAdverts.length === 1 ? '' : 's'} pending approval. Please review them at the bottom of this page.
+	</div>
+{/if}
+
+<main class="admin-container">
 	<div class="header">
 		<div>
 			<h1>{$t('admin.title')}</h1>
@@ -456,10 +474,16 @@
 								<Cell>{ad.instructor_username || ad.instructor_id}</Cell>
 								<Cell>{$formatPrice(ad.price)}</Cell>
 								<Cell>
-									<Button variant="outlined" style="border-color: #2e7d32; color: #2e7d32;" onclick={() => approveAdvert(ad.id)}>
-										<span class="material-icons" style="margin-right: 4px; font-size: 18px;">check_circle</span>
-										<Label>Approve</Label>
-									</Button>
+									<div style="display: flex; gap: 8px;">
+										<Button variant="outlined" style="border-color: #2e7d32; color: #2e7d32;" onclick={() => approveAdvert(ad.id)}>
+											<span class="material-icons" style="margin-right: 4px; font-size: 18px;">check_circle</span>
+											<Label>Approve</Label>
+										</Button>
+										<Button variant="outlined" style="border-color: #d32f2f; color: #d32f2f;" onclick={() => disapproveAdvert(ad.id)}>
+											<span class="material-icons" style="margin-right: 4px; font-size: 18px;">cancel</span>
+											<Label>Reject</Label>
+										</Button>
+									</div>
 								</Cell>
 							</Row>
 						{/each}
@@ -468,7 +492,7 @@
 			{/if}
 		</div>
 	{/if}
-</div>
+</main>
 
 <!-- Create/Edit Modal -->
 <Dialog bind:open={isCreateEditModalOpen} aria-labelledby="create-edit-title">
@@ -830,6 +854,20 @@
 		border-radius: 50%;
 		display: inline-block;
 		box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
+	}
+
+	.pending-banner {
+		background-color: #fff3cd;
+		color: #856404;
+		padding: 1rem;
+		margin: 1rem 2rem;
+		border-radius: 8px;
+		border-left: 5px solid #ffeeba;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: 1.1rem;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 	}
 
 	.badge.tier-premium { background: #f3e5f5; color: #6a1b9a; }

@@ -150,10 +150,7 @@
 										<span class="material-icons" aria-hidden="true">groups</span>
 										{$t('nav.instructors')}
 									</a>
-									<a href="/accommodations" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
-										<span class="material-icons" aria-hidden="true">holiday_village</span>
-										{$t('nav.accommodations')}
-									</a>
+
 									<a href="/marketplace" class="dropdown-item" onclick={() => (surfMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">storefront</span>
 										{$t('nav.marketplace')}
@@ -175,6 +172,10 @@
 							</Button>
 							{#if resourcesMenuOpen}
 								<div class="user-dropdown">
+									<a href="/accommodations" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
+										<span class="material-icons" aria-hidden="true">holiday_village</span>
+										{$t('nav.accommodations')}
+									</a>
 									<a href="/gear-guide" class="dropdown-item" onclick={() => (resourcesMenuOpen = false)}>
 										<span class="material-icons" aria-hidden="true">surfing</span>
 										{$t('nav.gear_guide')}
@@ -467,10 +468,7 @@
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">groups</span>
 							<Label>{$t('nav.instructors')}</Label>
 						</Button>
-						<Button href="/accommodations" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
-							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">holiday_village</span>
-							<Label>{$t('nav.accommodations')}</Label>
-						</Button>
+
 						<Button href="/marketplace" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">storefront</span>
 							<Label>{$t('nav.marketplace')}</Label>
@@ -492,6 +490,10 @@
 				</Button>
 				{#if mobileResourcesMenuOpen}
 					<div class="mobile-submenu">
+						<Button href="/accommodations" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
+							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">holiday_village</span>
+							<Label>{$t('nav.accommodations')}</Label>
+						</Button>
 						<Button href="/gear-guide" onclick={toggleMobileMenu} class="mobile-menu-btn mobile-submenu-btn">
 							<span class="material-icons" aria-hidden="true" style="margin-right: 8px;">surfing</span>
 							<Label>{$t('nav.gear_guide')}</Label>

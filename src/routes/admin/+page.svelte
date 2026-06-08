@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
-	import { fetchApi } from '$lib/api';
+	import { fetchApi, getMediaUrl } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
@@ -55,6 +55,7 @@
 	let advertDifficulty = $state(1);
 	let advertSportType = $state('surf');
 	let advertIsOnline = $state(false);
+	let advertImageUrl = $state('');
 	
 	let ratingStudentId = $state('');
 	let ratingBookingId = $state('');
@@ -296,6 +297,7 @@
 			advertDifficulty = advert.difficulty_level || 1;
 			advertSportType = advert.sport_type || 'surf';
 			advertIsOnline = advert.is_online || false;
+			advertImageUrl = advert.image_url || '';
 		} else {
 			advertClassTypeId = 1;
 			advertTitle = '';
@@ -310,6 +312,7 @@
 			advertDifficulty = 1;
 			advertSportType = 'surf';
 			advertIsOnline = false;
+			advertImageUrl = '';
 		}
 		isInnerModalOpen = true;
 	}
@@ -425,6 +428,48 @@
 			alert('Verification email sent successfully!');
 		} catch (err: any) {
 			alert(err.message || 'Failed to send email');
+		}
+	}
+
+	async function handleUserPictureUpload(userId: number, e: Event) {
+		const target = e.target as HTMLInputElement;
+		if (!target.files || target.files.length === 0) return;
+
+		const file = target.files[0];
+		const formData = new FormData();
+		formData.append('profile_picture', file);
+
+		try {
+			await fetchApi(`/users/${userId}/picture`, {
+				method: 'POST',
+				body: formData
+			});
+			import('$lib/stores/toast').then(({ showToast }) => showToast('User picture uploaded successfully', 'success'));
+			await reloadDetails();
+			await fetchUsers(); // Refresh main list too
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Error uploading user picture', 'error'));
+		}
+	}
+
+	async function handleAdvertPictureUpload(advertId: number, e: Event) {
+		const target = e.target as HTMLInputElement;
+		if (!target.files || target.files.length === 0) return;
+
+		const file = target.files[0];
+		const formData = new FormData();
+		formData.append('class_picture', file);
+
+		try {
+			const res = await fetchApi(`/classes/${advertId}/picture`, {
+				method: 'POST',
+				body: formData
+			});
+			import('$lib/stores/toast').then(({ showToast }) => showToast('Advert picture uploaded successfully', 'success'));
+			advertImageUrl = res.image_url;
+			await reloadDetails();
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Error uploading advert picture', 'error'));
 		}
 	}
 
@@ -611,6 +656,9 @@
 							<Cell>{user.id}</Cell>
 							<Cell>
 								<div style="display: flex; align-items: center; gap: 8px;">
+									{#if user.profile_picture_url}
+										<img src={getMediaUrl(user.profile_picture_url)} alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+									{/if}
 									{#if user.last_active_at && (new Date().getTime() - new Date(user.last_active_at).getTime() < 5 * 60 * 1000)}
 										<span class="online-indicator" title="Online"></span>
 									{/if}
@@ -814,6 +862,15 @@
 			<div class="tab-content">
 				{#if activeTab === 'profile'}
 					<div class="details-grid">
+						<div class="detail-item" style="grid-column: span 2; display: flex; align-items: center; gap: 1rem;">
+							<strong>Profile Picture:</strong>
+							{#if detailsData.user.profile_picture_url}
+								<img src={getMediaUrl(detailsData.user.profile_picture_url)} alt="Profile" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+							{:else}
+								<span style="color: #666;">No picture</span>
+							{/if}
+							<input type="file" accept="image/*" onchange={(e) => handleUserPictureUpload(detailsData.user.id, e)} />
+						</div>
 						<div class="detail-item"><strong>{$t('admin.id')}:</strong> {detailsData.user.id}</div>
 						<div class="detail-item"><strong>{$t('admin.username')}:</strong> {detailsData.user.username}</div>
 						<div class="detail-item"><strong>{$t('admin.name')}:</strong> {detailsData.user.first_name} {detailsData.user.last_name}</div>
@@ -1061,6 +1118,17 @@
 					</Select>
 				</div>
 			{:else if innerModalType === 'advert'}
+				{#if innerModalMode === 'edit'}
+					<div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+						{#if advertImageUrl}
+							<img src={getMediaUrl(advertImageUrl)} alt="Class" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;" />
+						{/if}
+						<div>
+							<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Update Picture</label>
+							<input type="file" accept="image/*" onchange={(e) => handleAdvertPictureUpload(innerId, e)} />
+						</div>
+					</div>
+				{/if}
 				<div class="select-field" style="margin-bottom: 1rem;">
 					<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Class Type</label>
 					<select bind:value={advertClassTypeId} style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">

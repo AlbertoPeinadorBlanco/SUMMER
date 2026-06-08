@@ -247,6 +247,9 @@
     "allow_messages_title": "Allow Direct Messages",
     "allow_messages_desc": "If enabled, users can send you messages from your profile.",
     "allow_messages_label": "Allow messages",
+    "show_contact_info_title": "Show Contact Information",
+    "show_contact_info_desc": "If enabled, your phone number and email will be visible on your public profile.",
+    "show_contact_info_label": "Show contact info",
     "danger_zone": {
       "title": "Danger Zone",
       "delete_profile": "Delete Profile",
@@ -466,6 +469,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "send_password_reset": "Send Password Reset",
     "logs_title": "Analytics & Logs",
     "logs_subtitle": "Monitor platform traffic and audit administrative actions.",
     "tab_audit": "Admin Logs",

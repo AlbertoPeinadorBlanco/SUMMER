@@ -247,6 +247,9 @@
     "allow_messages_title": "Permitir Mensajes Directos",
     "allow_messages_desc": "Permitir que los usuarios te envíen mensajes a través de tu perfil público.",
     "allow_messages_label": "Permitir Mensajes",
+    "show_contact_info_title": "Mostrar Información de Contacto",
+    "show_contact_info_desc": "Si está activado, tu número de teléfono y correo electrónico serán visibles en tu perfil público.",
+    "show_contact_info_label": "Mostrar info de contacto",
     "danger_zone": {
       "title": "Zona de Peligro",
       "delete_profile": "Eliminar Perfil",
@@ -466,6 +469,7 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
+    "send_password_reset": "Enviar Restauración de Contraseña",
     "id": "ID",
     "username": "Usuario",
     "email": "Correo",

@@ -325,11 +325,13 @@
 									{/if}
 								</div>
 								<div class="instructor-contact">
-									{#if ad.phone}
-										<span title="Phone">📞 {ad.phone}</span>
-									{/if}
-									{#if ad.email}
-										<span title="Email">✉️ {ad.email}</span>
+									{#if ad.show_contact_info}
+										{#if ad.phone}
+											<span title="Phone">📞 {ad.phone}</span>
+										{/if}
+										{#if ad.email}
+											<span title="Email">✉️ {ad.email}</span>
+										{/if}
 									{/if}
 								</div>
 							</div>

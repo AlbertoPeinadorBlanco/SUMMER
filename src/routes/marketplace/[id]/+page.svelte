@@ -169,6 +169,19 @@
 					<span
 						><span class="material-icons" aria-hidden="true">place</span> {teacher.location}</span
 					>
+					{#if teacher.show_contact_info}
+						{#if teacher.phone}
+							<span style="display: flex; align-items: center; gap: 4px;">
+								<span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">phone</span> {teacher.phone}
+							</span>
+						{/if}
+						{#if teacher.email}
+							<span style="display: flex; align-items: center; gap: 4px;">
+								<span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">email</span> 
+								<a href="mailto:{teacher.email}" style="color: inherit; text-decoration: none;">{teacher.email}</a>
+							</span>
+						{/if}
+					{/if}
 				</div>
 				<div class="perk-badges">
 					{#if teacher.is_featured}

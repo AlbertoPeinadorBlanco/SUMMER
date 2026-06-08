@@ -29,6 +29,7 @@
 	let booking_link = $state('');
 	let available_today = $state(false);
 	let allow_communications = $state(true);
+	let show_contact_info = $state(false);
 	let bio = $state('');
 	let specialization = $state('');
 
@@ -110,6 +111,7 @@
 			booking_link = user.booking_link || '';
 			available_today = user.available_today || false;
 			allow_communications = user.allow_communications !== undefined ? !!user.allow_communications : true;
+			show_contact_info = user.show_contact_info !== undefined ? !!user.show_contact_info : false;
 			bio = user.bio || '';
 			specialization = user.specialization || '';
 		} else if (isAuthenticated === false) {
@@ -303,9 +305,9 @@
 		try {
 			await fetchApi(`/users/${user.id}/instructor-profile`, {
 				method: 'PUT',
-				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications, bio, specialization })
+				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications, show_contact_info, bio, specialization })
 			});
-			auth.updateUser({ video_url, booking_link, available_today, allow_communications, bio, specialization });
+			auth.updateUser({ video_url, booking_link, available_today, allow_communications, show_contact_info, bio, specialization });
 			// Don't show success msg here if it's called from handleUpdate to avoid overriding
 			if (!loading) {
 				successMsg = $t('profile.alerts.instructor_updated');
@@ -699,6 +701,15 @@
 					</div>
 					<label style="display: flex; align-items: center; gap: 0.5rem;">
 						<input type="checkbox" bind:checked={allow_communications} onchange={saveInstructorProfile} aria-label={$t('profile.allow_messages_label')} />
+					</label>
+				</div>
+				<div class="upgrade-row">
+					<div class="upgrade-info">
+						<h4>{$t('profile.show_contact_info_title')}</h4>
+						<p class="desc">{$t('profile.show_contact_info_desc')}</p>
+					</div>
+					<label style="display: flex; align-items: center; gap: 0.5rem;">
+						<input type="checkbox" bind:checked={show_contact_info} onchange={saveInstructorProfile} aria-label={$t('profile.show_contact_info_label')} />
 					</label>
 				</div>
 			{/if}

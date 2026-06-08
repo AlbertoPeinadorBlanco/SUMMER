@@ -299,6 +299,16 @@
 		}
 	}
 
+	async function sendPasswordReset(userId: number) {
+		if (!confirm('Are you sure you want to send a password reset email to this user?')) return;
+		try {
+			await fetchApi(`/admin/users/${userId}/send-password-reset`, { method: 'POST' });
+			alert('Password reset email sent successfully!');
+		} catch (err: any) {
+			alert(err.message || 'Failed to send email');
+		}
+	}
+
 	async function openDetailsModal(user: any) {
 		isDetailsModalOpen = true;
 		activeTab = 'profile';
@@ -603,6 +613,12 @@
 								</Button>
 							{/if}
 						</div>
+					</div>
+					<div style="margin-top: 1rem;">
+						<Button variant="outlined" style="color: #d32f2f; border-color: #d32f2f;" onclick={() => sendPasswordReset(detailsData.user.id)}>
+							<span class="material-icons" style="margin-right: 4px; font-size: 18px;">lock_reset</span>
+							<Label>{$t('admin.send_password_reset', { default: 'Send Password Reset' })}</Label>
+						</Button>
 					</div>
 					
 					{#if detailsData.user.role === 'instructor' || detailsData.user.role === 'admin'}

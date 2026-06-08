@@ -28,9 +28,9 @@ export interface User {
 }
 
 function createAuthStore() {
-	// Restore user profile from sessionStorage to avoid UI flash on reload
+	// Restore user profile from localStorage to avoid UI flash on reload and new tabs
 	// (The actual auth is verified via the httpOnly cookie — this is just for display)
-	const storedUser = browser ? sessionStorage.getItem('auth_user') : null;
+	const storedUser = browser ? localStorage.getItem('auth_user') : null;
 	let initialUser: User | null = null;
 	if (storedUser) {
 		try { initialUser = JSON.parse(storedUser); } catch { initialUser = null; }
@@ -48,7 +48,7 @@ function createAuthStore() {
 
 	// Called after login/register to set user state
 	function setUser(user: User) {
-		if (browser) sessionStorage.setItem('auth_user', JSON.stringify(user));
+		if (browser) localStorage.setItem('auth_user', JSON.stringify(user));
 		set({ user, isAuthenticated: true, isLoading: false });
 	}
 
@@ -61,13 +61,13 @@ function createAuthStore() {
 				const data = await res.json();
 				if (data.authenticated === false) {
 					set({ user: null, isAuthenticated: false, isLoading: false });
-					if (browser) sessionStorage.removeItem('auth_user');
+					if (browser) localStorage.removeItem('auth_user');
 				} else {
 					setUser(data as User);
 				}
 			} else {
 				set({ user: null, isAuthenticated: false, isLoading: false });
-				if (browser) sessionStorage.removeItem('auth_user');
+				if (browser) localStorage.removeItem('auth_user');
 			}
 		} catch {
 			set({ user: null, isAuthenticated: false, isLoading: false });
@@ -81,7 +81,7 @@ function createAuthStore() {
 			try {
 				await fetch(`${API_BASE_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
 			} catch { /* ignore */ }
-			if (browser) sessionStorage.removeItem('auth_user');
+			if (browser) localStorage.removeItem('auth_user');
 			set({ user: null, isAuthenticated: false, isLoading: false });
 			if (browser) goto('/');
 		},
@@ -90,7 +90,7 @@ function createAuthStore() {
 			update((state) => {
 				if (!state.user) return state;
 				const updatedUser = { ...state.user, ...updates };
-				if (browser) sessionStorage.setItem('auth_user', JSON.stringify(updatedUser));
+				if (browser) localStorage.setItem('auth_user', JSON.stringify(updatedUser));
 				return { ...state, user: updatedUser };
 			});
 		}

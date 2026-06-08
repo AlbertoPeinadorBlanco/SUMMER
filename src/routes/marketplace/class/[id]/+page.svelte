@@ -7,7 +7,6 @@
 	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
-	import BookingModal from '$lib/components/BookingModal.svelte';
 	import ShowMoreText from '$lib/components/ShowMoreText.svelte';
 
 	let { data } = $props();

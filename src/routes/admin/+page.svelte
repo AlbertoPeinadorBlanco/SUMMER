@@ -44,8 +44,17 @@
 	
 	let advertClassTypeId = $state(1);
 	let advertTitle = $state('');
+	let advertTitleEs = $state('');
+	let advertDescription = $state('');
+	let advertDescriptionEs = $state('');
 	let advertPrice = $state(0);
 	let advertIsActive = $state(true);
+	let advertCapacity = $state(10);
+	let advertDuration = $state(90);
+	let advertLocation = $state('');
+	let advertDifficulty = $state(1);
+	let advertSportType = $state('surf');
+	let advertIsOnline = $state(false);
 	
 	let ratingStudentId = $state('');
 	let ratingBookingId = $state('');
@@ -67,6 +76,14 @@
 	let pendingAdverts: any[] = $state([]);
 	let pendingLoading = $state(false);
 
+	let featuredInstructors: any[] = $state([]);
+	let featuredLoading = $state(false);
+	
+	let isFeaturedModalOpen = $state(false);
+	let featuredInstructorId = $state('');
+	let featuredUntilDate = $state('');
+	let featuredModalMode = $state('add');
+
 	async function fetchPendingAdverts() {
 		try {
 			pendingLoading = true;
@@ -77,6 +94,86 @@
 		} finally {
 			pendingLoading = false;
 		}
+	}
+
+	async function fetchFeaturedInstructors() {
+		try {
+			featuredLoading = true;
+			featuredInstructors = await fetchApi('/admin/users/featured');
+		} catch (err: any) {
+			console.error("Error fetching featured instructors", err);
+		} finally {
+			featuredLoading = false;
+		}
+	}
+
+	function openFeaturedModal(mode: string, instructor: any = null) {
+		featuredModalMode = mode;
+		if (mode === 'edit' && instructor) {
+			featuredInstructorId = instructor.id.toString();
+			if (instructor.featured_until) {
+				featuredUntilDate = new Date(instructor.featured_until).toISOString().split('T')[0];
+			}
+		} else {
+			featuredInstructorId = '';
+			const nextWeek = new Date();
+			nextWeek.setDate(nextWeek.getDate() + 7);
+			featuredUntilDate = nextWeek.toISOString().split('T')[0];
+		}
+		isFeaturedModalOpen = true;
+	}
+
+	async function saveFeaturedInstructor() {
+		if (!featuredInstructorId || !featuredUntilDate) {
+			alert("Please select an instructor and date");
+			return;
+		}
+		try {
+			const payload = {
+				featured_until: featuredUntilDate
+			};
+			await fetchApi(`/admin/users/${featuredInstructorId}/perks`, {
+				method: 'PUT',
+				body: JSON.stringify(payload)
+			});
+			isFeaturedModalOpen = false;
+			await fetchFeaturedInstructors();
+			import('$lib/stores/toast').then(({ showToast }) => showToast('Instructor of the Week updated successfully!', 'success'));
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Error saving featured instructor', 'error'));
+		}
+	}
+
+	async function removeFeaturedInstructor(id: number) {
+		if (!confirm("Are you sure you want to remove this instructor from the featured list?")) return;
+		try {
+			const payload = {
+				featured_until: null
+			};
+			await fetchApi(`/admin/users/${id}/perks`, {
+				method: 'PUT',
+				body: JSON.stringify(payload)
+			});
+			await fetchFeaturedInstructors();
+			import('$lib/stores/toast').then(({ showToast }) => showToast('Instructor removed from featured list', 'success'));
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Error removing featured instructor', 'error'));
+		}
+	}
+
+	function formatTimeRemaining(dateString: string) {
+		if (!dateString) return '-';
+		const targetDate = new Date(dateString);
+		const now = new Date();
+		const diffMs = targetDate.getTime() - now.getTime();
+		
+		if (diffMs <= 0) return 'Expired';
+		
+		const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+		const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		
+		if (days > 0) return `${days}d ${hours}h`;
+		return `${hours}h`;
 	}
 
 	async function approveAdvert(id: number) {
@@ -109,6 +206,7 @@
 		}
 		await fetchUsers();
 		await fetchPendingAdverts();
+		await fetchFeaturedInstructors();
 	});
 
 	async function fetchUsers() {
@@ -185,14 +283,33 @@
 		innerModalMode = mode;
 		if (mode === 'edit') {
 			innerId = advert.id;
-			advertTitle = advert.title;
-			advertPrice = advert.price;
+			advertTitle = advert.title || '';
+			advertTitleEs = advert.title_es || '';
+			advertDescription = advert.description || '';
+			advertDescriptionEs = advert.description_es || '';
+			advertPrice = advert.price || 0;
 			advertIsActive = advert.is_active;
+			advertClassTypeId = advert.class_type_id || 1;
+			advertCapacity = advert.capacity || 10;
+			advertDuration = advert.duration_minutes || 90;
+			advertLocation = advert.location || '';
+			advertDifficulty = advert.difficulty_level || 1;
+			advertSportType = advert.sport_type || 'surf';
+			advertIsOnline = advert.is_online || false;
 		} else {
 			advertClassTypeId = 1;
 			advertTitle = '';
+			advertTitleEs = '';
+			advertDescription = '';
+			advertDescriptionEs = '';
 			advertPrice = 0;
 			advertIsActive = true;
+			advertCapacity = 10;
+			advertDuration = 90;
+			advertLocation = '';
+			advertDifficulty = 1;
+			advertSportType = 'surf';
+			advertIsOnline = false;
 		}
 		isInnerModalOpen = true;
 	}
@@ -229,21 +346,33 @@
 					});
 				}
 			} else if (innerModalType === 'advert') {
+				const advertPayload = {
+					title: advertTitle,
+					title_es: advertTitleEs,
+					description: advertDescription,
+					description_es: advertDescriptionEs,
+					price: advertPrice,
+					class_type_id: advertClassTypeId,
+					capacity: advertCapacity,
+					duration_minutes: advertDuration,
+					location: advertLocation,
+					difficulty_level: advertDifficulty,
+					sport_type: advertSportType,
+					is_online: advertIsOnline ? 1 : 0,
+					is_active: advertIsActive ? 1 : 0
+				};
+
 				if (innerModalMode === 'edit') {
 					await fetchApi(`/classes/${innerId}`, {
 						method: 'PUT',
-						body: JSON.stringify({ title: advertTitle, price: advertPrice, is_active: advertIsActive ? 1 : 0 })
+						body: JSON.stringify(advertPayload)
 					});
 				} else {
 					await fetchApi(`/classes`, {
 						method: 'POST',
 						body: JSON.stringify({ 
 							instructor_id: detailsData.user.id, 
-							class_type_id: advertClassTypeId,
-							title: advertTitle,
-							price: advertPrice,
-							is_online: 0,
-							capacity: 10
+							...advertPayload
 						})
 					});
 				}
@@ -296,6 +425,55 @@
 			alert('Verification email sent successfully!');
 		} catch (err: any) {
 			alert(err.message || 'Failed to send email');
+		}
+	}
+
+	async function boostAdvertAdmin(classId: number) {
+		if (!confirm('Are you sure you want to instantly boost this advert for 24 hours?')) return;
+		try {
+			await fetchApi(`/admin/classes/${classId}/boost`, { method: 'PUT' });
+			import('$lib/stores/toast').then(({ showToast }) => showToast('Advert boosted successfully!', 'success'));
+			await reloadDetails();
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Failed to boost advert', 'error'));
+		}
+	}
+
+	async function boostInstructorProfileAdmin() {
+		if (!detailsData || !detailsData.user) return;
+		if (!confirm('Are you sure you want to instantly boost this instructor profile for 24 hours?')) return;
+		try {
+			const payload = {
+				bump_instructor: true
+			};
+			await fetchApi(`/admin/users/${detailsData.user.id}/perks`, {
+				method: 'PUT',
+				body: JSON.stringify(payload)
+			});
+			import('$lib/stores/toast').then(({ showToast }) => showToast('Instructor boosted successfully!', 'success'));
+			await reloadDetails();
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Failed to boost instructor', 'error'));
+		}
+	}
+
+	async function updatePerks() {
+		if (!detailsData || !detailsData.user) return;
+		try {
+			const payload = {
+				has_video_upgrade: detailsData.user.has_video_upgrade,
+				has_link_upgrade: detailsData.user.has_link_upgrade,
+				has_badge_upgrade: detailsData.user.has_badge_upgrade,
+				featured_until: detailsData.user.featured_until
+			};
+			await fetchApi(`/admin/users/${detailsData.user.id}/perks`, {
+				method: 'PUT',
+				body: JSON.stringify(payload)
+			});
+			import('$lib/stores/toast').then(({ showToast }) => showToast('Perks updated successfully!', 'success'));
+			await reloadDetails();
+		} catch (err: any) {
+			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Failed to update perks', 'error'));
 		}
 	}
 
@@ -501,6 +679,50 @@
 				</DataTable>
 			{/if}
 		</div>
+		
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; margin-bottom: 1rem;">
+			<h2 style="margin: 0; color: #0d1b2a;">Instructors of the Week</h2>
+			<Button variant="outlined" onclick={() => openFeaturedModal('add')}>Add Featured Instructor</Button>
+		</div>
+		<div class="table-container">
+			{#if featuredLoading}
+				<p style="padding: 1rem;">Loading featured instructors...</p>
+			{:else if featuredInstructors.length === 0}
+				<p style="padding: 1rem; color: #666;">No instructors are currently featured.</p>
+			{:else}
+				<DataTable style="width: 100%;">
+					<Head>
+						<Row>
+							<Cell>User ID</Cell>
+							<Cell>Username</Cell>
+							<Cell>Name</Cell>
+							<Cell>Featured Until</Cell>
+							<Cell>Time Left</Cell>
+							<Cell>Actions</Cell>
+						</Row>
+					</Head>
+					<Body>
+						{#each featuredInstructors as instructor}
+							<Row>
+								<Cell>{instructor.id}</Cell>
+								<Cell>{instructor.username}</Cell>
+								<Cell>{instructor.first_name} {instructor.last_name}</Cell>
+								<Cell>{new Date(instructor.featured_until).toLocaleString()}</Cell>
+								<Cell>
+									<span style="font-weight: bold; color: #ed6c02;">
+										{formatTimeRemaining(instructor.featured_until)}
+									</span>
+								</Cell>
+								<Cell>
+									<IconButton class="material-icons" style="color: #1976d2;" onclick={() => openFeaturedModal('edit', instructor)} aria-label="Edit Date">edit</IconButton>
+									<IconButton class="material-icons" style="color: #d32f2f;" onclick={() => removeFeaturedInstructor(instructor.id)} aria-label="Remove Featured">delete</IconButton>
+								</Cell>
+							</Row>
+						{/each}
+					</Body>
+				</DataTable>
+			{/if}
+		</div>
 	{/if}
 </main>
 
@@ -622,23 +844,50 @@
 					</div>
 					
 					{#if detailsData.user.role === 'instructor' || detailsData.user.role === 'admin'}
-						<h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Instructor Profile</h3>
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+							<h3 style="margin: 0;">Instructor Profile</h3>
+							<Button variant="outlined" onclick={updatePerks}>Save Perks</Button>
+						</div>
 						<div class="details-grid">
 							<div class="detail-item" style="grid-column: span 2;"><strong>{$t('admin.bio')}:</strong> {detailsData.user.bio || '-'}</div>
-							<div class="detail-item"><strong>{$t('admin.specialization')}:</strong> {detailsData.user.specialization || '-'}</div>
-							<div class="detail-item">
-								<strong>Featured Until:</strong> 
-								{#if detailsData.user.featured_until && new Date(detailsData.user.featured_until) > new Date()}
-									<span style="color: #2e7d32; font-weight: bold;">{new Date(detailsData.user.featured_until).toLocaleDateString('en-GB')}</span>
-								{:else}
-									-
-								{/if}
-							</div>
-							<div class="detail-item" style="grid-column: span 2;"><strong>Upgrades:</strong> 
-								{#if detailsData.user.has_video_upgrade} <span class="badge" style="background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;">Video</span> {/if}
-								{#if detailsData.user.has_link_upgrade} <span class="badge" style="background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;">Link</span> {/if}
-								{#if detailsData.user.has_badge_upgrade} <span class="badge" style="background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;">Badge</span> {/if}
-								{#if !detailsData.user.has_video_upgrade && !detailsData.user.has_link_upgrade && !detailsData.user.has_badge_upgrade} None {/if}
+							<div class="detail-item" style="grid-column: span 2;"><strong>{$t('admin.specialization')}:</strong> {detailsData.user.specialization || '-'}</div>
+							<div class="detail-item" style="grid-column: span 2; display: flex; flex-direction: column; gap: 1rem; background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+								<strong style="font-size: 1.1rem;">Manage Upgrades/Perks:</strong>
+								
+								<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+									<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
+										<input type="checkbox" bind:checked={detailsData.user.has_video_upgrade} style="width: 18px; height: 18px;" />
+										<span class="material-icons" style="color: #1565c0;">videocam</span>
+										Video Upgrade
+									</label>
+
+									<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
+										<input type="checkbox" bind:checked={detailsData.user.has_link_upgrade} style="width: 18px; height: 18px;" />
+										<span class="material-icons" style="color: #1565c0;">link</span>
+										Link Upgrade
+									</label>
+
+									<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
+										<input type="checkbox" bind:checked={detailsData.user.has_badge_upgrade} style="width: 18px; height: 18px;" />
+										<span class="material-icons" style="color: #1565c0;">verified</span>
+										Badge Upgrade
+									</label>
+								</div>
+
+								<div style="margin-top: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+									<div style="display: flex; flex-direction: column; gap: 0.25rem;">
+										<strong>Instructor of the Week Until:</strong>
+										<input type="date" bind:value={detailsData.user.featured_until} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; max-width: 200px;" />
+										<small style="color: #666;">Leave empty or set to a past date to disable.</small>
+									</div>
+									<div style="display: flex; flex-direction: column; gap: 0.25rem;">
+										<strong>Boost Profile:</strong>
+										<Button variant="outlined" style="color: #ed6c02; border-color: #ed6c02; background: white;" onclick={boostInstructorProfileAdmin}>
+											<span class="material-icons" style="margin-right: 4px; font-size: 18px;">rocket_launch</span>
+											Boost Instructor (24h)
+										</Button>
+									</div>
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -710,6 +959,7 @@
 											</span>
 										</Cell>
 										<Cell>
+											<IconButton class="material-icons" style="color: #ed6c02;" onclick={() => boostAdvertAdmin(ad.id)} title="Boost Advert (24h)" aria-label="Boost Advert">rocket_launch</IconButton>
 											<IconButton class="material-icons" style="color: #1976d2;" onclick={() => openInnerAdvert('edit', ad)} aria-label="Edit Advert">edit</IconButton>
 											<IconButton class="material-icons" style="color: #d32f2f;" onclick={() => deleteInnerItem('advert', ad.id)} aria-label="Delete Advert">delete</IconButton>
 										</Cell>
@@ -769,6 +1019,30 @@
 	</Actions>
 </Dialog>
 
+<!-- Featured Instructor Modal -->
+<Dialog bind:open={isFeaturedModalOpen} aria-labelledby="featured-modal-title">
+	<Title id="featured-modal-title">{featuredModalMode === 'edit' ? 'Edit Featured Instructor' : 'Add Featured Instructor'}</Title>
+	<Content>
+		<div class="form-container" style="padding-top: 1rem;">
+			<p style="margin-bottom: 1rem; color: #666;">Enter the User ID of the instructor and the date they should be featured until.</p>
+			
+			<Textfield variant="outlined" bind:value={featuredInstructorId} label="Instructor User ID" style="width: 100%;" disabled={featuredModalMode === 'edit'} />
+			
+			<div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+				<label for="featured_until_date" style="font-weight: bold;">Featured Until Date:</label>
+				<input id="featured_until_date" type="date" bind:value={featuredUntilDate} style="padding: 12px; border: 1px solid #ccc; border-radius: 4px; width: 100%; font-size: 16px;" />
+			</div>
+		</div>
+	</Content>
+	<Actions>
+		<Button onclick={() => (isFeaturedModalOpen = false)}>
+			<Label>Cancel</Label>
+		</Button>
+		<Button variant="raised" onclick={saveFeaturedInstructor}>
+			<Label>Save</Label>
+		</Button>
+	</Actions>
+</Dialog>
 <!-- Inner CRUD Modal for Bookings/Adverts -->
 <Dialog bind:open={isInnerModalOpen} aria-labelledby="inner-title" style="--mdc-dialog-z-index: 1000;">
 	<Title id="inner-title">{innerModalMode === 'edit' ? 'Edit' : 'Create'} {innerModalType === 'booking' ? 'Booking' : innerModalType === 'advert' ? 'Advert' : 'Rating'}</Title>
@@ -787,18 +1061,38 @@
 					</Select>
 				</div>
 			{:else if innerModalType === 'advert'}
-				{#if innerModalMode === 'create'}
-					<div class="select-field">
-						<label>Class Type ID</label>
-						<Select variant="outlined" bind:value={advertClassTypeId} style="width: 100%;">
-							<Option value={1}>Surf</Option>
-							<Option value={2}>Skate</Option>
-						</Select>
-					</div>
-				{/if}
-				<Textfield variant="outlined" bind:value={advertTitle} label="Title" style="width: 100%;" />
-				<Textfield variant="outlined" bind:value={advertPrice} label="Price (€)" type="number" style="width: 100%;" />
-				<div class="select-field" style="margin-top: 1rem;">
+				<div class="select-field" style="margin-bottom: 1rem;">
+					<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Class Type</label>
+					<select bind:value={advertClassTypeId} style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+						<option value={1}>Class</option>
+						<option value={2}>Course</option>
+					</select>
+				</div>
+				<Textfield variant="outlined" bind:value={advertTitle} label="Title (English)" style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertTitleEs} label="Title (Spanish)" style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertDescription} label="Description (English)" textarea style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertDescriptionEs} label="Description (Spanish)" textarea style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertPrice} label="Price (€)" type="number" style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertCapacity} label="Capacity" type="number" style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertDuration} label="Duration (minutes)" type="number" style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertLocation} label="Location" style="width: 100%; margin-bottom: 1rem;" />
+				<Textfield variant="outlined" bind:value={advertDifficulty} label="Difficulty Level (1-5)" type="number" input$min="1" input$max="5" style="width: 100%; margin-bottom: 1rem;" />
+				
+				<div class="select-field" style="margin-bottom: 1rem;">
+					<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Sport Type</label>
+					<select bind:value={advertSportType} style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+						<option value="surf">Surf</option>
+						<option value="skate">Skate</option>
+						<option value="yoga">Yoga</option>
+						<option value="paddle">Paddle</option>
+					</select>
+				</div>
+
+				<div class="select-field" style="display: flex; gap: 2rem; margin-top: 1rem;">
+					<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+						<input type="checkbox" bind:checked={advertIsOnline} style="width: 18px; height: 18px;" />
+						Is Online
+					</label>
 					<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 						<input type="checkbox" bind:checked={advertIsActive} style="width: 18px; height: 18px;" />
 						Is Active

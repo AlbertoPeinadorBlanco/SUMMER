@@ -7,6 +7,8 @@
 	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
 	import { formatPrice } from '$lib/stores/currency';
 	import SEO from '$lib/components/SEO.svelte';
+	import BookingModal from '$lib/components/BookingModal.svelte';
+	import ShowMoreText from '$lib/components/ShowMoreText.svelte';
 
 	let { data } = $props();
 	let advert = $derived(data.advert);
@@ -210,7 +212,9 @@
 			<div class="main-column">
 				<section class="details-section" aria-labelledby="about-title">
 					<h3 id="about-title">{$t('advert.about_class')}</h3>
-					<p class="description">{getDescription(advert)}</p>
+					<p class="description">
+						<ShowMoreText text={getDescription(advert)} limit={300} />
+					</p>
 				</section>
 				
 				<section class="details-section" aria-labelledby="schedule-title">

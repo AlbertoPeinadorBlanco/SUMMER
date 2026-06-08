@@ -7,6 +7,7 @@
 	import Icon from '@smui/textfield/icon';
 
 	import { fetchApi, getMediaUrl, getAvatarPlaceholder } from '$lib/api';
+	import ShowMoreText from '$lib/components/ShowMoreText.svelte';
 
 	//instructors page
 	let instructors: any[] = $state([]);
@@ -199,7 +200,7 @@
 						</div>
 
 						<p class="instructor-bio">
-							{truncateWords(typeof instructor.bio === 'string' && instructor.bio.trim() ? instructor.bio : defaultBio, 50)}
+							<ShowMoreText text={typeof instructor.bio === 'string' && instructor.bio.trim() ? instructor.bio : defaultBio} limit={150} />
 						</p>
 					</div>
 					<div class="card-footer">

@@ -364,7 +364,8 @@
 					difficulty_level: advertDifficulty,
 					sport_type: advertSportType,
 					is_online: advertIsOnline ? 1 : 0,
-					is_active: advertIsActive ? 1 : 0
+					is_active: advertIsActive ? 1 : 0,
+					image_url: advertImageUrl
 				};
 
 				if (innerModalMode === 'edit') {
@@ -1122,17 +1123,20 @@
 					</Select>
 				</div>
 			{:else if innerModalType === 'advert'}
-				{#if innerModalMode === 'edit'}
-					<div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-						{#if advertImageUrl}
-							<img src={getMediaUrl(advertImageUrl)} alt="Class" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;" />
+				<div style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+					{#if advertImageUrl}
+						<img src={getMediaUrl(advertImageUrl)} alt="Class" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;" />
+					{/if}
+					<div style="flex: 1; min-width: 250px;">
+						{#if innerModalMode === 'edit'}
+							<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Update Picture via File</label>
+							<input type="file" accept="image/*" onchange={(e) => handleAdvertPictureUpload(innerId, e)} style="margin-bottom: 10px;" />
 						{/if}
-						<div>
-							<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Update Picture</label>
-							<input type="file" accept="image/*" onchange={(e) => handleAdvertPictureUpload(innerId, e)} />
-						</div>
+						
+						<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">{innerModalMode === 'edit' ? 'Or Set' : 'Set'} Image URL Manually</label>
+						<input type="text" bind:value={advertImageUrl} placeholder="https://example.com/image.jpg" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
 					</div>
-				{/if}
+				</div>
 				<div class="select-field" style="margin-bottom: 1rem;">
 					<label style="display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px;">Class Type</label>
 					<select bind:value={advertClassTypeId} style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">

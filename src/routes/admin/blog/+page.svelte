@@ -18,6 +18,7 @@
 	// Modals
 	let isCreateEditModalOpen = $state(false);
 	let isDeleteModalOpen = $state(false);
+	let deleteConfirmText = $state('');
 	
 	// Form state
 	let isEditing = $state(false);
@@ -80,6 +81,7 @@
 
 	function openDeleteModal(post: any) {
 		currentPostId = post.id;
+		deleteConfirmText = '';
 		isDeleteModalOpen = true;
 	}
 
@@ -273,11 +275,13 @@
 >
 	<Title id="delete-modal-title">Delete Blog Post</Title>
 	<Content id="delete-modal-content">
-		Are you sure you want to delete this blog post? This action cannot be undone.
+		<p>Are you sure you want to delete this blog post? This action cannot be undone.</p>
+		<p style="color: #d32f2f; font-weight: bold; margin-top: 1rem;">To confirm, please type DELETE below:</p>
+		<Textfield variant="outlined" bind:value={deleteConfirmText} style="width: 100%; margin-top: 0.5rem;" />
 	</Content>
 	<Actions>
 		<Button onclick={() => isDeleteModalOpen = false}>Cancel</Button>
-		<Button onclick={deletePost} style="color: #e63946;">Delete</Button>
+		<Button onclick={deletePost} style="color: {deleteConfirmText === 'DELETE' ? '#e63946' : '#bdbdbd'};" disabled={deleteConfirmText !== 'DELETE'}>Delete</Button>
 	</Actions>
 </Dialog>
 

@@ -260,7 +260,14 @@
 					<span class="material-icons" style="font-size: 14px; vertical-align: middle;">star</span>
 				</div>
 			{/if}
-			<Card style="height: 100%; display: flex; flex-direction: column;">
+			<Card style="height: 100%; display: flex; flex-direction: column; {ad.capacity && ad.bookings_count >= ad.capacity ? 'filter: grayscale(80%); opacity: 0.8;' : ''}">
+				{#if ad.capacity && ad.bookings_count >= ad.capacity}
+					<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+						<div style="background: rgba(0,0,0,0.6); color: white; padding: 0.5rem 1.5rem; border-radius: 20px; font-weight: bold; font-size: 1.2rem; transform: rotate(-15deg); box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 2px solid white;">
+							{$t('marketplace.fully_booked')}
+						</div>
+					</div>
+				{/if}
 				<PrimaryAction onclick={() => window.location.href = `/marketplace/class/${ad.id}`} aria-label="Class {ad.title}" style="flex: 1; display: flex; flex-direction: column;">
 					<Media
 						class="card-media"
@@ -355,10 +362,10 @@
 						<button 
 							class="book-btn-custom" 
 							onclick={(e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); openBookingDialog(ad, e); }}
-							disabled={userBookedClassIds.has(ad.id)}
-							style={userBookedClassIds.has(ad.id) ? 'background-color: #bdbdbd; cursor: not-allowed; border-color: #bdbdbd;' : ''}
+							disabled={userBookedClassIds.has(ad.id) || (ad.capacity && ad.bookings_count >= ad.capacity)}
+							style={(userBookedClassIds.has(ad.id) || (ad.capacity && ad.bookings_count >= ad.capacity)) ? 'background-color: #bdbdbd; cursor: not-allowed; border-color: #bdbdbd; color: #555 !important;' : ''}
 						>
-							{userBookedClassIds.has(ad.id) ? $t('marketplace.booked_btn') : $t('marketplace.book_btn')}
+							{userBookedClassIds.has(ad.id) ? $t('marketplace.booked_btn') : ((ad.capacity && ad.bookings_count >= ad.capacity) ? $t('marketplace.fully_booked') : $t('marketplace.book_btn'))}
 						</button>
 						<Button href="/marketplace/{ad.instructor_id}" class="premium-button">
 							<Label>{$t('marketplace.profile_btn')}</Label>

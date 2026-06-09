@@ -29,12 +29,7 @@
 		try {
 			const data = await fetchApi('/users?role=instructor');
 			if (data && !data.error) {
-				// Sort: featured first
-				instructors = data.sort((a: any, b: any) => {
-					const aFeatured = isFeatured(a) ? 1 : 0;
-					const bFeatured = isFeatured(b) ? 1 : 0;
-					return bFeatured - aFeatured;
-				});
+				instructors = data;
 				filteredInstructors = instructors;
 			}
 		} catch (error) {

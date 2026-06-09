@@ -19,6 +19,7 @@
 	// Modals
 	let isModalOpen = $state(false);
 	let isDeleteModalOpen = $state(false);
+	let deleteConfirmText = $state('');
 	
 	// Form state
 	let isEditing = $state(false);
@@ -85,6 +86,7 @@
 
 	function confirmDelete(item: any) {
 		itemToDelete = item;
+		deleteConfirmText = '';
 		isDeleteModalOpen = true;
 	}
 
@@ -233,13 +235,15 @@
 <Dialog bind:open={isDeleteModalOpen} aria-labelledby="delete-title" aria-describedby="delete-content">
 	<Title id="delete-title">Delete Beach</Title>
 	<Content id="delete-content">
-		Are you sure you want to delete <strong>{itemToDelete?.name}</strong>? This action cannot be undone.
+		<p>Are you sure you want to delete <strong>{itemToDelete?.name}</strong>? This action cannot be undone.</p>
+		<p style="color: #d32f2f; font-weight: bold; margin-top: 1rem;">To confirm, please type DELETE below:</p>
+		<Textfield variant="outlined" bind:value={deleteConfirmText} style="width: 100%; margin-top: 0.5rem;" />
 	</Content>
 	<Actions>
 		<Button onclick={() => isDeleteModalOpen = false}>
 			<Label>Cancel</Label>
 		</Button>
-		<Button variant="raised" onclick={executeDelete} style="background-color: #d32f2f; color: white;">
+		<Button variant="raised" onclick={executeDelete} style="background-color: {deleteConfirmText === 'DELETE' ? '#d32f2f' : '#bdbdbd'}; color: white;" disabled={deleteConfirmText !== 'DELETE'}>
 			<Label>Delete</Label>
 		</Button>
 	</Actions>

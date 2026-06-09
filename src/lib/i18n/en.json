@@ -159,7 +159,8 @@
         "levels_guide": "Difficulty Levels Guide",
         "login_to_book": "Please log in to book a class.",
         "boosted": "Boosted",
-        "not_rated": "Not rated yet"
+        "not_rated": "Not rated yet",
+        "fully_booked": "Fully Booked"
     },
     "advert": {
         "details_title": "Class Details",

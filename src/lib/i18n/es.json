@@ -159,7 +159,8 @@
         "levels_guide": "Guía de Niveles de Dificultad",
         "login_to_book": "Inicia sesión para reservar una clase.",
         "boosted": "Impulsado",
-        "not_rated": "Sin valoraciones aún"
+        "not_rated": "Sin valoraciones aún",
+        "fully_booked": "Completo"
     },
     "advert": {
         "details_title": "Detalles de la Clase",

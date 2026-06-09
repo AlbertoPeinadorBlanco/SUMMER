@@ -25,6 +25,7 @@
 	// Modals
 	let isCreateEditModalOpen = $state(false);
 	let isDeleteModalOpen = $state(false);
+	let deleteConfirmText = $state('');
 	let isDetailsModalOpen = $state(false);
 	
 	// Details state
@@ -251,6 +252,7 @@
 	function openDeleteModal(user: any) {
 		currentUserId = user.id;
 		formUsername = user.username;
+		deleteConfirmText = '';
 		isDeleteModalOpen = true;
 	}
 
@@ -406,7 +408,11 @@
 	}
 
 	async function deleteInnerItem(type: string, id: any) {
-		if (!confirm('Are you sure you want to delete this?')) return;
+		const word = prompt('To confirm deletion, please type the word DELETE:');
+		if (word !== 'DELETE') {
+			alert('Deletion cancelled. You must type DELETE exactly to confirm.');
+			return;
+		}
 		try {
 			let endpoint = '';
 			if (type === 'booking') endpoint = `/bookings/${id}`;
@@ -696,6 +702,7 @@
 					<Head>
 						<Row>
 							<Cell>Class ID</Cell>
+							<Cell>Image</Cell>
 							<Cell>Title</Cell>
 							<Cell>Instructor</Cell>
 							<Cell>Price</Cell>
@@ -706,6 +713,13 @@
 						{#each pendingAdverts as ad}
 							<Row>
 								<Cell>{ad.id}</Cell>
+								<Cell>
+									{#if ad.image_url}
+										<img src={getMediaUrl(ad.image_url)} alt="Class" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;" />
+									{:else}
+										<span style="color: #999; font-size: 0.8rem;">No Image</span>
+									{/if}
+								</Cell>
 								<Cell>{ad.title}</Cell>
 								<Cell>{ad.instructor_username || ad.instructor_id}</Cell>
 								<Cell>{$formatPrice(ad.price)}</Cell>
@@ -823,13 +837,15 @@
 <Dialog bind:open={isDeleteModalOpen} aria-labelledby="delete-title">
 	<Title id="delete-title">{$t('admin.delete_user')}</Title>
 	<Content>
-		{$t('admin.delete_confirm').replace('{user}', formUsername)}
+		<p>{$t('admin.delete_confirm').replace('{user}', formUsername)}</p>
+		<p style="color: #d32f2f; font-weight: bold; margin-top: 1rem;">To confirm, please type DELETE below:</p>
+		<Textfield variant="outlined" bind:value={deleteConfirmText} style="width: 100%; margin-top: 0.5rem;" />
 	</Content>
 	<Actions>
 		<Button onclick={() => (isDeleteModalOpen = false)}>
 			<Label>{$t('admin.cancel')}</Label>
 		</Button>
-		<Button variant="raised" style="background-color: #d32f2f; color: white;" onclick={deleteUser}>
+		<Button variant="raised" style="background-color: {deleteConfirmText === 'DELETE' ? '#d32f2f' : '#bdbdbd'}; color: white;" disabled={deleteConfirmText !== 'DELETE'} onclick={deleteUser}>
 			<Label>{$t('admin.delete')}</Label>
 		</Button>
 	</Actions>
@@ -998,6 +1014,7 @@
 							<Head>
 								<Row>
 									<Cell>{$t('admin.id')}</Cell>
+									<Cell>Image</Cell>
 									<Cell>{$t('admin.class_title')}</Cell>
 									<Cell>{$t('admin.price')}</Cell>
 									<Cell>{$t('admin.status')}</Cell>
@@ -1008,6 +1025,13 @@
 								{#each detailsData.adverts as ad}
 									<Row>
 										<Cell>{ad.id}</Cell>
+										<Cell>
+											{#if ad.image_url}
+												<img src={getMediaUrl(ad.image_url)} alt="Class" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;" />
+											{:else}
+												<span style="color: #999; font-size: 0.8rem;">No Image</span>
+											{/if}
+										</Cell>
 										<Cell>{ad.title}</Cell>
 										<Cell>{$formatPrice(ad.price)}</Cell>
 										<Cell>

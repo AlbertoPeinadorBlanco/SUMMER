@@ -259,14 +259,24 @@
 						</div>
 
 						<div class="booking-action">
-							<button 
-								class="book-btn-custom" 
-								onclick={openBookingDialog}
-								disabled={userBookedClassIds.has(advert.id)}
-								style={userBookedClassIds.has(advert.id) ? 'background-color: #bdbdbd; cursor: not-allowed; border-color: #bdbdbd;' : ''}
-							>
-								{userBookedClassIds.has(advert.id) ? $t('marketplace.booked_btn') : $t('advert.book_now')}
-							</button>
+							{#if advert.bookings_count >= advert.capacity}
+								<button 
+									class="book-btn-custom" 
+									disabled
+									style="background-color: #bdbdbd; cursor: not-allowed; border-color: #bdbdbd;"
+								>
+									{$t('advert.fully_booked', { default: 'Class is fully booked' })}
+								</button>
+							{:else}
+								<button 
+									class="book-btn-custom" 
+									onclick={openBookingDialog}
+									disabled={userBookedClassIds.has(advert.id)}
+									style={userBookedClassIds.has(advert.id) ? 'background-color: #bdbdbd; cursor: not-allowed; border-color: #bdbdbd;' : ''}
+								>
+									{userBookedClassIds.has(advert.id) ? $t('marketplace.booked_btn') : $t('advert.book_now')}
+								</button>
+							{/if}
 						</div>
 					</Content>
 				</Card>

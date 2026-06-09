@@ -142,7 +142,11 @@
 			await fetchFeaturedInstructors();
 			import('$lib/stores/toast').then(({ showToast }) => showToast('Instructor of the Week updated successfully!', 'success'));
 		} catch (err: any) {
-			import('$lib/stores/toast').then(({ showToast }) => showToast(err.message || 'Error saving featured instructor', 'error'));
+			let msg = err.message || 'Error saving featured instructor';
+			if (err.errors) {
+				msg += ': ' + JSON.stringify(err.errors);
+			}
+			import('$lib/stores/toast').then(({ showToast }) => showToast(msg, 'error'));
 		}
 	}
 

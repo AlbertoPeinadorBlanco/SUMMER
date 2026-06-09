@@ -281,7 +281,7 @@
 								{getTitle(ad)}
 							</h2>
 							
-							{#if (ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)) || ad.available_today || (ad.featured_until && new Date(ad.featured_until) > new Date())}
+							{#if (ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)) || (ad.featured_until && new Date(ad.featured_until) > new Date())}
 								<div class="ad-perks">
 									{#if ad.featured_until && new Date(ad.featured_until) > new Date()}
 										<span class="badge featured-badge" title="Featured Spot">
@@ -291,11 +291,6 @@
 									{#if ad.bumped_at && new Date(ad.bumped_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)}
 										<span class="badge bumped-badge" title="Recently Boosted">
 											<span class="material-icons">rocket_launch</span> {$t('marketplace.boosted')}
-										</span>
-									{/if}
-									{#if ad.available_today}
-										<span class="badge available-today-badge" title={$t('marketplace.available_today')}>
-											<span class="material-icons">event_available</span> {$t('marketplace.available_today')}
 										</span>
 									{/if}
 								</div>

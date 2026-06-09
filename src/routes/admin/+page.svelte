@@ -512,9 +512,6 @@
 		if (!detailsData || !detailsData.user) return;
 		try {
 			const payload = {
-				has_video_upgrade: detailsData.user.has_video_upgrade,
-				has_link_upgrade: detailsData.user.has_link_upgrade,
-				has_badge_upgrade: detailsData.user.has_badge_upgrade,
 				featured_until: detailsData.user.featured_until
 			};
 			await fetchApi(`/admin/users/${detailsData.user.id}/perks`, {
@@ -928,23 +925,6 @@
 								<strong style="font-size: 1.1rem;">Manage Upgrades/Perks:</strong>
 								
 								<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-									<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
-										<input type="checkbox" bind:checked={detailsData.user.has_video_upgrade} style="width: 18px; height: 18px;" />
-										<span class="material-icons" style="color: #1565c0;">videocam</span>
-										Video Upgrade
-									</label>
-
-									<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
-										<input type="checkbox" bind:checked={detailsData.user.has_link_upgrade} style="width: 18px; height: 18px;" />
-										<span class="material-icons" style="color: #1565c0;">link</span>
-										Link Upgrade
-									</label>
-
-									<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
-										<input type="checkbox" bind:checked={detailsData.user.has_badge_upgrade} style="width: 18px; height: 18px;" />
-										<span class="material-icons" style="color: #1565c0;">verified</span>
-										Badge Upgrade
-									</label>
 								</div>
 
 								<div style="margin-top: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">

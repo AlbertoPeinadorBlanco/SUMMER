@@ -190,13 +190,6 @@
 							{$t('profile_enhancements.public_featured')}
 						</span>
 					{/if}
-
-					{#if teacher.available_today}
-						<span class="perk-badge available-badge">
-							<span class="material-icons" aria-hidden="true">event_available</span>
-							{$t('marketplace.available_today')}
-						</span>
-					{/if}
 				</div>
 			</div>
 		</div>

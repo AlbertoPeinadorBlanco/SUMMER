@@ -174,24 +174,6 @@
 
 						<!-- Perk badges -->
 						<div class="perk-badges">
-							{#if instructor.available_today && instructor.has_badge_upgrade}
-								<span class="perk-badge available-badge">
-									<span class="material-icons">event_available</span>
-									{$t('marketplace.available_today')}
-								</span>
-							{/if}
-							{#if instructor.has_video_upgrade}
-								<span class="perk-badge upgrade-badge">
-									<span class="material-icons">videocam</span>
-									Video
-								</span>
-							{/if}
-							{#if instructor.has_link_upgrade}
-								<span class="perk-badge upgrade-badge">
-									<span class="material-icons">link</span>
-									Online Booking
-								</span>
-							{/if}
 						</div>
 
 						<p class="instructor-bio">

@@ -25,7 +25,6 @@
 	let username = $state('');
 	let profile_picture_url = $state('');
 	let avatar_color = $state('random');
-	let available_today = $state(false);
 	let allow_communications = $state(true);
 	let show_contact_info = $state(false);
 	let bio = $state('');
@@ -68,8 +67,6 @@
 					auth.updateUser({ tier: 'summer_pass' });
 				} else if (purchasedItem === 'bump_instructor') {
 					auth.updateUser({ bumped_at: new Date().toISOString() });
-				} else if (purchasedItem === 'badge_upgrade') {
-					auth.updateUser({ has_badge_upgrade: true });
 				}
             }
 
@@ -101,7 +98,6 @@
 			username = user.username || '';
 			profile_picture_url = user.profile_picture_url || '';
 			avatar_color = user.avatar_color || 'random';
-			available_today = user.available_today || false;
 			allow_communications = user.allow_communications !== undefined ? !!user.allow_communications : true;
 			show_contact_info = user.show_contact_info !== undefined ? !!user.show_contact_info : false;
 			bio = user.bio || '';
@@ -297,9 +293,9 @@
 		try {
 			await fetchApi(`/users/${user.id}/instructor-profile`, {
 				method: 'PUT',
-				body: JSON.stringify({ available_today, allow_communications, show_contact_info, bio, specialization })
+				body: JSON.stringify({ allow_communications, show_contact_info, bio, specialization })
 			});
-			auth.updateUser({ available_today, allow_communications, show_contact_info, bio, specialization });
+			auth.updateUser({ allow_communications, show_contact_info, bio, specialization });
 			// Don't show success msg here if it's called from handleUpdate to avoid overriding
 			if (!loading) {
 				successMsg = $t('profile.alerts.instructor_updated');
@@ -534,27 +530,6 @@
 							</Label>
 						</Button>
 					</div>
-
-					<!-- Available Today Badge -->
-					<div class="upgrade-row">
-						<div class="upgrade-info">
-							<h4>{$t('profile_enhancements.badge')}</h4>
-							<p class="desc">{$t('profile_enhancements.badge_desc')}</p>
-						</div>
-						{#if user.has_badge_upgrade}
-							<label style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
-								<input type="checkbox" bind:checked={available_today} /> {$t('profile_enhancements.enable_badge')}
-							</label>
-						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('badge'); }} disabled={loading}>
-								<Label>
-									{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.badge_upgrade, true) } })}
-								</Label>
-							</Button>
-						{/if}
-					</div>
-
-
 
 					<Button type="submit" variant="raised" disabled={loading} class="premium-button save-btn">
 						<Label>{loading ? $t('profile_enhancements.saving') : $t('profile_enhancements.save')}</Label>

@@ -15,12 +15,6 @@ export interface User {
 	role?: string;
 	tier?: string;
 	is_verified?: boolean | number;
-	has_video_upgrade?: boolean;
-	has_link_upgrade?: boolean;
-	has_badge_upgrade?: boolean;
-	video_url?: string;
-	booking_link?: string;
-	available_today?: boolean;
 	bumped_at?: string;
 	allow_communications?: boolean | number;
 	bio?: string;

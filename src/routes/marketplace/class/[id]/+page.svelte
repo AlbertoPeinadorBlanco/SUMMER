@@ -259,7 +259,7 @@
 						</div>
 
 						<div class="booking-action">
-							{#if advert.bookings_count >= advert.capacity}
+							{#if advert.is_fully_booked || (advert.capacity && advert.bookings_count >= advert.capacity)}
 								<button 
 									class="book-btn-custom" 
 									disabled

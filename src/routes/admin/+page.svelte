@@ -56,6 +56,7 @@
 	let advertDifficulty = $state(1);
 	let advertSportType = $state('surf');
 	let advertIsOnline = $state(false);
+	let advertIsFullyBooked = $state(false);
 	let advertImageUrl = $state('');
 	
 	let ratingStudentId = $state('');
@@ -74,6 +75,7 @@
 	let formLastName = $state('');
 	let formRole = $state('user');
 	let formVerified = $state(false);
+	let formTier = $state('basic');
 
 	let pendingAdverts: any[] = $state([]);
 	let pendingLoading = $state(false);
@@ -303,6 +305,7 @@
 			advertDifficulty = advert.difficulty_level || 1;
 			advertSportType = advert.sport_type || 'surf';
 			advertIsOnline = advert.is_online || false;
+			advertIsFullyBooked = advert.is_fully_booked || false;
 			advertImageUrl = advert.image_url || '';
 		} else {
 			advertClassTypeId = 1;
@@ -318,6 +321,7 @@
 			advertDifficulty = 1;
 			advertSportType = 'surf';
 			advertIsOnline = false;
+			advertIsFullyBooked = false;
 			advertImageUrl = '';
 		}
 		isInnerModalOpen = true;
@@ -368,6 +372,7 @@
 					difficulty_level: advertDifficulty,
 					sport_type: advertSportType,
 					is_online: advertIsOnline ? 1 : 0,
+					is_fully_booked: advertIsFullyBooked ? 1 : 0,
 					is_active: advertIsActive ? 1 : 0,
 					image_url: advertImageUrl
 				};
@@ -1176,6 +1181,10 @@
 					<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 						<input type="checkbox" bind:checked={advertIsActive} style="width: 18px; height: 18px;" />
 						Is Active
+					</label>
+					<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+						<input type="checkbox" bind:checked={advertIsFullyBooked} style="width: 18px; height: 18px;" />
+						Fully Booked
 					</label>
 				</div>
 			{:else if innerModalType === 'rating'}

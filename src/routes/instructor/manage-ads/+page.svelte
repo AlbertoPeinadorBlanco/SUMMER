@@ -37,6 +37,7 @@
 	let ends_at = $state('');
 	let location = $state('');
 	let is_online = $state(false);
+	let is_fully_booked = $state(false);
 	let difficulty_level = $state('1');
 
 	let imageFile: File | null = $state(null);
@@ -165,6 +166,7 @@
 		ends_at = c.ends_at ? new Date(c.ends_at).toISOString().slice(0, 16) : '';
 		location = c.location || '';
 		is_online = !!c.is_online;
+		is_fully_booked = !!c.is_fully_booked;
 		difficulty_level = c.difficulty_level ? c.difficulty_level.toString() : '1';
 		currentImageUrl = getMediaUrl(c.image_url);
 		imageFile = null;
@@ -187,6 +189,7 @@
 		ends_at = '';
 		location = '';
 		is_online = false;
+		is_fully_booked = false;
 		difficulty_level = '1';
 		currentImageUrl = '';
 		imageFile = null;
@@ -262,6 +265,7 @@
 				ends_at: ends_at ? new Date(ends_at).toISOString() : null,
 				location,
 				is_online: is_online ? 1 : 0,
+				is_fully_booked: is_fully_booked ? 1 : 0,
 				difficulty_level: parseInt(difficulty_level, 10) || 1
 			};
 
@@ -465,6 +469,11 @@
 				<div class="checkbox-container" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
 					<Checkbox bind:checked={is_online} id="is_online_checkbox" />
 					<label for="is_online_checkbox" style="color: var(--text-color); cursor: pointer;">{$t('createAd.form_is_online')}</label>
+				</div>
+
+				<div class="checkbox-container" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+					<Checkbox bind:checked={is_fully_booked} id="is_fully_booked_checkbox" />
+					<label for="is_fully_booked_checkbox" style="color: var(--text-color); cursor: pointer;">{$t('marketplace.fully_booked')}</label>
 				</div>
 
 				<div class="actions">

@@ -173,6 +173,7 @@
         "location": "Location",
         "level": "Level",
         "book_now": "Book Now",
+        "fully_booked": "Fully Booked",
         "back_btn": "Back to Marketplace",
         "online": "Online",
         "booking_success_title": "Request Sent!",
@@ -762,3 +763,4 @@
         "show_less": "Show Less"
     }
 }
+

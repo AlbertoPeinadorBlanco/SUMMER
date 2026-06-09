@@ -173,6 +173,7 @@
         "location": "Ubicación",
         "level": "Nivel",
         "book_now": "Reservar Ahora",
+        "fully_booked": "Completo",
         "back_btn": "Volver al Marketplace",
         "online": "Online",
         "booking_success_title": "¡Solicitud Enviada!",
@@ -755,3 +756,4 @@
         "show_less": "Mostrar menos"
     }
 }
+

@@ -817,7 +817,7 @@
 			</div>
 
 			<div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-				<input type="checkbox" id="verified-checkbox" bind:checked={formVerified} style="width: 18px; height: 18px;" />
+				<input type="checkbox" id="verified-checkbox" bind:checked={formVerified} disabled={isEditing} style="width: 18px; height: 18px;" />
 				<label for="verified-checkbox" style="font-size: 1rem;">Is Verified Account</label>
 			</div>
 			

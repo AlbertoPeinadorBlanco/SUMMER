@@ -25,8 +25,6 @@
 	let username = $state('');
 	let profile_picture_url = $state('');
 	let avatar_color = $state('random');
-	let video_url = $state('');
-	let booking_link = $state('');
 	let available_today = $state(false);
 	let allow_communications = $state(true);
 	let show_contact_info = $state(false);
@@ -68,10 +66,6 @@
 					auth.updateUser({ tier: 'premium' });
 				} else if (purchasedItem === 'summer_pass') {
 					auth.updateUser({ tier: 'summer_pass' });
-				} else if (purchasedItem === 'video_upgrade') {
-					auth.updateUser({ has_video_upgrade: true });
-				} else if (purchasedItem === 'link_upgrade') {
-					auth.updateUser({ has_link_upgrade: true });
 				} else if (purchasedItem === 'bump_instructor') {
 					auth.updateUser({ bumped_at: new Date().toISOString() });
 				} else if (purchasedItem === 'badge_upgrade') {
@@ -107,8 +101,6 @@
 			username = user.username || '';
 			profile_picture_url = user.profile_picture_url || '';
 			avatar_color = user.avatar_color || 'random';
-			video_url = user.video_url || '';
-			booking_link = user.booking_link || '';
 			available_today = user.available_today || false;
 			allow_communications = user.allow_communications !== undefined ? !!user.allow_communications : true;
 			show_contact_info = user.show_contact_info !== undefined ? !!user.show_contact_info : false;
@@ -305,9 +297,9 @@
 		try {
 			await fetchApi(`/users/${user.id}/instructor-profile`, {
 				method: 'PUT',
-				body: JSON.stringify({ video_url, booking_link, available_today, allow_communications, show_contact_info, bio, specialization })
+				body: JSON.stringify({ available_today, allow_communications, show_contact_info, bio, specialization })
 			});
-			auth.updateUser({ video_url, booking_link, available_today, allow_communications, show_contact_info, bio, specialization });
+			auth.updateUser({ available_today, allow_communications, show_contact_info, bio, specialization });
 			// Don't show success msg here if it's called from handleUpdate to avoid overriding
 			if (!loading) {
 				successMsg = $t('profile.alerts.instructor_updated');
@@ -511,23 +503,6 @@
 				<p class="tier-desc">{$t('profile_enhancements.desc')}</p>
 				
 				<form class="enhancements-form" onsubmit={handleInstructorUpdate}>
-					<!-- Intro Video Upgrade -->
-					<div class="upgrade-row">
-						<div class="upgrade-info">
-							<h4>{$t('profile_enhancements.intro_video')}</h4>
-							<p class="desc">{$t('profile_enhancements.intro_video_desc')}</p>
-						</div>
-						{#if user.has_video_upgrade}
-							<Textfield variant="outlined" bind:value={video_url} label={$t('profile_enhancements.video_url')} style="flex: 1;" />
-						{:else}
-							<Button variant="outlined" onclick={(e: any) => { e.preventDefault(); handleBuyUpgrade('video'); }} disabled={loading}>
-								<Label>
-									{$t('profile_enhancements.unlock', { values: { price: $formatPrice($pricings.video_upgrade, true) } })}
-								</Label>
-							</Button>
-						{/if}
-					</div>
-
 					<!-- Boost Profile Perk -->
 					<div class="upgrade-row">
 						<div class="upgrade-info">

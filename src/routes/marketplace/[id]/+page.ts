@@ -58,16 +58,13 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			bio: u.bio || 'Passionate surfing instructor ready to hit the waves!',
 			allow_communications: u.allow_communications,
 			tier: u.tier || 'basic',
-			// Perks — only expose values if the upgrade was purchased
-			video_url: u.has_video_upgrade ? u.video_url : null,
-			booking_link: u.has_link_upgrade ? u.booking_link : null,
 			available_today: u.has_badge_upgrade ? !!u.available_today : false,
 			is_featured: isFeatured,
 			featured_until: u.featured_until,
-			has_video_upgrade: !!u.has_video_upgrade,
-			has_link_upgrade: !!u.has_link_upgrade,
 			has_badge_upgrade: !!u.has_badge_upgrade,
 			is_verified: !!u.is_verified,
+			show_contact_info: !!u.show_contact_info,
+			extra_advert_slots: u.extra_advert_slots || 0,
 			classes: teacherClasses,
 			ratings
 		};

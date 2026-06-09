@@ -197,38 +197,12 @@
 							{$t('marketplace.available_today')}
 						</span>
 					{/if}
-					{#if teacher.has_video_upgrade}
-						<span class="perk-badge upgrade-badge">
-							<span class="material-icons" aria-hidden="true">videocam</span>
-							Video
-						</span>
-					{/if}
-					{#if teacher.has_link_upgrade}
-						<span class="perk-badge upgrade-badge">
-							<span class="material-icons" aria-hidden="true">link</span>
-							Online Booking
-						</span>
-					{/if}
 				</div>
 			</div>
 		</div>
 
 		<div class="content-grid">
 			<div class="main-column">
-				{#if teacher.video_url}
-					<section class="video-section">
-						<h3>Introductory Video</h3>
-						<div class="video-container">
-							<iframe 
-								src={teacher.video_url.includes('youtube.com/watch?v=') ? teacher.video_url.replace('watch?v=', 'embed/') : teacher.video_url} 
-								title="Instructor Video"
-								frameborder="0" 
-								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-								allowfullscreen
-							></iframe>
-						</div>
-					</section>
-				{/if}
 
 				<section class="about-section" aria-labelledby="about-title">
 					<h3 id="about-title">{$t('profile.about')}</h3>
@@ -318,13 +292,6 @@
 			</div>
 
 			<div class="sidebar">
-				{#if teacher.booking_link}
-					<div class="booking-link-box" style="margin-bottom: 2rem;">
-						<Button href={teacher.booking_link} target="_blank" rel="noopener noreferrer" variant="raised" class="premium-button" style="width: 100%;">
-							<Label>Book on external software</Label>
-						</Button>
-					</div>
-				{/if}
 				<div class="contact-box" role="region" aria-labelledby="contact-title">
 					<h3 id="contact-title">{$t('profile.contact_title')}</h3>
 					

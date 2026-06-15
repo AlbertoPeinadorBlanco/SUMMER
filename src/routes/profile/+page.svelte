@@ -243,7 +243,7 @@
 		error = '';
 
 		try {
-			const item_key = `${type}_upgrade`; // e.g. video_upgrade
+			const item_key = type;
 			const res = await fetchApi('/stripe/create-checkout-session', {
 				method: 'POST',
 				body: JSON.stringify({ item_key })
